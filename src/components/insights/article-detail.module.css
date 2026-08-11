@@ -1,0 +1,200 @@
+/*
+ * Article detail layout (§12.2, §19.3).
+ *
+ * DOM order is fixed: breadcrumb, metadata, title, excerpt, byline, hero image.
+ * That is exactly the tablet/mobile reading order, so those breakpoints need no
+ * layout work at all. Desktop turns the same two blocks into a split header
+ * using named grid areas — no `order`, no duplicated markup, no reversed DOM.
+ */
+
+.article {
+  min-width: 0;
+}
+
+.headerSection {
+  border-bottom: var(--border-hairline) solid var(--line-default);
+}
+
+.header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
+  min-width: 0;
+}
+
+.headerBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+
+.headerMedia {
+  min-width: 0;
+}
+
+/*
+ * The ratio is declared here, not derived from the asset, so the space is
+ * reserved before the image decodes and the header never shifts (§22.2).
+ */
+.heroFrame {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2xs) var(--space-sm);
+  margin: 0;
+  min-width: 0;
+}
+
+/* Two class selectors so this wins over `.tag` in ui.module.css, whose
+   `white-space: nowrap` would push a long type label past the gutter at 320px. */
+.meta .type {
+  white-space: normal;
+  max-width: 100%;
+}
+
+.metaItem {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-h2);
+  line-height: var(--leading-display);
+  /* A single very long token must break rather than widen the page. */
+  overflow-wrap: anywhere;
+}
+
+.lede {
+  margin: 0;
+  max-width: var(--measure);
+  font-size: var(--text-body-lg);
+  line-height: 1.45;
+  color: var(--text-muted);
+  overflow-wrap: break-word;
+}
+
+.byline {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  overflow-wrap: break-word;
+}
+
+.bylineLabel {
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  font-size: var(--text-xs);
+}
+
+.bylineLink {
+  color: var(--text-default);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+.bylineLink:hover,
+.bylineLink:focus-visible {
+  text-decoration-thickness: 2px;
+}
+
+/* ------------------------------------------------------------------- body */
+
+/*
+ * The rich-text module already caps paragraphs and lists at `--measure`
+ * (~60–75 characters). Capping the column too keeps headings, figures and
+ * embeds inside the same reading field instead of running the full 1600px.
+ */
+.body {
+  max-width: var(--measure);
+  min-width: 0;
+}
+
+/* --------------------------------------------------------------- back link */
+
+.back {
+  margin: var(--space-2xl) 0 0;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  /* 44px target (§20.2). */
+  min-height: 44px;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: gap var(--duration-surface) var(--ease-foundry);
+}
+
+.backLink span {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  text-decoration-thickness: 1px;
+}
+
+.backLink:hover,
+.backLink:focus-visible {
+  gap: var(--space-xs);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backLink {
+    transition: none;
+  }
+
+  .backLink:hover,
+  .backLink:focus-visible {
+    gap: var(--space-2xs);
+  }
+}
+
+/* ------------------------------------------------------------- >= 992px */
+
+@media (min-width: 992px) {
+  .header {
+    /* Split header: title and metadata left, hero right. */
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-areas: "body media";
+    column-gap: var(--space-2xl);
+    align-items: start;
+    margin-top: var(--space-xl);
+  }
+
+  .headerBody {
+    grid-area: body;
+    gap: var(--space-md);
+  }
+
+  .headerMedia {
+    grid-area: media;
+  }
+
+  /* Portrait crop in the narrower right field. */
+  .heroFrame {
+    aspect-ratio: 4 / 5;
+  }
+
+  /* Without art the header takes the full field instead of leaving a hole. */
+  .header[data-media="false"] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "body";
+    max-width: 62ch;
+  }
+
+  .title {
+    font-size: var(--text-h1);
+  }
+}

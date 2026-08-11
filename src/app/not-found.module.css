@@ -1,0 +1,53 @@
+/* 404 page (§6.4). */
+
+.page {
+  display: flex;
+  align-items: center;
+  /* The site header is fixed, so this route has to clear it itself. */
+  padding-top: calc(var(--header-height) + var(--space-2xl));
+  padding-bottom: var(--section-y);
+  /* Fills the first screen so the footer does not ride up under a short page.
+     `svh` rather than `vh`: the mobile URL bar must not create a scrollbar. */
+  min-height: calc(100svh - var(--header-height));
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* Long words in the heading can never widen the page past the viewport. */
+  min-width: 0;
+  max-width: 42ch;
+}
+
+.heading {
+  margin: 0;
+  /* Deliberately one step below the display maximum: a 404 is an interruption,
+     not a statement. */
+  font-size: var(--text-h2);
+  line-height: var(--leading-display);
+}
+
+.body {
+  margin: var(--space-md) 0 0;
+  font-size: var(--text-body-lg);
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: var(--space-xl);
+}
+
+/* At the narrowest widths three side-by-side buttons would each be squeezed
+   below a comfortable target, so they stack to full width instead. */
+@media (max-width: 479px) {
+  .actions {
+    align-self: stretch;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

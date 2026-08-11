@@ -1,0 +1,123 @@
+/* Network person card (§14). */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  height: 100%;
+  min-width: 0;
+}
+
+/*
+ * Fixed 4:5 portrait for both the photograph and the typographic fallback, so a
+ * mixed grid never jumps and no card shifts once an image decodes.
+ */
+.portrait {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+}
+
+/*
+ * Decoration only (§14): grayscale never hides information, and the colour state
+ * is reachable by keyboard through `:focus-within` as well as by pointer.
+ */
+.portraitImage {
+  filter: grayscale(1);
+  transition: filter var(--duration-surface) var(--ease-standard);
+}
+
+.card:focus-within .portraitImage {
+  filter: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .portraitImage {
+    filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portraitImage {
+    transition: none;
+  }
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  min-width: 0;
+}
+
+.name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-h5);
+  font-weight: var(--weight-regular);
+  line-height: 1.15;
+  letter-spacing: var(--tracking-display);
+  overflow-wrap: anywhere;
+}
+
+.role {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.4;
+  color: var(--text-muted);
+  overflow-wrap: break-word;
+}
+
+.taxonomy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+  margin-top: var(--space-3xs);
+  min-width: 0;
+}
+
+.taxonomyLabel {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3xs);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+/*
+ * Two class selectors so this always wins over `.tag` in ui.module.css: the
+ * primitive sets `white-space: nowrap`, which would push a long expertise title
+ * past the card edge at 320px.
+ */
+.tags .tag {
+  white-space: normal;
+  max-width: 100%;
+}
+
+.contact {
+  margin: var(--space-2xs) 0 0;
+}
+
+/*
+ * Two class selectors so the flex box and the 44px target win over the
+ * `textLink` primitive `ExternalLink` also applies, regardless of stylesheet
+ * order (§20.2).
+ */
+.contact .linkedin {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3xs);
+  min-height: 44px;
+  font-size: var(--text-sm);
+}

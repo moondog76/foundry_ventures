@@ -1,0 +1,392 @@
+/* Shared styles for the UI primitives (§17.2). */
+
+/* ------------------------------------------------------------- Container */
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  /* iOS safe areas (§19.1). */
+  padding-inline: max(var(--gutter), env(safe-area-inset-left), env(safe-area-inset-right));
+}
+
+.containerInner {
+  max-width: var(--container-inner-max);
+}
+
+.containerNarrow {
+  max-width: 900px;
+}
+
+.containerFlush {
+  padding-inline: 0;
+}
+
+/* ---------------------------------------------------------------- Section */
+
+.section {
+  padding-block: var(--section-y);
+  scroll-margin-top: calc(var(--header-height) + var(--space-md));
+}
+
+.sectionTight {
+  padding-block: var(--section-y-sm);
+}
+
+.sectionLoose {
+  padding-block: var(--section-y-lg);
+}
+
+.sectionDark {
+  background-color: var(--surface-inverse);
+  color: var(--text-inverse);
+}
+
+.sectionLight {
+  background-color: var(--surface-default);
+  color: var(--text-default);
+}
+
+.sectionOffWhite {
+  background-color: var(--color-off-white);
+  color: var(--text-default);
+}
+
+/* ------------------------------------------------------------------ Grid */
+
+/* 24 columns on desktop, 8 on mobile, ~11px gap (§5.4). */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  row-gap: var(--space-lg);
+}
+
+/* ----------------------------------------------------------- Eyebrow */
+
+.eyebrow {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2xs);
+  margin-bottom: var(--space-md);
+  color: var(--text-muted);
+}
+
+.eyebrowOnDark {
+  color: var(--text-muted-inverse);
+}
+
+/* ---------------------------------------------------------------- Button */
+
+.button {
+  --button-fg: var(--color-white);
+  --button-bg: var(--color-black);
+  --button-border: var(--color-black);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2xs);
+  /* 44px minimum target (§20.2). */
+  min-height: 44px;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-decoration: none;
+  text-align: center;
+  color: var(--button-fg);
+  background-color: var(--button-bg);
+  border: 1px solid var(--button-border);
+  border-radius: var(--radius-none);
+  transition:
+    background-color var(--duration-surface) var(--ease-standard),
+    color var(--duration-surface) var(--ease-standard),
+    border-color var(--duration-surface) var(--ease-standard);
+}
+
+.button:hover {
+  --button-bg: transparent;
+  --button-fg: var(--color-black);
+}
+
+.buttonSecondary {
+  --button-fg: var(--color-black);
+  --button-bg: transparent;
+  --button-border: currentColor;
+}
+
+.buttonSecondary:hover {
+  --button-bg: var(--color-black);
+  --button-fg: var(--color-white);
+}
+
+.buttonOnDark {
+  --button-fg: var(--color-black);
+  --button-bg: var(--color-white);
+  --button-border: var(--color-white);
+}
+
+.buttonOnDark:hover {
+  --button-bg: transparent;
+  --button-fg: var(--color-white);
+}
+
+.buttonOnDark.buttonSecondary {
+  --button-fg: var(--color-white);
+  --button-bg: transparent;
+  --button-border: var(--color-line-on-dark);
+}
+
+.buttonOnDark.buttonSecondary:hover {
+  --button-bg: var(--color-white);
+  --button-fg: var(--color-black);
+  --button-border: var(--color-white);
+}
+
+.button[aria-disabled="true"],
+.button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.buttonFull {
+  width: 100%;
+}
+
+/* ------------------------------------------------------------- Text link */
+
+/* Foundry's signature: a 1px underline drawn left-to-right (§5.6). */
+.textLink {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  padding-bottom: 2px;
+}
+
+.textLink::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background-color: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--duration-underline) var(--ease-foundry);
+}
+
+.textLink:hover::after,
+.textLink:focus-visible::after,
+.textLinkActive::after {
+  transform: scaleX(1);
+}
+
+.textLinkActive::after {
+  transition: none;
+}
+
+/* --------------------------------------------------------------- IconButton */
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  color: inherit;
+  background: transparent;
+  border: 1px solid transparent;
+  transition: border-color var(--duration-surface) var(--ease-standard);
+}
+
+.iconButton:hover {
+  border-color: currentColor;
+}
+
+/* --------------------------------------------------------------------- Tag */
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.6rem;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  border: 1px solid var(--line-default);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.tagOnDark {
+  border-color: var(--line-inverse);
+  color: var(--text-muted-inverse);
+}
+
+.tagAccent {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ----------------------------------------------------------------- Divider */
+
+.divider {
+  border: none;
+  border-top: var(--border-hairline) solid var(--line-default);
+  margin: 0;
+}
+
+.dividerOnDark {
+  border-top-color: var(--line-inverse);
+}
+
+/* -------------------------------------------------------------- Image */
+
+.imageFrame {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--color-charcoal);
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imageContain {
+  object-fit: contain;
+}
+
+/*
+ * Typographic fallback (§7.5, §19.4.1): when no rights-cleared image exists we
+ * render a deliberate Foundry-branded surface, never a stock photo or a broken
+ * image placeholder.
+ */
+.imageFallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+  text-align: center;
+  background: linear-gradient(135deg, var(--color-charcoal) 0%, var(--color-black) 100%);
+  color: var(--text-inverse);
+}
+
+.imageFallbackLabel {
+  font-family: var(--font-display);
+  font-size: var(--text-h4);
+  line-height: 1.15;
+  letter-spacing: var(--tracking-display);
+}
+
+.imageFallbackMeta {
+  display: block;
+  margin-top: var(--space-2xs);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted-inverse);
+}
+
+/* --------------------------------------------------------- Empty state */
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding-block: var(--space-2xl);
+  max-width: 56ch;
+}
+
+.emptyStateActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+/* ---------------------------------------------------------- Pagination */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2xs);
+  margin-top: var(--space-2xl);
+}
+
+.paginationList {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.paginationLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding-inline: var(--space-2xs);
+  font-size: var(--text-sm);
+  text-decoration: none;
+  border: 1px solid var(--line-default);
+}
+
+.paginationCurrent {
+  border-color: currentColor;
+  font-weight: var(--weight-medium);
+}
+
+.paginationDisabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* -------------------------------------------------------------- Reveal */
+
+/*
+ * Motion is added *after* hydration (§4.3): server markup is fully visible, so
+ * text can never be trapped at opacity 0 when JavaScript fails.
+ */
+.reveal[data-reveal="pending"] {
+  opacity: 0;
+  transform: translateY(var(--reveal-distance, 16px));
+}
+
+.reveal[data-reveal="visible"] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity var(--duration-reveal) var(--ease-standard),
+    transform var(--duration-reveal) var(--ease-foundry);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal[data-reveal="pending"] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------- External arrow */
+
+.externalIcon {
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  margin-left: 0.35em;
+  vertical-align: baseline;
+  flex: none;
+}

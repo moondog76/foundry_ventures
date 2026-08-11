@@ -1,0 +1,50 @@
+/* Companies this person is deal lead for (§10.2). */
+
+.section {
+  margin-top: var(--space-3xl);
+  min-width: 0;
+}
+
+.heading {
+  margin: 0 0 var(--space-lg);
+  font-family: var(--font-display);
+  font-weight: var(--weight-regular);
+  font-size: var(--text-h4);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-display);
+}
+
+.grid {
+  display: grid;
+  /* minmax(0, 1fr) rather than 1fr: a long unbroken tagline must not be able to
+     force a track wider than its share and push the page sideways at 320px. */
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: var(--grid-gap);
+  row-gap: var(--space-xl);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.item {
+  display: flex;
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-lg);
+  }
+}
+
+@media (min-width: 1200px) {
+  /* Three across only once the container is genuinely wide: this block sits
+     below a reading-width bio, not in a full-bleed archive grid. */
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: var(--space-xl);
+    row-gap: var(--space-2xl);
+  }
+}

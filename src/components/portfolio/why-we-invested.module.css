@@ -1,0 +1,35 @@
+/* "Why we invested" (§9.1). */
+
+.section {
+  margin-top: var(--space-2xl);
+  min-width: 0;
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-md);
+}
+
+.heading {
+  margin: 0;
+  font-size: var(--text-h4);
+  font-family: var(--font-display);
+  font-weight: var(--weight-regular);
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-heading);
+}
+
+.body {
+  max-width: var(--measure);
+}
+
+@media (min-width: 992px) {
+  /* Asymmetric: label column left, prose right — the same rhythm as the
+     narrative block above it. */
+  .inner {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    column-gap: var(--space-2xl);
+    align-items: start;
+  }
+}

@@ -1,0 +1,131 @@
+/* Footer (§6.3). Prototype desktop reference padding: 76px 48px 44px. */
+
+.footer {
+  background-color: var(--color-black);
+  color: var(--color-white);
+  padding-top: var(--space-3xl);
+  padding-bottom: max(var(--space-xl), env(safe-area-inset-bottom));
+}
+
+.top {
+  display: grid;
+  gap: var(--space-2xl);
+  padding-bottom: var(--space-2xl);
+  border-bottom: 1px solid var(--line-inverse);
+}
+
+@media (min-width: 768px) {
+  .top {
+    grid-template-columns: 1.4fr 1fr 1.2fr;
+    gap: var(--space-xl);
+  }
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  align-items: flex-start;
+}
+
+.statement {
+  max-width: 34ch;
+  font-size: var(--text-body);
+  color: var(--color-muted-on-dark);
+}
+
+.nav h2,
+.contactHeading {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted-on-dark);
+  margin-bottom: var(--space-sm);
+}
+
+.navList,
+.contactList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navLink,
+.contactLink,
+.legalLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3xs);
+  min-height: 32px;
+  font-size: var(--text-body);
+  text-decoration: none;
+  color: var(--color-white);
+}
+
+.navLink:hover,
+.contactLink:hover,
+.legalLink:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.person {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+  margin-top: var(--space-2xs);
+}
+
+.personName {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+  font-size: var(--text-sm);
+  color: var(--color-white);
+}
+
+.personRole {
+  color: var(--color-muted-on-dark);
+}
+
+.address {
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--space-md);
+  font-style: normal;
+  font-size: var(--text-sm);
+  color: var(--color-muted-on-dark);
+}
+
+.bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding-top: var(--space-md);
+}
+
+.copyright {
+  font-size: var(--text-sm);
+  color: var(--color-muted-on-dark);
+}
+
+.legalList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.legalLink {
+  font-size: var(--text-sm);
+  color: var(--color-muted-on-dark);
+}

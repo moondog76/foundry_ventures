@@ -1,0 +1,157 @@
+/* Contact CTA (§7.9). */
+
+.cta {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-block: var(--section-y-lg);
+  color: var(--text-inverse);
+  /* Painted first, so an unavailable crop still leaves a legitimate surface. */
+  background-color: var(--color-deep-navy);
+}
+
+.cta .mediaFrame {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-color: var(--color-deep-navy);
+}
+
+/*
+ * Prototype reference wash, plus the live site's baseline dim underneath it. The
+ * 115° angle keeps the densest navy behind the heading column, where the white
+ * display type needs the most separation.
+ */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(115deg, rgba(0, 24, 72, 0.94) 0%, rgba(0, 24, 72, 0.7) 100%),
+    rgba(0, 0, 0, 0.15);
+}
+
+.container {
+  position: relative;
+  z-index: 2;
+}
+
+/* Mobile is one column — never two cramped columns of truncated addresses. */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2xl);
+}
+
+.intro {
+  min-width: 0;
+}
+
+.heading {
+  font-size: var(--text-h2);
+  line-height: var(--leading-heading);
+  max-width: 16ch;
+  text-wrap: balance;
+}
+
+.paragraph {
+  margin-top: var(--space-md);
+  font-size: var(--text-body-lg);
+  line-height: 1.45;
+  color: var(--color-muted-on-dark);
+  max-width: 44ch;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: var(--space-xl);
+}
+
+/* ----------------------------------------------------------------- People */
+
+.people {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-xl);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.person {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+  min-width: 0;
+  padding-top: var(--space-sm);
+  border-top: var(--border-hairline) solid var(--line-inverse);
+}
+
+.personName {
+  font-family: var(--font-sans);
+  font-size: var(--text-h6);
+  font-weight: var(--weight-medium);
+}
+
+.personRole {
+  font-size: var(--text-sm);
+  color: var(--color-muted-on-dark);
+  margin-bottom: var(--space-2xs);
+}
+
+.personChannel {
+  font-size: var(--text-sm);
+  min-width: 0;
+}
+
+/*
+ * A long address wraps rather than overflowing its column — the reason the
+ * people list stays single-column until there is real room for two.
+ */
+.channelLink {
+  /* inline-flex + min-height gives the 44px target the accessibility floor
+     requires while still letting a long address wrap inside the box. */
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+  border-bottom: var(--border-hairline) solid var(--color-muted-on-dark);
+  transition: border-color var(--duration-surface) var(--ease-standard);
+}
+
+.channelLink:hover {
+  border-bottom-color: var(--color-white);
+}
+
+@media (min-width: 992px) {
+  .grid {
+    grid-template-columns: repeat(24, minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+    align-items: start;
+  }
+
+  .intro {
+    grid-column: 1 / span 12;
+  }
+
+  .people {
+    grid-column: 14 / span 11;
+    gap: var(--space-lg);
+  }
+}
+
+/*
+ * Two columns of people only once the right-hand block is genuinely wide
+ * enough (~290px per person at 1200px), so an address never has to hyphenate.
+ */
+@media (min-width: 1200px) {
+  .people {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-lg);
+  }
+}

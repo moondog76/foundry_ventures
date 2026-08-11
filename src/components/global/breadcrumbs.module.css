@@ -1,0 +1,40 @@
+.breadcrumbs {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.breadcrumbs[data-on-dark] {
+  color: var(--color-muted-on-dark);
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3xs);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3xs);
+}
+
+.link {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.separator {
+  opacity: 0.6;
+}

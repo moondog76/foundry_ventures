@@ -1,0 +1,185 @@
+/* Testimonials (§7.7). */
+
+.heading {
+  font-size: var(--text-h3);
+  margin-bottom: var(--space-2xl);
+  max-width: 22ch;
+}
+
+.carousel {
+  position: relative;
+}
+
+/* The focusable region needs a visible ring of its own (§20.2). */
+.carousel:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 6px;
+}
+
+.viewport {
+  overflow: hidden;
+}
+
+.track {
+  display: flex;
+  align-items: stretch;
+  /* Vertical scrolling stays with the browser; only horizontal gestures are
+     ours (§7.7). */
+  touch-action: pan-y;
+  transition: transform var(--duration-surface) var(--ease-foundry);
+  will-change: transform;
+}
+
+/* While a finger is down the track follows it exactly — no easing lag. */
+.track[data-dragging="true"] {
+  transition: none;
+}
+
+.slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  padding-inline-end: var(--space-md);
+}
+
+.single {
+  max-width: 72ch;
+}
+
+/* ------------------------------------------------------------------- Card */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin: 0;
+}
+
+.card .portrait {
+  width: 96px;
+  height: 96px;
+  flex: none;
+  border-radius: var(--radius-none);
+}
+
+.quote {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-h4);
+  line-height: 1.25;
+  letter-spacing: var(--tracking-display);
+  max-width: 34ch;
+}
+
+.attribution {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+}
+
+.person {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
+}
+
+.role,
+.company {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------- Controls */
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  margin-top: var(--space-xl);
+}
+
+.arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* 44×44 minimum target (§20.2). */
+  min-width: 44px;
+  min-height: 44px;
+  color: inherit;
+  border: var(--border-hairline) solid var(--line-default);
+  transition:
+    background-color var(--duration-surface) var(--ease-standard),
+    color var(--duration-surface) var(--ease-standard),
+    border-color var(--duration-surface) var(--ease-standard);
+}
+
+.arrow:hover {
+  background-color: var(--color-black);
+  border-color: var(--color-black);
+  color: var(--color-white);
+}
+
+.indicators {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-inline: var(--space-2xs);
+}
+
+/* The visible dot is small; the hit area is not. */
+.indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  color: inherit;
+}
+
+.indicatorDot {
+  display: block;
+  width: 8px;
+  height: 8px;
+  background-color: currentColor;
+  opacity: 0.35;
+  transition: opacity var(--duration-surface) var(--ease-standard);
+}
+
+.indicator:hover .indicatorDot,
+.indicatorCurrent .indicatorDot {
+  opacity: 1;
+}
+
+.indicatorCurrent .indicatorDot {
+  /* A second, non-colour cue for the current slide (§20.3). */
+  outline: var(--border-hairline) solid currentColor;
+  outline-offset: 3px;
+}
+
+@media (min-width: 768px) {
+  .quote {
+    font-size: var(--text-h3);
+    max-width: 26ch;
+  }
+
+  .card {
+    gap: var(--space-lg);
+  }
+
+  .card .portrait {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+@media (min-width: 992px) {
+  .slide {
+    padding-inline-end: var(--space-2xl);
+  }
+
+  .quote {
+    max-width: 22ch;
+  }
+}

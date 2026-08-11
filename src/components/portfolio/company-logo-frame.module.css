@@ -1,0 +1,75 @@
+/*
+ * Logo frame. The portfolio logos delivered by the live site are white-on-
+ * transparent marks, so the frame is a dark Foundry surface — that is a
+ * requirement of the artwork, not decoration.
+ */
+
+.frame {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 10;
+  padding: var(--space-md);
+  background-color: var(--color-charcoal);
+  color: var(--text-inverse);
+  overflow: hidden;
+  transition: background-color var(--duration-surface) var(--ease-standard);
+}
+
+/*
+ * Optical target areas. Width percentages resolve against the frame's content
+ * box, height percentages against the height the aspect-ratio makes definite.
+ * The three shapes have a deliberately similar area so a wordmark and a square
+ * mark carry the same visual weight (§5.5).
+ */
+.frame[data-fit="wide"] {
+  --logo-width: 82%;
+  --logo-height: 34%;
+}
+
+.frame[data-fit="contain"] {
+  --logo-width: 64%;
+  --logo-height: 54%;
+}
+
+.frame[data-fit="compact"] {
+  --logo-width: 46%;
+  --logo-height: 62%;
+}
+
+/*
+ * Two class selectors so this always beats `.imageFrame` from ui.module.css
+ * regardless of stylesheet order — the shared primitive paints a charcoal
+ * background that would otherwise sit as a visible slab inside this frame.
+ */
+.frame .logoBox {
+  width: calc(var(--logo-width) * var(--logo-optical-scale, 1));
+  height: calc(var(--logo-height) * var(--logo-optical-scale, 1));
+  background-color: transparent;
+  overflow: visible;
+}
+
+/* Typographic fallback: the real company name, set in the identity face. */
+.fallback {
+  max-width: 100%;
+  font-family: var(--font-display);
+  font-size: clamp(1.375rem, 1rem + 2.4vw, 2.25rem);
+  line-height: 1.05;
+  letter-spacing: var(--tracking-display);
+  text-align: center;
+  /* A single long token (a one-word company name) must never widen the card. */
+  overflow-wrap: anywhere;
+}
+
+/* Compact variant used beside the detail-page heading. */
+.detail {
+  aspect-ratio: 3 / 2;
+  max-width: 220px;
+}
+
+@media (min-width: 992px) {
+  .detail {
+    max-width: 260px;
+  }
+}

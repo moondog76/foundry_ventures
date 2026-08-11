@@ -1,0 +1,195 @@
+/* Featured portfolio (§7.5). */
+
+.header {
+  margin-bottom: var(--space-2xl);
+}
+
+/*
+ * The measure lives on the heading, not on the wrapper: `ch` resolves against
+ * the element's own font size, and the wrapper renders at body size while the
+ * heading is display size. Constraining the wrapper in `ch` gave the heading a
+ * ~220px column and broke it onto four one-word lines.
+ */
+.heading {
+  font-size: var(--text-h2);
+  max-width: 18ch;
+  text-wrap: balance;
+}
+
+.intro {
+  margin-top: var(--space-md);
+  font-size: var(--text-body-lg);
+  color: var(--text-muted);
+  max-width: var(--measure);
+}
+
+/*
+ * Fixed column counts, never `auto-fill`: a sparse portfolio must produce a
+ * short grid, not a full-width row of empty cells (§7.5).
+ */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-lg);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.gridItem {
+  min-width: 0;
+  /* Cards stretch to a common height per row. */
+  display: flex;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+  border: var(--border-hairline) solid var(--line-default);
+  background-color: var(--surface-default);
+  transition:
+    border-color var(--duration-surface) var(--ease-standard),
+    background-color var(--duration-surface) var(--ease-standard);
+}
+
+.cardLink:hover,
+.cardLink:focus-visible {
+  border-color: var(--color-black);
+}
+
+/* ------------------------------------------------------------ Brand surface */
+
+.surface {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* A stable tile keeps logos of wildly different aspect ratios on one baseline. */
+  aspect-ratio: 16 / 9;
+  padding: var(--space-lg);
+  overflow: hidden;
+  background-color: var(--color-black);
+  color: var(--text-inverse);
+}
+
+/*
+ * The only element on the page that starts transparent, and deliberately so: it
+ * is a decorative `alt=""` layer behind the logo, it holds no text, and its
+ * state is pure CSS. Nothing here depends on JavaScript, so no content can be
+ * stranded at opacity 0 if hydration fails (§4.3).
+ */
+.card .cardImageFrame {
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-black);
+  opacity: 0;
+  transition: opacity var(--duration-crossfade) var(--ease-standard);
+}
+
+/* Focus gets the identical treatment to hover — no state is pointer-only. */
+.cardLink:hover .cardImageFrame,
+.cardLink:focus-visible .cardImageFrame {
+  opacity: 1;
+}
+
+.card .logoFrame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  transform: scale(var(--logo-scale, 1));
+  transform-origin: center;
+}
+
+/* Logo shape hints from the CMS (§5.5). */
+.surface[data-fit="wide"] .logoFrame {
+  max-width: 78%;
+}
+
+.surface[data-fit="compact"] .logoFrame {
+  max-width: 46%;
+}
+
+.surface[data-fit="contain"] .logoFrame {
+  max-width: 64%;
+}
+
+.wordmark {
+  position: relative;
+  font-family: var(--font-display);
+  font-size: var(--text-h4);
+  line-height: 1.1;
+  letter-spacing: var(--tracking-display);
+  text-align: center;
+  overflow-wrap: break-word;
+}
+
+/* -------------------------------------------------------------------- Meta */
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  padding: var(--space-md);
+}
+
+.name {
+  font-family: var(--font-sans);
+  font-size: var(--text-h6);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.01em;
+  line-height: 1.25;
+}
+
+.tagline {
+  font-size: var(--text-sm);
+  line-height: 1.45;
+  color: var(--text-muted);
+  /* The migrated captions contain a hard line break; honour it without letting
+     a long line escape the card. */
+  white-space: pre-line;
+  overflow-wrap: break-word;
+}
+
+.founders {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.externalMark {
+  position: absolute;
+  top: var(--space-2xs);
+  right: var(--space-2xs);
+  display: inline-flex;
+  color: var(--text-inverse);
+}
+
+/* -------------------------------------------------------------------- CTA */
+
+.cta {
+  margin-top: var(--space-2xl);
+  font-size: var(--text-body-lg);
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 992px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .heading {
+    max-width: 16ch;
+  }
+}

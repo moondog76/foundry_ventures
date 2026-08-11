@@ -1,0 +1,37 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  /* The link box must not add its own underline treatment. */
+  text-decoration: none;
+}
+
+.mark {
+  display: block;
+  width: auto;
+  /* Never distort the delivered master's proportions (§5.1). */
+  object-fit: contain;
+}
+
+/*
+ * Missing-asset frame. Deliberately unattractive: it must read as a gap in the
+ * asset pipeline, not as a design choice, and it must never be mistaken for the
+ * wordmark itself.
+ */
+.missing {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed currentColor;
+  opacity: 0.7;
+}
+
+.missingLabel {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.14em;
+  line-height: 1.15;
+  text-align: center;
+  text-transform: uppercase;
+}

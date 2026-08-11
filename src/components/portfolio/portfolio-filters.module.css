@@ -1,0 +1,165 @@
+/*
+ * Portfolio filters (§8.2, §19.3).
+ *
+ * One DOM tree at every breakpoint. Below 768px the panel is collapsed behind a
+ * "Filter (N)" toolbar button; from 768px up the toolbar disappears and the
+ * panel is permanently visible, which is why the panel's visibility rule is
+ * scoped to the small-viewport media query only.
+ */
+
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-width: 0;
+  margin-bottom: var(--space-lg);
+}
+
+/* ------------------------------------------------------- compact toolbar */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3xs);
+  min-height: 44px;
+  padding-inline: var(--space-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.04em;
+  color: inherit;
+  border: var(--border-hairline) solid var(--line-default);
+  transition:
+    background-color var(--duration-surface) var(--ease-standard),
+    color var(--duration-surface) var(--ease-standard);
+}
+
+.trigger[aria-expanded="true"] {
+  background-color: var(--color-black);
+  color: var(--color-white);
+  border-color: var(--color-black);
+}
+
+.triggerCount {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .trigger:hover {
+    background-color: var(--color-black);
+    color: var(--color-white);
+    border-color: var(--color-black);
+  }
+}
+
+/* ----------------------------------------------------------------- panel */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+
+@media (max-width: 767px) {
+  /*
+   * Only the compact viewport hides the panel. `display: none` (not opacity or
+   * height) so the collapsed controls leave the tab order completely — the panel
+   * is inline, not modal, so nothing else may be made inert.
+   */
+  .panel[data-open="false"] {
+    display: none;
+  }
+}
+
+.groups {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  min-width: 0;
+  /* Closes the last group's hairline so the stack reads as one block. */
+  border-bottom: var(--border-hairline) solid var(--line-default);
+}
+
+.panelFooter {
+  display: flex;
+  padding-top: var(--space-2xs);
+}
+
+.applyButton {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.04em;
+  color: var(--color-white);
+  background-color: var(--color-black);
+  border: var(--border-hairline) solid var(--color-black);
+  transition:
+    background-color var(--duration-surface) var(--ease-standard),
+    color var(--duration-surface) var(--ease-standard);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .applyButton:hover {
+    background-color: transparent;
+    color: var(--color-black);
+  }
+}
+
+/* ---------------------------------------------------------- result count */
+
+.count {
+  margin: 0;
+  padding-top: var(--space-2xs);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-top: var(--border-hairline) solid var(--line-default);
+}
+
+.count[aria-busy="true"] {
+  color: var(--text-default);
+}
+
+/* ------------------------------------------------------------ >= 768px */
+
+@media (min-width: 768px) {
+  .filters {
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+  }
+
+  /* The permanent panel replaces the compact toolbar entirely. */
+  .toolbar {
+    display: none;
+  }
+
+  .groups {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-xl);
+    border-bottom: none;
+  }
+
+  /* The "Show N companies" affordance only exists to dismiss the compact panel. */
+  .panelFooter {
+    display: none;
+  }
+}
+
+@media (min-width: 992px) {
+  .groups {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}

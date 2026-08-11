@@ -1,0 +1,10 @@
+.next
+.next-e2e-fixture
+node_modules
+pnpm-lock.yaml
+public/brand
+public/images/placeholder
+coverage
+playwright-report
+test-results
+.data

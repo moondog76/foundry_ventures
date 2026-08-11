@@ -1,0 +1,184 @@
+/*
+ * Company detail layout (§9.1, §19.3).
+ *
+ * DOM order is fixed: breadcrumb, logo, hero image, heading, tagline. That is
+ * exactly the tablet/mobile reading order, so those breakpoints need no layout
+ * work at all. Desktop turns the same three blocks into a split hero using
+ * named grid areas — no `order`, no duplicated markup, no reversed DOM.
+ */
+
+.detail {
+  min-width: 0;
+}
+
+.heroSection {
+  border-bottom: var(--border-hairline) solid var(--line-default);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
+  min-width: 0;
+}
+
+.heroLogo {
+  min-width: 0;
+}
+
+.heroMedia {
+  min-width: 0;
+}
+
+/* ~3:2 on mobile. The hotspot supplied by the asset drives `object-position`. */
+.heroImageFrame {
+  aspect-ratio: 3 / 2;
+  width: 100%;
+}
+
+.heroBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-h1);
+  line-height: var(--leading-display);
+  /* A single-token company name must break rather than widen the page. */
+  overflow-wrap: anywhere;
+}
+
+.tagline {
+  margin: 0;
+  max-width: 46ch;
+  font-size: var(--text-body-lg);
+  line-height: 1.4;
+  color: var(--text-muted);
+  /* The live captions carry a deliberate hard line break — honour it. */
+  white-space: pre-line;
+  overflow-wrap: break-word;
+}
+
+/* ----------------------------------------------------------- narrative */
+
+.narrative {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-md);
+  margin-top: var(--space-2xl);
+  min-width: 0;
+}
+
+.narrativeAside {
+  min-width: 0;
+}
+
+.narrativeLabel {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.narrativeBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  min-width: 0;
+}
+
+.lede {
+  margin: 0;
+  max-width: var(--measure);
+  font-size: var(--text-body-lg);
+  line-height: 1.45;
+  white-space: pre-line;
+}
+
+.bodyCopy {
+  max-width: var(--measure);
+}
+
+/* ------------------------------------------------------------- >= 768px */
+
+@media (min-width: 768px) {
+  .hero {
+    /* Logo beside the image; heading below the pair. Still one column of
+       reading, still the same DOM order. */
+    grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+    grid-template-areas:
+      "logo media"
+      "body body";
+    column-gap: var(--space-lg);
+  }
+
+  .heroLogo {
+    grid-area: logo;
+  }
+
+  .heroMedia {
+    grid-area: media;
+  }
+
+  .heroBody {
+    grid-area: body;
+  }
+}
+
+/* ------------------------------------------------------------- >= 992px */
+
+@media (min-width: 992px) {
+  .hero {
+    /* True split hero: logo and large Ivar heading on the left, image on the
+       right, spanning both rows. */
+    grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+    grid-template-areas:
+      "logo  media"
+      "body  media";
+    grid-template-rows: auto 1fr;
+    column-gap: var(--space-2xl);
+    row-gap: var(--space-xl);
+    align-items: start;
+    margin-top: var(--space-xl);
+  }
+
+  /* Roughly square on desktop, per §9.1. Height stays automatic so the ratio —
+     not the grid row — decides the crop. */
+  .heroImageFrame {
+    aspect-ratio: 1 / 1;
+  }
+
+  /* Without art the heading takes the full field instead of leaving a hole. */
+  .hero[data-media="false"] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "logo"
+      "body";
+  }
+
+  .narrative {
+    /* Asymmetric: a narrow label field, then the reading column. */
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    column-gap: var(--space-2xl);
+    align-items: start;
+  }
+}
+
+/*
+ * Sticky is desktop-only and additionally requires a tall enough viewport —
+ * on a short laptop window a sticky label would collide with the header.
+ */
+@media (min-width: 992px) and (min-height: 700px) {
+  .narrativeAside {
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-lg));
+  }
+}

@@ -849,6 +849,23 @@ decode error, Save-Data or reduced motion. Verified: playing normally
 **Consequence.** ~1.9MB of video sits in `public/media/ocean/`, served only to
 visitors who allow motion. `media-src 'self'` was added to the CSP.
 
+**Amended 2026-08-11.** The owner asked for considerably more movement, so the
+strengths were raised roughly 4–7× (pointer swing ~186px against ~43px, scroll
+drift ~175–195px against ~27px, tilt ±0.76° against ±0.08°). Two supporting
+changes were required rather than optional:
+
+- the video's overscan went from 8% to 22%, because the old headroom was smaller
+  than the new travel and the video's own edge would have slid into frame;
+- offsets are now **clamped to that overscan at render time** instead of being
+  kept inside it by arithmetic. Pointer, scroll and rotation draw on one shared
+  budget whose worst case depends on the viewport's aspect ratio, so a short
+  window runs out of vertical headroom long before a tall one. Measured at
+  1280×600, 1440×900 and 1920×1080: 52–130px of margin left in every case.
+
+The scroll input was also re-anchored to 0 at the top of the hero. It previously
+ran −1…+1 across the section, which left the crop visibly displaced on first
+paint before the visitor had done anything.
+
 ## D-028 — `logoFit: "bleed"` for artwork that carries its own field
 
 **Date.** 2026-08-11

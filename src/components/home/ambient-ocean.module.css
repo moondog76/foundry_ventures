@@ -10,8 +10,10 @@
 .scene {
   --motion-x: 0px;
   --motion-y: 0px;
-  --scroll-y: 0px;
   --motion-rotate: 0deg;
+  /* Must match `OVERSCAN` in AmbientOcean.tsx — the component clamps its offsets
+     to this, so the two values cannot drift apart without exposing an edge. */
+  --overscan: 22%;
 
   position: absolute;
   inset: 0;
@@ -26,14 +28,15 @@
 
 .video {
   position: absolute;
-  /* Oversized so the parallax offset can never reveal an edge. */
-  inset: -8%;
-  width: 116%;
-  height: 116%;
+  /* Oversized so the parallax offset can never reveal an edge. The source is
+     2560×1440, so even at this scale it is not being upsampled on a 1440px
+     hero. */
+  inset: calc(-1 * var(--overscan));
+  width: calc(100% + var(--overscan) * 2);
+  height: calc(100% + var(--overscan) * 2);
   max-width: none;
   object-fit: cover;
-  transform: translate3d(var(--motion-x), calc(var(--motion-y) + var(--scroll-y)), 0)
-    rotate(var(--motion-rotate));
+  transform: translate3d(var(--motion-x), var(--motion-y), 0) rotate(var(--motion-rotate));
   transform-origin: center;
   will-change: transform;
 }

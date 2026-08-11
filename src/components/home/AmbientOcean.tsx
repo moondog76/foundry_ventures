@@ -30,14 +30,41 @@
 import { useEffect, useRef } from "react";
 import styles from "./ambient-ocean.module.css";
 
-/** Motion strength, from the supplied package. Lower is calmer. */
+/**
+ * Motion strength. The supplied package shipped these at roughly a quarter of
+ * these values — deliberately subtle; the owner asked for considerably more on
+ * 2026-08-11.
+ *
+ * Each number is a fraction of the viewport, so the effect is proportional on a
+ * laptop and a 5K display alike. They are safe to raise further only alongside
+ * `OVERSCAN`, which is what stops the video's own edge from sliding into view.
+ */
 const SETTINGS = {
-  pointerX: 0.03,
-  pointerY: 0.022,
-  scrollTravel: 0.06,
-  rotation: 0.16,
-  easing: 0.085,
+  /** Horizontal pointer travel, as a fraction of viewport width. */
+  pointerX: 0.14,
+  /** Vertical pointer travel, as a fraction of viewport height. */
+  pointerY: 0.1,
+  /** Vertical drift across the hero's full scroll, as a fraction of height. */
+  scrollTravel: 0.32,
+  /** Degrees of tilt at the far edges. */
+  rotation: 1.6,
+  /** Follow speed. Higher tracks the pointer more tightly. */
+  easing: 0.09,
 } as const;
+
+/**
+ * How far the video oversizes its frame on each side, matching `--overscan` in
+ * the stylesheet.
+ *
+ * This is the headroom the parallax moves within. Every offset is clamped to it
+ * below rather than trusted to stay inside by arithmetic, because pointer, scroll
+ * and rotation all consume the same budget and their worst case depends on the
+ * viewport's aspect ratio — a short window runs out of vertical headroom long
+ * before a tall one does.
+ */
+const OVERSCAN = 0.22;
+/** Leaves a margin so rounding and the rotation's corner sweep stay covered. */
+const SAFE_FRACTION = 0.82;
 
 export function AmbientOcean({ className }: { className?: string }) {
   const sceneRef = useRef<HTMLDivElement>(null);
@@ -63,6 +90,8 @@ export function AmbientOcean({ className }: { className?: string }) {
       if (!frame) frame = requestAnimationFrame(render);
     };
 
+    const clamp = (value: number, limit: number) => Math.max(-limit, Math.min(limit, value));
+
     function render() {
       frame = 0;
       let moving = false;
@@ -70,9 +99,18 @@ export function AmbientOcean({ className }: { className?: string }) {
         current[key] += (target[key] - current[key]) * SETTINGS.easing;
         if (Math.abs(target[key] - current[key]) > 0.08) moving = true;
       }
-      scene!.style.setProperty("--motion-x", `${current.x.toFixed(2)}px`);
-      scene!.style.setProperty("--motion-y", `${current.y.toFixed(2)}px`);
-      scene!.style.setProperty("--scroll-y", `${current.scrollY.toFixed(2)}px`);
+
+      // Pointer and scroll share one vertical budget, so they are clamped
+      // together: either alone stays well inside the overscan, but at the
+      // extremes of both they would not.
+      const { width, height } = scene!.getBoundingClientRect();
+      const maxX = width * OVERSCAN * SAFE_FRACTION;
+      const maxY = height * OVERSCAN * SAFE_FRACTION;
+      const x = clamp(current.x, maxX);
+      const y = clamp(current.y + current.scrollY, maxY);
+
+      scene!.style.setProperty("--motion-x", `${x.toFixed(2)}px`);
+      scene!.style.setProperty("--motion-y", `${y.toFixed(2)}px`);
       scene!.style.setProperty("--motion-rotate", `${current.rotation.toFixed(3)}deg`);
       if (moving) schedule();
     }
@@ -103,8 +141,12 @@ export function AmbientOcean({ className }: { className?: string }) {
       // Parallax is driven by the hero's own travel, not the whole document:
       // once the hero has scrolled away there is nothing left to move.
       const rect = scene!.getBoundingClientRect();
+      // 0 while the hero is at rest at the top of the page, rising to 1 once it
+      // has scrolled fully past. Anchoring at 0 matters: a symmetric -1..+1
+      // range would leave the crop already displaced on first paint, before the
+      // visitor has done anything.
       const progress = Math.min(1, Math.max(0, -rect.top / Math.max(1, rect.height)));
-      target.scrollY = (progress - 0.5) * window.innerHeight * SETTINGS.scrollTravel;
+      target.scrollY = progress * window.innerHeight * SETTINGS.scrollTravel;
       schedule();
     };
 

@@ -105,6 +105,25 @@ export function ownerApprovedFromLive(
   return ownerApproved(CONTENT_OWNER, OWNER_APPROVED_AT, [source, OWNER_INSTRUCTION]);
 }
 
+/**
+ * A description drafted from a portfolio company's own website on the owner's
+ * instruction (2026-08-11).
+ *
+ * The source is the company itself, so the claims are theirs rather than
+ * invented — but the wording is a summary written for this site, and Foundry has
+ * not read it line by line. The note travels with the evidence so the integrity
+ * report keeps saying so until someone confirms it.
+ */
+export function draftedFromCompanySite(websiteUrl: string): FieldEvidence {
+  return {
+    ...ownerApproved(CONTENT_OWNER, OWNER_APPROVED_AT, [
+      { label: "Company website", url: websiteUrl, observedAt: OWNER_APPROVED_AT },
+      OWNER_INSTRUCTION,
+    ]),
+    note: "Summarised from the company's own website on owner instruction — wording not yet reviewed by Foundry",
+  };
+}
+
 /** Owner approval for something the owner supplied or confirmed directly. */
 export function ownerConfirmed(note: string): FieldEvidence {
   return ownerApproved(CONTENT_OWNER, OWNER_APPROVED_AT, [

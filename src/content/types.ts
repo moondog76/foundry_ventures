@@ -160,6 +160,7 @@ export type Address = {
 
 export type FeatureFlags = {
   investmentCriteria: boolean;
+  team: boolean;
   insights: boolean;
   about: boolean;
   network: boolean;

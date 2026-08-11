@@ -327,12 +327,20 @@ export const getTeamMembers = cache(async (context?: PolicyContext): Promise<Tea
     .sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name, "en"));
 });
 
-/** Whether `/team/[slug]` exists for this person (§10.2). */
+/**
+ * Whether `/team/[slug]` exists for this person (§10.2).
+ *
+ * Also false while the `team` flag is off, so nothing anywhere — a deal-lead
+ * credit, an article byline — can link into a section that 404s.
+ */
 export async function teamMemberHasDetail(
   member: TeamMember,
   context?: PolicyContext,
 ): Promise<boolean> {
-  return canPublishTeamDetail(member, await ctx(context));
+  const policy = await ctx(context);
+  const settings = await getAdapter().getSiteSettings();
+  if (!settings.featureFlags.team && policy.mode === "production") return false;
+  return canPublishTeamDetail(member, policy);
 }
 
 export async function getTeamMemberBySlug(
@@ -362,6 +370,9 @@ export async function getTeamMemberBySlug(
 export async function getPublishableTeamSlugs(
   context: PolicyContext = PRODUCTION_POLICY,
 ): Promise<string[]> {
+  // A disabled feature publishes no routes at all, exactly like Insights (§3.4).
+  const settings = await getAdapter().getSiteSettings();
+  if (!settings.featureFlags.team && context.mode === "production") return [];
   const members = await getAdapter().getTeamMembers();
   return members.filter((m) => canPublishTeamDetail(m, context)).map((m) => m.slug);
 }

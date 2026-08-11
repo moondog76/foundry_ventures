@@ -102,19 +102,22 @@ describe("getCompanies (real seed)", () => {
     }
   });
 
-  it("invents no caption for the companies that have none", async () => {
+  it("describes every company from its own website, and says so in the evidence", async () => {
     const companies = await rawContent.companies();
-    const bySlug = new Map(
-      companies.map((company) => [company.slug, toCompanySummary(company, PRODUCTION_POLICY)]),
-    );
 
-    // Live captions are Foundry's own published words and migrate with the rest.
-    expect(bySlug.get("empley")?.tagline).toContain("AI-powered simulation platform");
-    expect(bySlug.get("memmo")?.tagline).toBe("Study smarter, get better grades.");
+    for (const company of companies) {
+      const summary = toCompanySummary(company, PRODUCTION_POLICY);
 
-    // These three have no caption anywhere, so the card shows logo and name only.
-    for (const slug of ["newly", "skattio", "builderbase"]) {
-      expect(bySlug.get(slug)?.tagline).toBeNull();
+      // Two sentences, drafted from the company's own site (owner instruction).
+      expect(summary.tagline).not.toBeNull();
+      expect((summary.tagline as string).split(". ").length).toBeGreaterThanOrEqual(2);
+
+      // The provenance travels with the field: the source is the company's own
+      // website, and the note records that Foundry has not read the wording yet.
+      const evidence = company.fieldEvidence.tagline;
+      expect(evidence?.status).toBe("owner-approved");
+      expect(evidence?.sources.some((s) => s.url === company.websiteUrl)).toBe(true);
+      expect(evidence?.note).toMatch(/not yet reviewed by Foundry/);
     }
   });
 

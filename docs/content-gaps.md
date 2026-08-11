@@ -11,10 +11,17 @@ home page, the team and **nine portfolio companies**. The approval deliberately
 covers only what Foundry already states publicly, so the gate still refuses
 everything below.
 
-**Published.** Company names, websites, logos and the live captions; the migrated
+**Published.** Company names, websites, logos and a two-sentence description
+drafted from each company's own site; the migrated
 home copy (hero, vision, offering, contact); Anders' and Julia's names, roles and
 email addresses; Anders' phone number; four investment criteria (Stage, Industry,
 Technology focus, Geography).
+
+**Read these before launch.** The nine company descriptions were summarised from
+each company's own website on 2026-08-11. The claims are theirs, but the wording
+is not — every one carries an evidence note saying Foundry has not read it line
+by line, and `pnpm test` prints them. Fifteen minutes with the portfolio page
+clears this.
 
 **Still refused, by design.**
 
@@ -39,7 +46,8 @@ One caveat: the hero arrived as a **screen capture** (1664×1108) rather than th
 original export (2500×1667). Same 3:2 framing, but it is upscaled on a wide
 display. The original would be better.
 
-Team portraits are still absent, so both people render the typographic fallback.
+Team portraits are no longer needed for launch — the team section is off. They
+come back onto the list if that flag is ever turned on.
 
 Nothing here is an engineering task unless the Owner column says _Engineering_.
 

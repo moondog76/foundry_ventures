@@ -23,7 +23,7 @@ import {
   unverified,
 } from "./evidence";
 import { DEFAULT_OG_IMAGE } from "./images";
-import { ANDERS_REF, JULIA_REF } from "./team";
+import { ANDERS_REF } from "./team";
 
 export const CANONICAL_ORIGIN = "https://www.foundryventures.ai";
 
@@ -40,7 +40,9 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
   // No verified general inbox exists — see §16.1. Contact routes through people.
   contactEmail: undefined,
   contactPhone: undefined,
-  contactPeople: [ANDERS_REF, JULIA_REF],
+  // Anders only, on owner instruction 2026-08-11. Julia's record still exists in
+  // the content layer — she is simply not a published contact.
+  contactPeople: [ANDERS_REF],
   address: undefined,
   organizationNumber: undefined,
 
@@ -69,7 +71,7 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
    */
   navigation: [
     { label: "Portfolio", href: "/portfolio" },
-    { label: "Team", href: "/team" },
+    { label: "Team", href: "/team", featureFlag: "team" },
     { label: "Insights", href: "/insights", featureFlag: "insights" },
     { label: "About", href: "/about", featureFlag: "about" },
     { label: "Network", href: "/network", featureFlag: "network" },
@@ -79,7 +81,7 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
   footerNavigation: [
     { label: "Home", href: "/" },
     { label: "Portfolio", href: "/portfolio" },
-    { label: "Team", href: "/team" },
+    { label: "Team", href: "/team", featureFlag: "team" },
     { label: "Insights", href: "/insights", featureFlag: "insights" },
     { label: "About", href: "/about", featureFlag: "about" },
     { label: "Pitch", href: "/pitch" },
@@ -168,6 +170,10 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
    */
   featureFlags: {
     investmentCriteria: true,
+    // Off on owner instruction 2026-08-11: no team page, and Anders appears in
+    // the contact block instead. Flip to true when portraits and bios exist and
+    // the route, navigation and sitemap entries all come back.
+    team: false,
     insights: false,
     about: false,
     network: false,

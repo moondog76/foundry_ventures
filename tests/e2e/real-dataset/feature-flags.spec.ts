@@ -31,8 +31,10 @@
 
 import { expect, test } from "@playwright/test";
 
-const FLAGGED_ROUTES = ["/insights", "/about", "/network"] as const;
-const FLAGGED_NAV_LABELS = ["Insights", "About", "Network"] as const;
+// `/team` joined this list on 2026-08-11: the owner removed the team section,
+// so it is flagged off exactly like the P1 routes rather than deleted.
+const FLAGGED_ROUTES = ["/team", "/insights", "/about", "/network"] as const;
+const FLAGGED_NAV_LABELS = ["Team", "Insights", "About", "Network"] as const;
 
 test("the fixture dataset is NOT loaded on this server", async ({ request }) => {
   // A guard on the guard: if this server ever picked up the fixture switches,
@@ -97,7 +99,7 @@ test("disabled routes are absent from the sitemap", async ({ request }) => {
 
   // The routes that exist unconditionally are still listed, so an empty or
   // broken sitemap cannot make the assertions above pass by accident.
-  for (const route of ["/", "/portfolio", "/team", "/pitch"]) {
+  for (const route of ["/", "/portfolio", "/pitch"]) {
     expect(xml).toContain(`<loc>https://www.foundryventures.ai${route}</loc>`);
   }
 });

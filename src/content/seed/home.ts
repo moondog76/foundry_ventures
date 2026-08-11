@@ -15,7 +15,7 @@
 import type { HomePage } from "../types";
 import { migratedVerbatim, proposed } from "./evidence";
 import { ARCHITECTURE_IMAGE, DEFAULT_OG_IMAGE, OCEAN_IMAGE, SILHOUETTE_IMAGE } from "./images";
-import { ANDERS_REF, JULIA_REF } from "./team";
+import { ANDERS_REF } from "./team";
 import { SEED_COMPANIES } from "./companies";
 
 const HOME_URL = "https://www.foundryventures.ai/";
@@ -134,7 +134,7 @@ export const SEED_HOME_PAGE: HomePage = {
     ],
     primaryCta: { label: proposed("Submit your pitch"), href: "/pitch" },
     secondaryCta: { label: proposed("Email Anders"), contactPerson: ANDERS_REF },
-    contactPeople: [ANDERS_REF, JULIA_REF],
+    contactPeople: [ANDERS_REF],
   },
 
   seo: {

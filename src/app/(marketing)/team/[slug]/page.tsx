@@ -8,6 +8,9 @@
  *
  * Preview still resolves any slug on demand, which is how editors review
  * unapproved records behind the draft banner.
+ *
+ * The whole section sits behind the `team` feature flag, off since 2026-08-11 on
+ * owner instruction, so in production this route 404s regardless.
  */
 
 import type { Metadata } from "next";
@@ -18,7 +21,7 @@ import {
   getTeamMemberBySlug,
   teamContactChannels,
 } from "@/content";
-import { resolvePolicyContext } from "@/content/context";
+import { resolveFeatureGate } from "@/components/insights/feature-gate";
 import { canIndexTeamMember } from "@/content/policy";
 import type { TeamMember } from "@/content/types";
 import { HIDDEN_ROUTE_METADATA, buildMetadata } from "@/lib/seo/metadata";
@@ -34,6 +37,7 @@ type RouteParams = { slug: string };
 
 export async function generateStaticParams(): Promise<RouteParams[]> {
   // Defaults to PRODUCTION_POLICY — the same gate the sitemap uses (§16.8).
+  // `getPublishableTeamSlugs` already returns nothing while the flag is off.
   const slugs = await getPublishableTeamSlugs();
   return slugs.map((slug) => ({ slug }));
 }
@@ -52,9 +56,10 @@ export async function generateMetadata({
   params: Promise<RouteParams>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const policy = await resolvePolicyContext();
+  const { policy, hidden } = await resolveFeatureGate("team");
+  // Nothing may hint that a hidden route or an unpublishable record exists (§3.4).
+  if (hidden) return HIDDEN_ROUTE_METADATA;
   const view = await getTeamMemberBySlug(slug, policy);
-  // Nothing may hint that an unpublishable record exists (§3.4).
   if (!view) return HIDDEN_ROUTE_METADATA;
 
   const settings = await getSiteSettings(policy);
@@ -72,7 +77,8 @@ export async function generateMetadata({
 
 export default async function TeamMemberPage({ params }: { params: Promise<RouteParams> }) {
   const { slug } = await params;
-  const policy = await resolvePolicyContext();
+  const { policy, hidden } = await resolveFeatureGate("team");
+  if (hidden) notFound();
   const view = await getTeamMemberBySlug(slug, policy);
   if (!view) notFound();
 

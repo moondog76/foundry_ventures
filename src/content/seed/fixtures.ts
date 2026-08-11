@@ -405,6 +405,7 @@ const siteSettings: SiteSettings = {
   })),
   featureFlags: {
     investmentCriteria: true,
+    team: true,
     insights: true,
     about: true,
     network: true,

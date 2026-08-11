@@ -77,7 +77,7 @@ export const EXTERNAL_POST = {
 } as const;
 
 /** Feature-flagged routes (§3.4). The fixture dataset turns all three on. */
-export const FLAGGED_ROUTES = ["/insights", "/about", "/network"] as const;
+export const FLAGGED_ROUTES = ["/team", "/insights", "/about", "/network"] as const;
 
 /** Navigation labels for those routes, from `SEED_SITE_SETTINGS.navigation`. */
-export const FLAGGED_NAV_LABELS = ["Insights", "About", "Network"] as const;
+export const FLAGGED_NAV_LABELS = ["Team", "Insights", "About", "Network"] as const;

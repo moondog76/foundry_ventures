@@ -700,3 +700,74 @@ once. The hover crossfade layer inherits the tile colour rather than hard-coding
 black.
 
 **Reversal.** Remove the `[data-surface="light"]` rules; three logos disappear.
+
+## D-022 — Company descriptions are drafted from each company's own website
+
+**Date.** 2026-08-11
+
+**Decision.** All nine portfolio companies carry a two-sentence description
+written from their own website, replacing the live Foundry captions. Evidence
+records the site it came from, plus a note: _summarised from the company's own
+website on owner instruction — wording not yet reviewed by Foundry_.
+
+**Rationale.** The owner asked for descriptions fetched from the companies'
+sites. That makes the _claims_ the companies' own rather than invented, which is
+what the evidence model actually cares about — but the _wording_ is a summary
+written for this site, and nobody at Foundry has read it. Recording that in the
+evidence note keeps the integrity report honest instead of letting a drafted
+sentence look like an approved one. It also fixed a real gap: Newly, Skattio and
+BuilderBase had no caption anywhere and previously rendered logo-and-name only.
+
+Grand's site is client-rendered and returned nothing to a plain fetch, so its
+copy was read from the rendered DOM rather than guessed from the company name.
+
+**Spec.** §8.4, §16.2, §25.1, §31.13.
+
+**Consequence.** Nine sentences of unreviewed prose are live. They are listed by
+`pnpm test` until someone confirms them.
+
+**Reversal.** Restore the Appendix C captions and set the evidence back to
+`ownerApprovedFromLive`.
+
+## D-023 — The team section is flagged off, not deleted
+
+**Date.** 2026-08-11
+
+**Decision.** `featureFlags.team` is false on owner instruction. `/team` and
+`/team/[slug]` 404 in production, the navigation entry and sitemap entries are
+gone, `teamMemberHasDetail` returns false so nothing links into the section, and
+`SiteSettings.contactPeople` is Anders alone. The routes, components and both
+`TeamMember` records stay in the codebase.
+
+**Rationale.** The owner asked to remove the section and keep Anders under
+contact. A feature flag delivers exactly that on the site while leaving the work
+reversible with one boolean — and `TeamMember` cannot be deleted from the domain
+model anyway, because deal-lead credits, article bylines and the contact block
+all resolve through it. Deleting the routes would have been a destructive
+refactor with no user-visible difference.
+
+**Spec.** §3.4, §10, §16.1.
+
+**Consequence.** Roughly twenty files are built but unreachable. Julia's record
+still exists and is simply not published anywhere.
+
+**Reversal.** Set `featureFlags.team` to true. Portraits and long bios are then
+the remaining gap, per `docs/content-gaps.md`.
+
+## D-024 — The brand statement is gated like any other authored string
+
+**Date.** 2026-08-11
+
+**Decision.** The footer renders `SiteSettings.brandStatement` only when
+`canRenderEditorialText` passes.
+
+**Rationale.** It was rendering unconditionally, so a `proposed` string — copy
+written during this rebuild, not by Foundry — was live in production. The same
+class of bug as the guessed LinkedIn URL in [D-019](#d-019): the evidence was
+recorded correctly and then ignored at the render site.
+
+**Spec.** §16.1.1, §25.1.
+
+**Consequence.** The footer has no brand statement until one is approved.
+
+**Reversal.** Approve the string, or replace it with Foundry's own wording.

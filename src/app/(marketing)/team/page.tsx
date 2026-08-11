@@ -4,24 +4,26 @@
  * Server component. `getTeamMembers()` has already applied the publishing policy
  * and the canonical sort order, so this route neither filters nor re-sorts.
  *
- * An empty list is a legitimate answer, not an error: with the current dataset
- * nobody's name and role are owner-approved yet, so production renders the `h1`
- * and an honest empty state. The route must not 404 — `/team` is in the site
- * navigation and is a real destination whose answer today is "nothing published
- * yet" (§3.4 only removes *feature-flagged* routes, and Team is not one).
+ * Behind the `team` feature flag, off since 2026-08-11 on owner instruction: the
+ * site has no team page and Anders appears in the contact block instead. The
+ * route therefore 404s in production and stays previewable for editors, exactly
+ * like Insights, About and Network (§3.4). Turning the flag back on restores the
+ * route, the navigation entry and the sitemap entries together.
  */
 
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getSiteSettings, getTeamMembers, teamMemberHasDetail } from "@/content";
-import { resolvePolicyContext } from "@/content/context";
-import { buildMetadata } from "@/lib/seo/metadata";
+import { resolveFeatureGate } from "@/components/insights/feature-gate";
+import { buildMetadata, HIDDEN_ROUTE_METADATA } from "@/lib/seo/metadata";
 import { PitchBanner } from "@/components/global/PitchBanner";
 import { TEAM_TITLE, TeamIndex, type TeamIndexEntry } from "@/components/team/TeamIndex";
 
 const TEAM_PATH = "/team";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const policy = await resolvePolicyContext();
+  const { policy, hidden } = await resolveFeatureGate("team");
+  if (hidden) return HIDDEN_ROUTE_METADATA;
   const settings = await getSiteSettings(policy);
 
   return buildMetadata({
@@ -36,7 +38,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function TeamPage() {
-  const policy = await resolvePolicyContext();
+  const { policy, hidden } = await resolveFeatureGate("team");
+  if (hidden) notFound();
   const [settings, members] = await Promise.all([getSiteSettings(policy), getTeamMembers(policy)]);
 
   // Whether `/team/[slug]` exists is a policy question, and `teamMemberHasDetail`

@@ -8,8 +8,10 @@
  *    what Foundry already publishes about each company: name, website, logo and
  *    the live caption. Taxonomy, status, founders, investment year and deal lead
  *    stay `unverified` — the live site states none of them, so neither do we.
- *  - Newly, Skattio and BuilderBase have **no** caption. None is invented; those
- *    cards render the logo and the name alone.
+ *  - Descriptions are two sentences drafted from each company's own website on
+ *    owner instruction (2026-08-11), replacing the live captions. The claims are
+ *    the companies' own; the wording is a summary Foundry has not read line by
+ *    line, and the evidence note says so.
  *  - The prototype's note fields (Openroll = "AI-native hiring", Agaton =
  *    "Industrial software") are placeholders and are NOT seeded.
  *  - BuilderBase was confirmed as a portfolio company by the owner on
@@ -25,6 +27,7 @@
 import type { Company } from "../types";
 import {
   FOUNDRY_PORTFOLIO_SOURCE,
+  draftedFromCompanySite,
   ownerApprovedFromLive,
   ownerConfirmed,
   unverified,
@@ -43,24 +46,28 @@ type SeedCompanyInput = {
   name: string;
   /** Omitted when the owner has not supplied one; never guessed. */
   websiteUrl?: string;
-  /** Verbatim live caption, or null when the live site has none. */
-  caption: string | null;
+  /** Two sentences drafted from the company's own website. */
+  description: string;
   logo: Company["logo"];
   logoFit: NonNullable<Company["logoFit"]>;
   /** Which field the supplied artwork needs — measured, not guessed. */
   logoSurface: NonNullable<Company["logoSurface"]>;
   opticalScale: number;
   sortOrder: number;
-  captionNote?: string;
+  /** Anything a reviewer must know about this record. Surfaces in the report. */
+  reviewNote?: string;
 };
 
 function seedCompany(input: SeedCompanyInput): Company {
-  // A live caption is Foundry's own published copy, approved with the rest of
-  // the migration. Where the live site has none, none is invented — the card
-  // simply shows the logo and the name (§C.6).
-  const captionEvidence = input.caption
-    ? ownerApprovedFromLive(FOUNDRY_PORTFOLIO_SOURCE)
-    : unverified(`No caption exists for ${input.name}; nothing may be invented`);
+  // Descriptions are drafted from each company's own website (owner instruction,
+  // 2026-08-11), so the claims are the company's own rather than invented. The
+  // evidence records the site it came from and that Foundry has not yet read it.
+  const base = input.websiteUrl
+    ? draftedFromCompanySite(input.websiteUrl)
+    : unverified(`No website to describe ${input.name} from`);
+  const descriptionEvidence = input.reviewNote
+    ? { ...base, note: [base.note, input.reviewNote].filter(Boolean).join(" — ") }
+    : base;
 
   return {
     id: `company-${input.slug}`,
@@ -81,8 +88,8 @@ function seedCompany(input: SeedCompanyInput): Company {
         ? ownerApprovedFromLive(FOUNDRY_PORTFOLIO_SOURCE)
         : unverified("No website URL supplied yet"),
       logo: LOGO_SUPPLIED,
-      tagline: captionEvidence,
-      shortDescription: captionEvidence,
+      tagline: descriptionEvidence,
+      shortDescription: descriptionEvidence,
       body: unverified("No long description exists on the live site"),
       stages: unverified("Live site publishes no stage taxonomy"),
       sectors: unverified("Live site publishes no sector taxonomy"),
@@ -99,9 +106,9 @@ function seedCompany(input: SeedCompanyInput): Company {
     logoFit: input.logoFit,
     logoSurface: input.logoSurface,
     opticalScale: input.opticalScale,
-    // Captions double as the tagline candidate; both stay behind the same evidence.
-    tagline: input.caption ?? undefined,
-    shortDescription: input.caption ?? undefined,
+    // The description doubles as the card tagline; both share one evidence record.
+    tagline: input.description,
+    shortDescription: input.description,
     websiteUrl: input.websiteUrl,
     featured: true,
     sortOrder: input.sortOrder,
@@ -117,8 +124,8 @@ export const SEED_COMPANIES: Company[] = [
     slug: "empley",
     name: "Empley",
     websiteUrl: "https://empley.com/",
-    caption:
-      "Empley is the AI-powered simulation platform helping enterprises model, plan, and optimize their workforce - faster, smarter, and automated.",
+    description:
+      "Empley connects workforce planning to business strategy and financial execution in a single platform. Its AI agents watch for capacity gaps, recommend where to hire, reallocate or upskill, and track those decisions through to execution.",
     logo: SUPPLIED_PORTFOLIO_LOGOS.empley,
     logoSurface: "dark",
     logoFit: "wide",
@@ -129,23 +136,22 @@ export const SEED_COMPANIES: Company[] = [
     slug: "agaton",
     name: "Agaton",
     websiteUrl: "https://www.agaton.ai/",
-    caption:
-      "Agaton delivers AI sales superiority for higher conversion rates, driving measurable revenue growth and rapid ROI.",
+    description:
+      "Agaton builds AI agents for sales and customer service teams, using voice analysis to coach people in real time. It plugs into the systems a team already runs, with the aim of lifting conversion rates and turning service into a revenue function.",
     logo: SUPPLIED_PORTFOLIO_LOGOS.agaton,
     logoSurface: "light",
     logoFit: "wide",
     opticalScale: 1,
     sortOrder: 20,
-    captionNote:
+    reviewNote:
       'Must not be merged with the prototype\'s separate "Agaton Group" entry without owner confirmation.',
   }),
   seedCompany({
     slug: "grand",
     name: "Grand",
     websiteUrl: "https://grandsystems.com/en/",
-    // The live source has a hard line break between the two sentences.
-    caption:
-      "AI-assisted hospitality management.\nWe help you do more across all hospitality operations, delivering excellence in every guest interaction.",
+    description:
+      "Grand is a cloud property management system for hotels and venues, covering bookings, calendars, catering, proposals and housekeeping in one place. AI assistance runs through the operations so teams can do more across every guest interaction.",
     logo: SUPPLIED_PORTFOLIO_LOGOS.grand,
     logoSurface: "dark",
     logoFit: "wide",
@@ -156,8 +162,8 @@ export const SEED_COMPANIES: Company[] = [
     slug: "wilgot",
     name: "Wilgot",
     websiteUrl: "https://www.wilgot.ai/",
-    caption:
-      "Wilgot upgrades your product catalog so AI search engines, ad systems, and shopping agents can find, recommend, and sell your products.",
+    description:
+      "Wilgot rewrites product catalogues so AI search engines, ad systems and shopping agents can find and recommend what a retailer sells. It reads real customer queries and market data to generate product content built for agentic commerce.",
     logo: SUPPLIED_PORTFOLIO_LOGOS.wilgot,
     logoSurface: "dark",
     logoFit: "wide",
@@ -168,22 +174,22 @@ export const SEED_COMPANIES: Company[] = [
     slug: "openroll",
     name: "Openroll",
     websiteUrl: "https://www.openroll.com/",
-    caption:
-      "Openroll is reimagining how Compensation and People teams work, automate, and operate with AI—bringing all data into one collaborative platform.",
+    description:
+      "Openroll connects to the systems People and Finance teams already run and automates compensation reviews, headcount planning and budget tracking. Teams ask questions in plain language and get auditable answers and live dashboards back.",
     logo: SUPPLIED_PORTFOLIO_LOGOS.openroll,
     logoSurface: "light",
     logoFit: "wide",
     opticalScale: 1,
     sortOrder: 50,
-    captionNote:
+    reviewNote:
       "The dash before 'bringing' is a non-ASCII character in the live source; confirm the exact glyph on export.",
   }),
   seedCompany({
     slug: "newly",
     name: "Newly",
     websiteUrl: "https://newly.app/",
-    // No <figcaption> exists on the live site. Nothing is invented (§C.6).
-    caption: null,
+    description:
+      "Newly turns a plain-English description of an app into a working native build for iOS and Android. It handles design, development and deployment on React Native and Expo, and hands over the full source code.",
     logo: SUPPLIED_PORTFOLIO_LOGOS.newly,
     // The supplied artwork is a black tile rather than a transparent mark, so
     // it reads as a deliberate tile against the light field and disappears
@@ -197,7 +203,8 @@ export const SEED_COMPANIES: Company[] = [
     slug: "skattio",
     name: "Skattio",
     websiteUrl: "https://skattio.se/",
-    caption: null,
+    description:
+      "Skattio reads a Swedish limited company's bookkeeping and finds where salary, dividend and preliminary-tax decisions are costing it money. It turns that into specific, quantified recommendations for the owner.",
     logo: SUPPLIED_PORTFOLIO_LOGOS.skattio,
     logoSurface: "dark",
     logoFit: "wide",
@@ -209,7 +216,8 @@ export const SEED_COMPANIES: Company[] = [
     name: "BuilderBase",
     // Supplied by the content owner 2026-08-11.
     websiteUrl: "https://builderbase.com/",
-    caption: null,
+    description:
+      "BuilderBase runs hackathons, accelerators and sprints from one place, covering applications, team formation, judging, sponsors and reporting. It is built to keep the administration of an event in a single tool rather than spread across several.",
     logo: SUPPLIED_PORTFOLIO_LOGOS.builderbase,
     // Measured luminance 61 — a dark mark that needs a light field.
     logoSurface: "light",
@@ -221,13 +229,14 @@ export const SEED_COMPANIES: Company[] = [
     slug: "memmo",
     name: "Memmo",
     websiteUrl: "https://www.memmo.org/",
-    caption: "Study smarter, get better grades.",
+    description:
+      "Memmo turns course notes, documents and lectures into quizzes, flashcards, summaries and podcasts. It tracks what a student actually knows and connects to a library of more than 300,000 textbooks.",
     logo: SUPPLIED_PORTFOLIO_LOGOS.memmo,
     logoSurface: "light",
     logoFit: "wide",
     opticalScale: 0.92,
     sortOrder: 80,
-    captionNote:
+    reviewNote:
       "Consistent with the linked study platform observed 2026-08-10, but still requires editorial approval.",
   }),
 ];

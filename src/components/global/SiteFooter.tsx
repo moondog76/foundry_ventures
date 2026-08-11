@@ -10,6 +10,7 @@
 import Link from "next/link";
 import { getContactPeople, getSiteSettings, teamContactChannels } from "@/content";
 import { resolvePolicyContext } from "@/content/context";
+import { canRenderEditorialText } from "@/content/policy";
 import { mailtoHref, telHref } from "@/lib/security/url";
 import { Container } from "@/components/ui";
 import { FoundryLogo } from "./FoundryLogo";
@@ -31,8 +32,10 @@ export async function SiteFooter() {
         <div className={styles.top}>
           <div className={styles.brand}>
             <FoundryLogo variant="white" size="footer" title={settings.displayBrandName} href="/" />
-            {settings.brandStatement ? (
-              <p className={styles.statement}>{settings.brandStatement.value}</p>
+            {/* Gated like any other authored string: the brand statement is
+                `proposed` copy, so production shows it only once approved. */}
+            {canRenderEditorialText(settings.brandStatement, policy) ? (
+              <p className={styles.statement}>{settings.brandStatement?.value}</p>
             ) : null}
           </div>
 

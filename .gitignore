@@ -57,3 +57,6 @@ next-env.d.ts
 
 # Second Next.js build used only by the end-to-end fixture server
 /.next-e2e-fixture/
+
+# Unexplained stray drop; see the note in public/brand/README.md
+/public/brand/Inter-Regular.ttf

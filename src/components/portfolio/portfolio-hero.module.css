@@ -1,0 +1,38 @@
+/* Portfolio archive hero (§8.1). Dark Foundry surface, no gradient, no carousel. */
+
+.hero {
+  /* The header sits on the same black surface; a hairline keeps the two apart
+     without introducing a second background colour. */
+  border-bottom: var(--border-hairline) solid var(--line-inverse);
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  /* Long words in the intro can never push the dark panel wider than the page. */
+  min-width: 0;
+}
+
+.heading {
+  font-size: var(--text-h1);
+  line-height: var(--leading-display);
+  margin: 0;
+}
+
+.intro {
+  max-width: 52ch;
+  font-size: var(--text-body-lg);
+  line-height: 1.45;
+  color: var(--text-muted-inverse);
+  margin: 0;
+}
+
+@media (min-width: 992px) {
+  .inner {
+    /* Editorial split: the heading holds the left field, the intro sits under it
+       at a reading measure rather than stretching across 1600px. */
+    max-width: 62ch;
+    gap: var(--space-lg);
+  }
+}

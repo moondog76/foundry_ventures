@@ -1,0 +1,129 @@
+/* Shared legal-page template (§15.1). */
+
+.document {
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  padding-bottom: var(--space-lg);
+  border-bottom: var(--border-hairline) solid var(--line-default);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-h2);
+  line-height: var(--leading-display);
+  overflow-wrap: break-word;
+}
+
+.updated {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------- table of contents */
+
+.toc {
+  margin-top: var(--space-xl);
+  padding: var(--space-md);
+  border: var(--border-hairline) solid var(--line-default);
+  min-width: 0;
+}
+
+.tocHeading {
+  margin: 0 0 var(--space-2xs);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.tocList {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding-left: 1.25em;
+  min-width: 0;
+}
+
+.tocItem {
+  min-width: 0;
+}
+
+.tocLink {
+  display: inline-flex;
+  align-items: center;
+  /* 44px target (§20.2) — the list is a real navigation control. */
+  min-height: 44px;
+  font-size: var(--text-sm);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  text-decoration-thickness: 1px;
+  overflow-wrap: anywhere;
+}
+
+.tocLink:hover,
+.tocLink:focus-visible {
+  text-decoration-thickness: 2px;
+}
+
+/* ------------------------------------------------------------------- body */
+
+.body {
+  margin-top: var(--space-2xl);
+  min-width: 0;
+}
+
+/*
+ * Each section is one anchor target. The rich-text module already supplies the
+ * space above an `h2`, so the wrapper adds none of its own — otherwise the gap
+ * between sections would double.
+ */
+.section {
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------------ print */
+
+/*
+ * The global stylesheet already forces a white ground, black text and prints
+ * absolute URLs after links. This removes the remaining screen-only chrome and
+ * lets the measure fill the sheet instead of a 900px column (§15.1).
+ */
+@media print {
+  .document,
+  .body {
+    max-width: none;
+  }
+
+  .toc {
+    display: none;
+  }
+
+  .header {
+    padding-bottom: var(--space-sm);
+    border-bottom-color: #000;
+  }
+
+  .updated {
+    color: #000;
+  }
+
+  /* Never leave a heading stranded at the foot of a page. The element selector
+     is scoped by the hashed `.section` class; CSS Modules rewrites classes
+     only, so this reaches the heading the rich-text renderer emitted. */
+  .section h2,
+  .section h3 {
+    break-after: avoid;
+  }
+}

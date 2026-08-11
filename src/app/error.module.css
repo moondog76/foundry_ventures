@@ -1,0 +1,71 @@
+/* Route error boundary (§6.4). Mirrors the 404 so the two read as one system. */
+
+.page {
+  display: flex;
+  align-items: center;
+  /* The site header is fixed, so this route has to clear it itself. */
+  padding-top: calc(var(--header-height) + var(--space-2xl));
+  padding-bottom: var(--section-y);
+  /* `svh`, never `vh`: the mobile URL bar must not create a scrollbar. */
+  min-height: calc(100svh - var(--header-height));
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  max-width: 46ch;
+}
+
+.heading {
+  margin: 0;
+  font-size: var(--text-h2);
+  line-height: var(--leading-display);
+}
+
+.body {
+  margin: var(--space-md) 0 0;
+  font-size: var(--text-body-lg);
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: var(--space-xl);
+}
+
+.followUp {
+  margin: var(--space-lg) 0 0;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.reference {
+  margin: var(--space-sm) 0 0;
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.digest {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  /* Digests are long and unbreakable; forcing a break keeps a 320px viewport
+     from scrolling sideways. */
+  overflow-wrap: anywhere;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+@media (max-width: 479px) {
+  .actions {
+    align-self: stretch;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

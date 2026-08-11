@@ -1,0 +1,131 @@
+/* Full-screen mobile navigation (§6.1). Dark Foundry surface, large Helvetica
+   Neue labels — Ivar is for editorial headings, not nav labels. */
+
+.dialog {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-menu);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* svh, not vh, so mobile browser chrome cannot clip the panel (§5.4). */
+  height: 100svh;
+  padding: calc(var(--header-height) + var(--space-lg)) var(--gutter) var(--space-xl);
+  padding-bottom: max(var(--space-xl), env(safe-area-inset-bottom));
+  background-color: var(--color-black);
+  color: var(--color-white);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  opacity: 0;
+  transition: opacity var(--duration-menu) var(--ease-foundry);
+}
+
+.dialog[data-state="open"] {
+  opacity: 1;
+}
+
+.dialog[data-state="closing"] {
+  opacity: 0;
+}
+
+.dialog:focus {
+  outline: none;
+}
+
+@media (min-width: 992px) {
+  /* The desktop navigation is visible here, so this must never duplicate it. */
+  .dialog {
+    display: none;
+  }
+}
+
+.nav {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.navList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.navLink {
+  position: relative;
+  display: inline-block;
+  font-family: var(--font-sans);
+  /* Live mobile menu is fluid and very large (~8.5vmin). */
+  font-size: clamp(2rem, 8.5vmin, 3.25rem);
+  font-weight: var(--weight-regular);
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  text-decoration: none;
+  padding-block: var(--space-3xs);
+}
+
+.navLink::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background-color: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--duration-underline) var(--ease-foundry);
+}
+
+.navLink:hover::after,
+.navLink:focus-visible::after,
+.navLink[data-active="true"]::after {
+  transform: scaleX(1);
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--line-inverse);
+}
+
+.socialLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  min-height: 44px;
+  font-size: var(--text-body);
+  text-decoration: none;
+  color: var(--color-white);
+}
+
+.socialLink:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.closeButton {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0.6rem 1.25rem;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.04em;
+  color: var(--color-white);
+  border: 1px solid var(--line-inverse);
+  transition:
+    background-color var(--duration-surface) var(--ease-standard),
+    color var(--duration-surface) var(--ease-standard);
+}
+
+.closeButton:hover {
+  background-color: var(--color-white);
+  color: var(--color-black);
+}

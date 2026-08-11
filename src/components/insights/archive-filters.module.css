@@ -1,0 +1,412 @@
+/*
+ * Shared archive filter chrome (§8.2, §12.1, §14, §19.3).
+ *
+ * One DOM tree at every breakpoint. Below 768px the panel is collapsed behind a
+ * "Filter (N)" toolbar button; from 768px up the toolbar disappears and the
+ * panel is permanently visible, which is why the panel's visibility rule is
+ * scoped to the small-viewport media query only.
+ */
+
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-width: 0;
+  margin-bottom: var(--space-lg);
+}
+
+/* ------------------------------------------------------- compact toolbar */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3xs);
+  min-height: 44px;
+  padding-inline: var(--space-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.04em;
+  color: inherit;
+  border: var(--border-hairline) solid var(--line-default);
+  transition:
+    background-color var(--duration-surface) var(--ease-standard),
+    color var(--duration-surface) var(--ease-standard);
+}
+
+.trigger[aria-expanded="true"] {
+  background-color: var(--color-black);
+  color: var(--color-white);
+  border-color: var(--color-black);
+}
+
+.triggerCount {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .trigger:hover {
+    background-color: var(--color-black);
+    color: var(--color-white);
+    border-color: var(--color-black);
+  }
+}
+
+/* ------------------------------------------------------------ chip summary */
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2xs) var(--space-sm);
+  min-width: 0;
+}
+
+.chipList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3xs);
+  /* 44px target even though the chip's text is small (§20.2). */
+  min-height: 44px;
+  padding-inline: var(--space-xs);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  text-decoration: none;
+  color: inherit;
+  border: var(--border-hairline) solid var(--line-default);
+  transition:
+    background-color var(--duration-surface) var(--ease-standard),
+    color var(--duration-surface) var(--ease-standard),
+    border-color var(--duration-surface) var(--ease-standard);
+}
+
+.chipLabel {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.chipGroup {
+  color: var(--text-muted);
+}
+
+.chipRemove {
+  font-size: var(--text-sm);
+  line-height: 1;
+}
+
+.chip:focus-visible {
+  background-color: var(--color-black);
+  color: var(--color-white);
+  border-color: var(--color-black);
+}
+
+.chip:focus-visible .chipGroup {
+  color: var(--color-white);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .chip:hover {
+    background-color: var(--color-black);
+    color: var(--color-white);
+    border-color: var(--color-black);
+  }
+
+  .chip:hover .chipGroup {
+    color: var(--color-white);
+  }
+}
+
+.clearAll {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  color: var(--text-muted);
+}
+
+.clearAll:hover,
+.clearAll:focus-visible {
+  color: var(--text-default);
+}
+
+/* ----------------------------------------------------------------- panel */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+
+@media (max-width: 767px) {
+  /*
+   * Only the compact viewport hides the panel. `display: none` (not opacity or
+   * height) so the collapsed controls leave the tab order completely — the panel
+   * is inline, not modal, so nothing else may be made inert.
+   */
+  .panel[data-open="false"] {
+    display: none;
+  }
+}
+
+.groups {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  min-width: 0;
+  /* Closes the last group's hairline so the stack reads as one block. */
+  border-bottom: var(--border-hairline) solid var(--line-default);
+}
+
+/* ------------------------------------------------------------------ group */
+
+.group {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-top: var(--border-hairline) solid var(--line-default);
+}
+
+/*
+ * A `<legend>` inside a grid/flex fieldset is laid out by the browser's own
+ * rules; making it a block that fills the row keeps the toggle button a normal
+ * full-width control.
+ */
+.legend {
+  display: block;
+  width: 100%;
+  padding: 0;
+  float: none;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  width: 100%;
+  min-height: 44px;
+  padding-block: var(--space-2xs);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  text-align: left;
+  color: inherit;
+}
+
+.legendText {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.selectedCount {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding-inline: 0.35rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-white);
+  background-color: var(--accent);
+}
+
+.chevron {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  transition: transform var(--duration-compact) var(--ease-standard);
+}
+
+.toggle[aria-expanded="false"] .chevron {
+  transform: rotate(-90deg);
+}
+
+.options[data-open="false"] {
+  /* `display: none` — not opacity, not height:0 — so the collapsed inputs leave
+     the tab order entirely. */
+  display: none;
+}
+
+.optionList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+  list-style: none;
+  margin: 0 0 var(--space-sm);
+  padding: 0;
+  min-width: 0;
+}
+
+.optionRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  min-height: 44px;
+  min-width: 0;
+}
+
+/*
+ * The native control, visible and styled only through `accent-color` — the same
+ * treatment the portfolio filters use, so the three archives read as one system.
+ * A custom mark built on a visually hidden input would put the browser's focus
+ * ring on a 1px box, and a radio would lose its distinctive round affordance.
+ */
+.input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.option {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2xs);
+  min-height: 44px;
+  min-width: 0;
+  font-size: var(--text-sm);
+  line-height: 1.35;
+  cursor: pointer;
+}
+
+.optionTitle {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.optionCount {
+  flex: none;
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+/* Keyboard focus on the input highlights the whole row, not just the 18px box. */
+.input:focus-visible + .option .optionTitle {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .option:hover .optionTitle {
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chevron {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------ panel footer */
+
+.panelFooter {
+  display: flex;
+  padding-top: var(--space-2xs);
+}
+
+.applyButton {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.04em;
+  color: var(--color-white);
+  background-color: var(--color-black);
+  border: var(--border-hairline) solid var(--color-black);
+  transition:
+    background-color var(--duration-surface) var(--ease-standard),
+    color var(--duration-surface) var(--ease-standard);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .applyButton:hover {
+    background-color: transparent;
+    color: var(--color-black);
+  }
+}
+
+/* ---------------------------------------------------------- result count */
+
+.count {
+  margin: 0;
+  padding-top: var(--space-2xs);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-top: var(--border-hairline) solid var(--line-default);
+}
+
+.count[aria-busy="true"] {
+  color: var(--text-default);
+}
+
+/* ------------------------------------------------------------ >= 768px */
+
+@media (min-width: 768px) {
+  .filters {
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+  }
+
+  /* The permanent panel replaces the compact toolbar entirely. */
+  .toolbar {
+    display: none;
+  }
+
+  .groups {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-xl);
+    border-bottom: none;
+  }
+
+  /* The "Show N …" affordance only exists to dismiss the compact panel. */
+  .panelFooter {
+    display: none;
+  }
+}
+
+@media (min-width: 992px) {
+  .groups {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    column-gap: var(--space-2xl);
+  }
+}

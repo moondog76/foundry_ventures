@@ -1,0 +1,166 @@
+name: CI
+
+# Two jobs with two different jobs to do.
+#
+#   verify           runs on every push and pull request. It answers "is this
+#                    code correct?" — types, lint, tests, a real production
+#                    build and the end-to-end suite.
+#
+#   production-gate  runs only on main. It answers a different question: "may
+#                    this be served to the public?" That depends on content
+#                    approvals, licensed assets and runtime secrets, none of
+#                    which live in the repository. It is expected to fail until
+#                    those land — see docs/content-gaps.md. This is the job a
+#                    deploy should be required to pass.
+#
+# Nothing here reads a secret name that is not documented in .env.example.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# A new push supersedes an in-flight run on the same ref.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  # Keeps CI output free of interactive progress rendering.
+  CI: "1"
+  NODE_VERSION: "22"
+
+jobs:
+  verify:
+    name: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # pnpm must exist before setup-node, because setup-node's pnpm cache mode
+      # resolves the store path by running pnpm.
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      # Unit and component tests share one Vitest project. This is also where the
+      # record-level content-integrity assertions run — the half of the deploy
+      # gate that needs the TypeScript content layer.
+      - name: Unit and component tests
+        run: pnpm test
+
+      # Non-strict: the delivered SVG masters are not in the repository, so this
+      # reports and passes here. The strict form runs in production-gate.
+      - name: Verify brand assets (report only)
+        run: pnpm brand:verify
+
+      - name: Check fonts (report only)
+        run: pnpm fonts:check
+
+      # The honest production build: real seed content, production policy, no
+      # fixtures. Almost nothing is publishable, and that is the expected result
+      # — the build must still succeed and every route must still render.
+      - name: Build (production policy)
+        run: pnpm build
+        env:
+          FOUNDRY_POLICY_MODE: production
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+
+      - name: Install Playwright browser
+        run: pnpm e2e:install
+
+      # The e2e suite drives filters, detail routes and related content, none of
+      # which exist in the real dataset yet, so it needs the synthetic fixtures.
+      # The site is rebuilt with them because pages are rendered at build time —
+      # setting the fixture variables only at test time would exercise the
+      # production build's output instead.
+      - name: Build (e2e fixtures)
+        run: pnpm build
+        env:
+          FOUNDRY_POLICY_MODE: production
+          FOUNDRY_CONTENT_FIXTURE: e2e
+          FOUNDRY_ALLOW_FIXTURES: "1"
+
+      - name: End-to-end tests
+        run: pnpm e2e
+        env:
+          FOUNDRY_POLICY_MODE: production
+          FOUNDRY_CONTENT_FIXTURE: e2e
+          FOUNDRY_ALLOW_FIXTURES: "1"
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+          if-no-files-found: ignore
+
+  production-gate:
+    name: production-gate
+    needs: verify
+    # Only main. On a pull request this would report gaps the branch cannot fix.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # No pnpm install: both scripts are dependency-free Node ESM, so the gate
+      # stays independent of the dependency tree it is gating.
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      # Missing repository secrets arrive as empty strings, which the gate
+      # reports as "missing" — exactly the intended outcome.
+      - name: Content integrity gate
+        run: node scripts/content-integrity.mjs
+        env:
+          FOUNDRY_POLICY_MODE: production
+          FOUNDRY_ENFORCE_CANONICAL_HOST: "1"
+          DRAFT_MODE_SECRET: ${{ secrets.DRAFT_MODE_SECRET }}
+          SANITY_WEBHOOK_SECRET: ${{ secrets.SANITY_WEBHOOK_SECRET }}
+          PITCH_RECIPIENTS: ${{ secrets.PITCH_RECIPIENTS }}
+          PITCH_ESCALATION_EMAIL: ${{ secrets.PITCH_ESCALATION_EMAIL }}
+          PITCH_FROM_EMAIL: ${{ secrets.PITCH_FROM_EMAIL }}
+          PITCH_FINGERPRINT_SALT: ${{ secrets.PITCH_FINGERPRINT_SALT }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          PITCH_STORE_DRIVER: file
+
+      # Runs even when the step above failed, so one run reports every blocker
+      # rather than one per push.
+      - name: Verify brand assets (strict)
+        if: always()
+        run: node scripts/verify-brand-assets.mjs --strict

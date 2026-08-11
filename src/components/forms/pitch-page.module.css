@@ -1,0 +1,130 @@
+/*
+ * `/pitch` page furniture (§11.1). Same dark-hero-then-light-body rhythm as the
+ * portfolio archive, so the conversion page does not read as a different site.
+ */
+
+.hero {
+  border-bottom: var(--border-hairline) solid var(--line-inverse);
+}
+
+.heroInner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  min-width: 0;
+}
+
+.heading {
+  margin: 0;
+  font-size: var(--text-h1);
+  line-height: var(--leading-display);
+}
+
+.lead {
+  margin: 0;
+  max-width: 52ch;
+  font-size: var(--text-body-lg);
+  line-height: 1.45;
+  color: var(--text-muted-inverse);
+}
+
+@media (min-width: 992px) {
+  .heroInner {
+    max-width: 62ch;
+    gap: var(--space-lg);
+  }
+}
+
+/* ------------------------------------------------------------ Body layout */
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xl);
+  min-width: 0;
+}
+
+/* ----------------------------------------------------------- Next steps */
+
+.nextSteps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  max-width: var(--measure);
+  padding-left: var(--space-md);
+  border-left: var(--border-hairline) solid var(--line-default);
+}
+
+.nextStepsHeading {
+  font-family: var(--font-sans);
+  font-size: var(--text-h6);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.01em;
+}
+
+.nextStepsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+}
+
+/* ---------------------------------------------------------- Unavailable */
+
+.unavailable {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-width: var(--measure);
+}
+
+.unavailableHeading {
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-display);
+}
+
+.unavailableBody {
+  font-size: var(--text-body-lg);
+  line-height: 1.45;
+}
+
+.contactList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.contact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+}
+
+.contactName {
+  font-family: var(--font-sans);
+  font-size: var(--text-h6);
+  font-weight: var(--weight-medium);
+}
+
+.contactRole {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.contactLink {
+  /* 44px target for a link that sits in a list of otherwise static text. */
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  /* Addresses are long and must wrap rather than widen the page at 320px. */
+  overflow-wrap: anywhere;
+}

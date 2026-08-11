@@ -1,0 +1,37 @@
+/* Insights result grid: 3 / 2 / 1 columns (§12.1). */
+
+.results {
+  min-width: 0;
+}
+
+.grid {
+  display: grid;
+  /* minmax(0, 1fr) rather than 1fr: a long unbroken title must not be able to
+     force a track wider than its share and push the page sideways at 320px. */
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: var(--grid-gap);
+  row-gap: var(--space-xl);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  display: flex;
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-lg);
+  }
+}
+
+@media (min-width: 992px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: var(--space-xl);
+    row-gap: var(--space-2xl);
+  }
+}

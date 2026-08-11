@@ -1,0 +1,103 @@
+/* Investment criteria strip (§7.2). */
+
+.section {
+  border-block: var(--border-hairline) solid var(--line-default);
+}
+
+/*
+ * The column count is fixed per breakpoint by the component, so the grid never
+ * "wraps": every row is complete by construction except a deliberately balanced
+ * final row (4/3, 3/2, …). That is what makes the border rules below safe —
+ * a rule can never end up hanging in the middle of a wrapped row.
+ */
+.list {
+  display: grid;
+  grid-template-columns: repeat(var(--criteria-columns-mobile, 1), minmax(0, 1fr));
+  border-bottom: var(--border-hairline) solid var(--line-default);
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+  min-width: 0;
+  padding-block: var(--space-md) var(--space-lg);
+  padding-inline-end: var(--space-md);
+  /* Row rule: every cell in a row carries it, so the line is continuous. */
+  border-top: var(--border-hairline) solid var(--line-default);
+}
+
+.label {
+  color: var(--text-muted);
+}
+
+.value {
+  font-family: var(--font-display);
+  font-size: var(--text-h5);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-display);
+  /* A long value ("AI / services-as-a-software") must wrap, never overflow. */
+  overflow-wrap: break-word;
+}
+
+/* Mobile: a single column has no vertical rules at all. */
+.list[data-mobile-columns="2"] .item {
+  border-inline-start: var(--border-hairline) solid var(--line-default);
+  padding-inline-start: var(--space-md);
+}
+
+.list[data-mobile-columns="2"] .item:nth-child(2n + 1) {
+  border-inline-start: 0;
+  padding-inline-start: 0;
+}
+
+@media (min-width: 768px) {
+  /* Re-assert the column rule for every cell, then strip it from the first cell
+     of each row. The count comes from the data attribute because nth-child()
+     cannot consume the custom property. */
+  .list {
+    grid-template-columns: repeat(var(--criteria-columns-tablet, 2), minmax(0, 1fr));
+  }
+
+  .item {
+    border-inline-start: var(--border-hairline) solid var(--line-default);
+    padding-inline-start: var(--space-md);
+  }
+
+  .list[data-tablet-columns="1"] .item,
+  .list[data-tablet-columns="2"] .item:nth-child(2n + 1),
+  .list[data-tablet-columns="3"] .item:nth-child(3n + 1) {
+    border-inline-start: 0;
+    padding-inline-start: 0;
+  }
+}
+
+@media (min-width: 992px) {
+  .list {
+    grid-template-columns: repeat(var(--criteria-columns, 4), minmax(0, 1fr));
+  }
+
+  .item {
+    border-inline-start: var(--border-hairline) solid var(--line-default);
+    padding-block: var(--space-lg) var(--space-2xl);
+    padding-inline-start: var(--space-lg);
+    padding-inline-end: var(--space-lg);
+  }
+
+  .list[data-columns="1"] .item,
+  .list[data-columns="2"] .item:nth-child(2n + 1),
+  .list[data-columns="3"] .item:nth-child(3n + 1),
+  .list[data-columns="4"] .item:nth-child(4n + 1),
+  .list[data-columns="5"] .item:nth-child(5n + 1) {
+    border-inline-start: 0;
+    padding-inline-start: 0;
+  }
+
+  .value {
+    font-size: var(--text-h4);
+  }
+}
+
+.cta {
+  margin-top: var(--space-xl);
+}

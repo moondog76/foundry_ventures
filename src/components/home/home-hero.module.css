@@ -1,0 +1,163 @@
+/* Home hero (§7.1, §19.2). */
+
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /* Copy sits in the lower half, the way the live hero reads. */
+  justify-content: flex-end;
+  /* svh, never vh: collapsing mobile browser chrome must not resize the hero
+     under the user's finger (§19.1). */
+  min-height: 100svh;
+  /* Contains the negative-space overlay and the media layer. */
+  isolation: isolate;
+  overflow: hidden;
+  color: var(--text-inverse);
+  /* Painted first, so an unavailable or rights-unverified crop still renders a
+     legitimate dark surface instead of a white flash (§16.7). */
+  background-color: var(--color-deep-navy);
+  /* The header is fixed and floats transparently over this section (§6.1). */
+  padding-top: calc(var(--header-height) + var(--space-xl));
+  padding-bottom: var(--section-y);
+}
+
+/* Raised specificity so these win over `.imageFrame` in ui.module.css
+   regardless of stylesheet order. */
+.hero .mediaFrame {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-color: var(--color-deep-navy);
+}
+
+/*
+ * Three stacked layers, top to bottom in the paint order:
+ *   1. a top scrim that guarantees the white logotype and navigation clear AA
+ *      over the lightest part of the crop, independently of the crop itself;
+ *   2. the prototype's navy wash, which carries the hero's colour identity and
+ *      keeps white body copy above 4.5:1 even against a blown-out horizon;
+ *   3. the live site's ~15% baseline dim, so the photograph still reads as a
+ *      photograph rather than a flat colour field.
+ */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0, 24, 72, 0.55) 0%,
+      rgba(0, 24, 72, 0) calc(var(--header-height) * 2)
+    ),
+    linear-gradient(
+      180deg,
+      rgba(0, 24, 72, 0.5) 0%,
+      rgba(0, 24, 72, 0.7) 45%,
+      rgba(0, 24, 72, 0.95) 100%
+    ),
+    rgba(0, 0, 0, 0.15);
+}
+
+.container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  row-gap: var(--space-xl);
+}
+
+.headingBlock,
+.support,
+.actions {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.eyebrow {
+  margin-bottom: var(--space-md);
+  color: var(--color-muted-on-dark);
+}
+
+.heading {
+  /*
+   * The migrated heading is 80 characters long. On the bare --text-h1 ramp it
+   * wraps to five lines at 1440px and pushes the CTAs below the fold, so the
+   * hero rides a ramp that lands between --text-h2 and --text-h1 instead.
+   */
+  font-size: clamp(2.125rem, 1.05rem + 4.4vw, 5rem);
+  line-height: var(--leading-display);
+  text-wrap: balance;
+}
+
+.support {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.paragraph {
+  color: var(--color-muted-on-dark);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  max-width: var(--measure);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+/* Tablet and up: the support copy splits into two editorial columns. */
+@media (min-width: 768px) {
+  .support[data-columns="two"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-xl);
+  }
+}
+
+@media (min-width: 992px) {
+  .hero {
+    padding-top: calc(var(--header-height) + var(--space-2xl));
+  }
+
+  /* ~15 of the 24 columns for the heading (§7.1). */
+  .headingBlock {
+    grid-column: 1 / span 15;
+  }
+
+  .support {
+    grid-column: 1 / span 14;
+  }
+
+  .actions {
+    grid-column: 1 / span 15;
+  }
+}
+
+@media (min-width: 1440px) {
+  .headingBlock {
+    grid-column: 1 / span 15;
+  }
+
+  .support {
+    grid-column: 1 / span 13;
+  }
+}
+
+/*
+ * Short viewports (landscape phones, split-screen): a 100svh hero would hide
+ * the copy behind the fixed header, so the section falls back to its natural
+ * height and simply scrolls.
+ */
+@media (max-height: 560px) {
+  .hero {
+    min-height: 0;
+    padding-top: calc(var(--header-height) + var(--space-lg));
+    padding-bottom: var(--section-y-sm);
+  }
+}

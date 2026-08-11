@@ -1,0 +1,45 @@
+/*
+ * Anchored to the bottom of the viewport rather than the top. The site header is
+ * fixed at `top: 0`, so a banner in normal flow above it would be overlapped;
+ * putting the preview notice at the bottom keeps both readable without the
+ * header having to know the banner's height.
+ */
+.banner {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: calc(var(--z-header) + 1);
+  padding-bottom: max(var(--space-2xs), env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-2xs) var(--gutter);
+  background-color: var(--color-foundry-blue);
+  color: var(--color-white);
+  text-align: center;
+}
+
+.text {
+  font-size: var(--text-sm);
+  line-height: 1.35;
+}
+
+.exit {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  padding-inline: var(--space-2xs);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-white);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+}
+
+.exit:hover {
+  background-color: var(--color-white);
+  color: var(--color-foundry-blue);
+}

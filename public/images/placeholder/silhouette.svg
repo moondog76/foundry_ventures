@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 896 1280" width="896" height="1280" role="img">
+  <title>Foundry placeholder — dark blue-toned profile silhouette</title>
+  <desc>Brand-owned stand-in for the licensed portrait image. Replace with the rights-cleared original.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0b1526"/><stop offset="100%" stop-color="#02050a"/>
+    </linearGradient>
+    <radialGradient id="rim" cx="0.68" cy="0.3" r="0.75">
+      <stop offset="0%" stop-color="#5f8fc0" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#5f8fc0" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="7"/></filter>
+  </defs>
+  <rect width="896" height="1280" fill="url(#bg)"/>
+  <rect width="896" height="1280" fill="url(#rim)"/>
+  <g filter="url(#soft)" fill="#010307">
+    <path d="M448 292c-96 0-166 66-172 158-3 47 9 84 26 112 9 15 8 27-4 40l-30 33c-11 12-7 27 8 31l44 12c9 2 13 8 13 17v42c0 26 20 45 47 49l70 10v-96c-42-6-72-20-95-41 33 17 66 25 100 25 92 0 160-70 165-166 6-114-64-226-172-226z"/>
+    <path d="M330 806c-102 26-170 96-186 190l-20 118c-3 18 10 33 28 33h592c18 0 31-15 28-33l-20-118c-16-94-84-164-186-190l-118 62z"/>
+  </g>
+  <rect width="896" height="1280" fill="#001848" opacity="0.22"/>
+</svg>

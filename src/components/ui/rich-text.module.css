@@ -1,0 +1,96 @@
+/* Long-form rich text (§12.2). Body measure targets ~60–75 characters. */
+
+.richText {
+  font-size: var(--text-body-lg);
+  line-height: var(--leading-body);
+}
+
+.richText > * + * {
+  margin-top: var(--space-md);
+}
+
+.richText p,
+.richText ul,
+.richText ol {
+  max-width: var(--measure);
+}
+
+.richText h2 {
+  margin-top: var(--space-2xl);
+  font-size: var(--text-h3);
+}
+
+.richText h3 {
+  margin-top: var(--space-xl);
+  font-family: var(--font-sans);
+  font-size: var(--text-h4);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.01em;
+}
+
+.richText h4 {
+  margin-top: var(--space-lg);
+  font-size: var(--text-h5);
+}
+
+.richText ul,
+.richText ol {
+  padding-left: 1.25em;
+}
+
+.richText li + li {
+  margin-top: var(--space-2xs);
+}
+
+.richText a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.richText a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.richText code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+  padding: 0.1em 0.3em;
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.quote {
+  margin: var(--space-2xl) 0;
+  padding-left: var(--space-md);
+  border-left: 2px solid var(--accent);
+}
+
+.quote figcaption {
+  margin-top: var(--space-sm);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.figure {
+  margin: var(--space-2xl) 0;
+}
+
+.figure figcaption {
+  margin-top: var(--space-2xs);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.embed {
+  position: relative;
+  margin: var(--space-2xl) 0;
+  aspect-ratio: 16 / 9;
+}
+
+.embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}

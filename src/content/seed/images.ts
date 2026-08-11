@@ -123,7 +123,51 @@ export const DEFAULT_OG_IMAGE: ImageAsset = {
   alt: "",
 };
 
-/** Portfolio logo export references, from Appendix C.4. */
+/**
+ * Logo files supplied by the content owner on 2026-08-11 and prepared for the
+ * web by `scripts/prepare-supplied-assets.mjs`.
+ *
+ * `sourceUrl` keeps the Appendix C.4 live reference so the provenance chain
+ * stays intact, but the bytes now come from the owner's own originals rather
+ * than the Squarespace CDN, which is what §5.5 asks for.
+ */
+function suppliedLogo(
+  slug: string,
+  file: string,
+  width: number,
+  height: number,
+  owner: string,
+  sourceUrl?: string,
+): ImageAsset {
+  return {
+    id: `portfolio/${slug}`,
+    src: `/images/portfolio/${file}`,
+    width,
+    height,
+    rightsStatus: "approved",
+    rightsOwner: owner,
+    sourceUrl,
+    available: true,
+    alt: "",
+  };
+}
+
+export const SUPPLIED_PORTFOLIO_LOGOS = {
+  empley: suppliedLogo("empley", "empley.png", 1510, 400, "Empley"),
+  agaton: suppliedLogo("agaton", "agaton.png", 768, 181, "Agaton"),
+  grand: suppliedLogo("grand", "grand.png", 2027, 332, "Grand"),
+  wilgot: suppliedLogo("wilgot", "wilgot.png", 5468, 1700, "Wilgot"),
+  openroll: suppliedLogo("openroll", "openroll.png", 1056, 276, "Openroll"),
+  // Rendered from the supplied A4 PDF and cropped to the logo tile, which
+  // carries its own black field — the same square the live site served.
+  newly: suppliedLogo("newly", "newly.png", 1001, 1001, "Newly"),
+  skattio: suppliedLogo("skattio", "skattio.png", 701, 176, "Skattio"),
+  // The viewBox is tightened to the artwork by the prep script, so these are
+  // the wordmark's own proportions rather than the 810×810 artboard.
+  memmo: suppliedLogo("memmo", "memmo.svg", 639, 98, "Memmo"),
+} as const;
+
+/** Superseded live-CDN references, retained for the migration record. */
 export const PORTFOLIO_LOGO_REFERENCES = {
   empley: exportReference(
     "portfolio/empley.png",

@@ -536,3 +536,63 @@ single-hop host normalisation — is unchanged.
 
 **Reversal.** Rename back and export `middleware`; the deprecation warning
 returns.
+
+## D-016 — Brand variants derived from the supplied `Foundry logo.pdf`
+
+**Date.** 2026-08-11
+
+**Decision.** The content owner supplied `Foundry logo.pdf` rather than the five
+SVG masters listed in Appendix A.1. `scripts/prepare-supplied-assets.mjs`
+converts it with `pdftocairo -svg` and produces all five variants from that one
+file. `verify-brand-assets.mjs` now accepts either the delivered master hash or
+the recorded derived hash, and says which one it found.
+
+**Rationale.** The PDF's page box is 355.677 × 134.703 — the exact master
+geometry from Appendix A.1 — so it is an authoritative source for the logotype.
+The artwork is a single flat colour, so the white and black variants come from
+substituting that one fill value, and the symbol variants come from narrowing the
+viewBox to the symbol's 77.01 units. Neither touches a path. The script asserts
+that every `d=` attribute is byte-identical across all five outputs, so a colour
+change cannot smuggle in a geometry change. §5.1's prohibitions — never recreate
+the logotype with text, never recolour it with a CSS filter — are both respected;
+this is the same operation the delivered variant set represents.
+
+**Spec.** §5.1, §31.5, Appendix A.1.
+
+**Consequence.** Two things need the owner's attention:
+
+1. The PDF's blue is `#28428C`, while the `--color-foundry-blue` token is
+   `#00308F`. That looks like a CMYK→sRGB conversion on export rather than a
+   deliberate change. The derived asset keeps the PDF's own colour; the token is
+   unchanged. Someone has to say which is correct.
+2. The five delivered SVG masters remain preferable, because they carry the
+   brand's own optical corrections per variant rather than a mechanical
+   substitution.
+
+**Reversal.** Drop the five masters into `public/brand/`; the verifier will
+report them as delivered masters and the derived hashes become dead entries.
+
+## D-017 — Logo artwork declares the surface it needs
+
+**Date.** 2026-08-11
+
+**Decision.** `Company.logoSurface` (`"dark" | "light"`) travels through
+`CompanySummary` to `CompanyLogoFrame`, which paints charcoal or off-white
+accordingly. Values were set from measured luminance of the supplied artwork,
+not by eye.
+
+**Rationale.** The frame was previously always dark, on the assumption — true of
+the live site's exports — that every portfolio logo is a light mark. The files
+the owner supplied break that: Agaton (luminance 28) and Openroll (25) are the
+black variants, and Memmo is a mid-green, so all three would have been invisible
+on a dark field. Founders supply whichever variant they have, so the data has to
+carry the requirement rather than the CSS assuming it.
+
+**Spec.** §5.5, §8.4, §20.3.
+
+**Consequence.** Every new company needs `logoSurface` set. It defaults to
+`"dark"`, which suits a light mark, so an unset value fails safe for the common
+case but should still be checked against the artwork.
+
+**Reversal.** Remove the field and the `[data-surface="light"]` rule; the dark
+frame returns, and three logos disappear.

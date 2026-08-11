@@ -316,6 +316,7 @@ describe("entity JSON-LD", () => {
       logo: null,
       logoAlt: "Testcorp Fixture logo",
       logoFit: "contain",
+      logoSurface: "dark" as const,
       opticalScale: 1,
       cardImage: null,
       tagline: null,

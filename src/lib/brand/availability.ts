@@ -13,11 +13,19 @@ import { BRAND_ASSETS, type BrandAssetKey } from "./manifest";
  */
 const brandDir = path.resolve(process.cwd(), "public/brand");
 
+/**
+ * Accepts either the delivered Appendix A.1 master or the variant derived from
+ * the owner-supplied `Foundry logo.pdf`. Byte-exactness is asserted by
+ * `pnpm brand:verify`; this only decides whether the component has something
+ * real to render, so it deliberately does not re-hash on every boot.
+ */
 function check(key: BrandAssetKey): boolean {
   const asset = BRAND_ASSETS[key];
   const filePath = path.join(brandDir, asset.file);
   try {
-    return existsSync(filePath) && statSync(filePath).size === asset.bytes;
+    if (!existsSync(filePath)) return false;
+    const { size } = statSync(filePath);
+    return size === asset.bytes || size === asset.derivedBytes;
   } catch {
     return false;
   }

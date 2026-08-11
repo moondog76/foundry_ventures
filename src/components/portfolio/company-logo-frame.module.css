@@ -1,7 +1,11 @@
 /*
- * Logo frame. The portfolio logos delivered by the live site are white-on-
- * transparent marks, so the frame is a dark Foundry surface — that is a
- * requirement of the artwork, not decoration.
+ * Logo frame.
+ *
+ * The field behind the mark is dictated by the artwork, not by taste. Founders
+ * supply whichever variant they have: Wilgot, Empley, Grand and Skattio are
+ * light marks that need a dark field, while Agaton, Openroll and Memmo are dark
+ * marks that would be invisible on one. `data-surface` carries that per company
+ * from `Company.logoSurface`.
  */
 
 .frame {
@@ -23,6 +27,13 @@
  * The three shapes have a deliberately similar area so a wordmark and a square
  * mark carry the same visual weight (§5.5).
  */
+/* A dark mark needs a light field. Off-white rather than pure white so the
+   frame still reads as a distinct panel against the white page. */
+.frame[data-surface="light"] {
+  background-color: var(--color-off-white);
+  color: var(--text-default);
+}
+
 .frame[data-fit="wide"] {
   --logo-width: 82%;
   --logo-height: 34%;

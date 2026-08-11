@@ -84,9 +84,16 @@ describe("getCompanies (real seed)", () => {
       expect(summary.sectors).toEqual([]);
       expect(summary.focuses).toEqual([]);
       expect(summary.founders).toEqual([]);
-      // The live logos are export references whose binaries are not in the
-      // workspace, so a card degrades to the typographic treatment.
-      expect(summary.logo).toBeNull();
+
+      // The logo is the one exception: the content owner supplied these files
+      // directly on 2026-08-11, which approves the artwork — and nothing else.
+      expect(summary.logo).not.toBeNull();
+      expect(summary.logo?.available).toBe(true);
+      expect(summary.logo?.rightsStatus).toBe("approved");
+      expect(summary.logo?.src).toMatch(/^\/images\/portfolio\//);
+      // Each mark declares the field it needs so a black wordmark is never
+      // rendered onto a black card.
+      expect(["dark", "light"]).toContain(summary.logoSurface);
     }
   });
 

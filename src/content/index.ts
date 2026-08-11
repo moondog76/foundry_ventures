@@ -155,6 +155,7 @@ export function toCompanySummary(company: Company, policy: PolicyContext): Compa
     logo: logoOk ? (company.logo as ImageAsset) : null,
     logoAlt: company.logoAlt ?? `${company.name} logo`,
     logoFit: company.logoFit ?? "contain",
+    logoSurface: company.logoSurface ?? "dark",
     opticalScale: company.opticalScale ?? 1,
     cardImage: canRenderImage(company.cardImage, policy) ? (company.cardImage as ImageAsset) : null,
     tagline: canPublishCompanyField(company, "tagline", policy) ? (company.tagline ?? null) : null,

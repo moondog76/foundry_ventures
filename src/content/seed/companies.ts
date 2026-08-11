@@ -4,7 +4,9 @@
  * Source: Appendix C.4 — the frozen 2026-08-10 live snapshot. Hard rules from
  * §8.5 that this file obeys literally:
  *
- *  - Every field is `observed`, never `owner-approved`. Nothing here publishes.
+ *  - Every *claim* is `observed`, never `owner-approved`. The one exception is
+ *    `logo`: the owner supplied those files directly on 2026-08-11, which
+ *    approves the artwork and nothing else.
  *  - Newly and Skattio have **no** caption on the live site. None is invented;
  *    the image `alt` filename fallback is explicitly not approved copy.
  *  - The prototype's note fields (Openroll = "AI-native hiring", Agaton =
@@ -20,8 +22,17 @@
  */
 
 import type { Company } from "../types";
-import { FOUNDRY_PORTFOLIO_SOURCE, observed, unverified } from "./evidence";
-import { PORTFOLIO_LOGO_REFERENCES } from "./images";
+import { FOUNDRY_PORTFOLIO_SOURCE, observed, ownerApproved, unverified } from "./evidence";
+import { SUPPLIED_PORTFOLIO_LOGOS } from "./images";
+
+/**
+ * The content owner supplied the portfolio logo files directly on 2026-08-11,
+ * which is an owner approval of the artwork itself — not of any other company
+ * fact. Names, taglines, taxonomy and status all remain `observed`.
+ */
+const LOGO_SUPPLIED = ownerApproved("anders.nygren@asortventures.com", "2026-08-11", [
+  { label: "Logo files supplied directly by the content owner", observedAt: "2026-08-11" },
+]);
 
 type SeedCompanyInput = {
   slug: string;
@@ -31,6 +42,8 @@ type SeedCompanyInput = {
   caption: string | null;
   logo: Company["logo"];
   logoFit: NonNullable<Company["logoFit"]>;
+  /** Which field the supplied artwork needs — measured, not guessed. */
+  logoSurface: NonNullable<Company["logoSurface"]>;
   opticalScale: number;
   sortOrder: number;
   captionNote?: string;
@@ -62,9 +75,7 @@ function seedCompany(input: SeedCompanyInput): Company {
         note: "Identified from logo, link domain and filename; the live gallery markup has no company-name field",
       }),
       websiteUrl: observed(FOUNDRY_PORTFOLIO_SOURCE),
-      logo: observed(FOUNDRY_PORTFOLIO_SOURCE, {
-        note: "Export reference only — rights-cleared original not yet supplied",
-      }),
+      logo: LOGO_SUPPLIED,
       tagline: captionEvidence,
       shortDescription: captionEvidence,
       body: unverified("No long description exists on the live site"),
@@ -81,6 +92,7 @@ function seedCompany(input: SeedCompanyInput): Company {
     logo: input.logo,
     logoAlt: `${input.name} logo`,
     logoFit: input.logoFit,
+    logoSurface: input.logoSurface,
     opticalScale: input.opticalScale,
     // Captions double as the tagline candidate; both stay behind the same evidence.
     tagline: input.caption ?? undefined,
@@ -102,7 +114,8 @@ export const SEED_COMPANIES: Company[] = [
     websiteUrl: "https://empley.com/",
     caption:
       "Empley is the AI-powered simulation platform helping enterprises model, plan, and optimize their workforce - faster, smarter, and automated.",
-    logo: PORTFOLIO_LOGO_REFERENCES.empley,
+    logo: SUPPLIED_PORTFOLIO_LOGOS.empley,
+    logoSurface: "dark",
     logoFit: "wide",
     opticalScale: 1,
     sortOrder: 10,
@@ -113,7 +126,8 @@ export const SEED_COMPANIES: Company[] = [
     websiteUrl: "https://www.agaton.ai/",
     caption:
       "Agaton delivers AI sales superiority for higher conversion rates, driving measurable revenue growth and rapid ROI.",
-    logo: PORTFOLIO_LOGO_REFERENCES.agaton,
+    logo: SUPPLIED_PORTFOLIO_LOGOS.agaton,
+    logoSurface: "light",
     logoFit: "wide",
     opticalScale: 1,
     sortOrder: 20,
@@ -127,7 +141,8 @@ export const SEED_COMPANIES: Company[] = [
     // The live source has a hard line break between the two sentences.
     caption:
       "AI-assisted hospitality management.\nWe help you do more across all hospitality operations, delivering excellence in every guest interaction.",
-    logo: PORTFOLIO_LOGO_REFERENCES.grand,
+    logo: SUPPLIED_PORTFOLIO_LOGOS.grand,
+    logoSurface: "dark",
     logoFit: "wide",
     opticalScale: 0.95,
     sortOrder: 30,
@@ -138,7 +153,8 @@ export const SEED_COMPANIES: Company[] = [
     websiteUrl: "https://www.wilgot.ai/",
     caption:
       "Wilgot upgrades your product catalog so AI search engines, ad systems, and shopping agents can find, recommend, and sell your products.",
-    logo: PORTFOLIO_LOGO_REFERENCES.wilgot,
+    logo: SUPPLIED_PORTFOLIO_LOGOS.wilgot,
+    logoSurface: "dark",
     logoFit: "wide",
     opticalScale: 0.9,
     sortOrder: 40,
@@ -149,7 +165,8 @@ export const SEED_COMPANIES: Company[] = [
     websiteUrl: "https://www.openroll.com/",
     caption:
       "Openroll is reimagining how Compensation and People teams work, automate, and operate with AI—bringing all data into one collaborative platform.",
-    logo: PORTFOLIO_LOGO_REFERENCES.openroll,
+    logo: SUPPLIED_PORTFOLIO_LOGOS.openroll,
+    logoSurface: "light",
     logoFit: "wide",
     opticalScale: 1,
     sortOrder: 50,
@@ -162,9 +179,13 @@ export const SEED_COMPANIES: Company[] = [
     websiteUrl: "https://newly.app/",
     // No <figcaption> exists on the live site. Nothing is invented (§C.6).
     caption: null,
-    logo: PORTFOLIO_LOGO_REFERENCES.newly,
+    logo: SUPPLIED_PORTFOLIO_LOGOS.newly,
+    // The supplied artwork is a black tile rather than a transparent mark, so
+    // it reads as a deliberate tile against the light field and disappears
+    // against a dark one.
+    logoSurface: "light",
     logoFit: "compact",
-    opticalScale: 0.78,
+    opticalScale: 1.25,
     sortOrder: 60,
   }),
   seedCompany({
@@ -172,7 +193,8 @@ export const SEED_COMPANIES: Company[] = [
     name: "Skattio",
     websiteUrl: "https://skattio.se/",
     caption: null,
-    logo: PORTFOLIO_LOGO_REFERENCES.skattio,
+    logo: SUPPLIED_PORTFOLIO_LOGOS.skattio,
+    logoSurface: "dark",
     logoFit: "wide",
     opticalScale: 1,
     sortOrder: 70,
@@ -182,9 +204,10 @@ export const SEED_COMPANIES: Company[] = [
     name: "Memmo",
     websiteUrl: "https://www.memmo.org/",
     caption: "Study smarter, get better grades.",
-    logo: PORTFOLIO_LOGO_REFERENCES.memmo,
-    logoFit: "compact",
-    opticalScale: 0.78,
+    logo: SUPPLIED_PORTFOLIO_LOGOS.memmo,
+    logoSurface: "light",
+    logoFit: "wide",
+    opticalScale: 0.92,
     sortOrder: 80,
     captionNote:
       "Consistent with the linked study platform observed 2026-08-10, but still requires editorial approval.",

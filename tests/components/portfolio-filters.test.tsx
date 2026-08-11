@@ -282,6 +282,7 @@ describe("portfolio zero states", () => {
             logo: null,
             logoAlt: "Testcorp Fixture logo",
             logoFit: "contain",
+            logoSurface: "dark" as const,
             opticalScale: 1,
             cardImage: null,
             tagline: null,

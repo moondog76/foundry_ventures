@@ -145,6 +145,7 @@ export async function CompanyDetail({ view, policy, crumbs }: CompanyDetailProps
                 logo={summary.logo}
                 name={company.name}
                 logoFit={summary.logoFit}
+                logoSurface={summary.logoSurface}
                 opticalScale={summary.opticalScale}
                 policy={policy}
                 sizes="(min-width: 992px) 260px, 220px"

@@ -53,6 +53,7 @@ export function CompanyCard({
         logo={summary.logo}
         name={summary.name}
         logoFit={summary.logoFit}
+        logoSurface={summary.logoSurface}
         opticalScale={summary.opticalScale}
         policy={policy}
         sizes={sizes}

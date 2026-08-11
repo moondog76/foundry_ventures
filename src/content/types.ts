@@ -327,6 +327,13 @@ export type Company = {
   logo?: ImageAsset;
   logoAlt?: string;
   logoFit?: "contain" | "wide" | "compact";
+  /**
+   * The surface this logo needs behind it. Founders supply whichever variant
+   * they have: some marks are white-on-transparent and need a dark field,
+   * others are black-on-transparent and would be invisible on one. Defaults to
+   * "dark", which suits the majority of the delivered artwork.
+   */
+  logoSurface?: "dark" | "light";
   /** Optical calibration so mismatched aspect ratios read as equal weight (§5.5). */
   opticalScale?: number;
   cardImage?: ImageAsset;
@@ -369,6 +376,7 @@ export type CompanySummary = {
   logo: ImageAsset | null;
   logoAlt: string;
   logoFit: "contain" | "wide" | "compact";
+  logoSurface: "dark" | "light";
   opticalScale: number;
   cardImage: ImageAsset | null;
   tagline: string | null;

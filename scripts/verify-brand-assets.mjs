@@ -19,26 +19,36 @@ const MANIFEST = [
     file: "foundry-logo-blue.svg",
     bytes: 5546,
     sha256: "1db42b83c1cfc1d4b58f98e77f38901ce7a0e4fc9bfacaf9cdc9c9d1d491a475",
+    derivedBytes: 15410,
+    derivedSha256: "deb2b7d73b77c3f09458aa88b08aae0d9871f406d3efd800675c3a71e41b66da",
   },
   {
     file: "foundry-logo-white.svg",
     bytes: 5546,
     sha256: "2f928f2b9550bdb81f5e23a1e6d9747a4785d4255867c38f5175641347c439dc",
+    derivedBytes: 15050,
+    derivedSha256: "35cfd119cfd3fcfedff224144cf5d3116cd01cc563852d27c8cfaf4bdce025c7",
   },
   {
     file: "foundry-logo-black.svg",
     bytes: 5546,
     sha256: "775b7c8e797e3f90fa64e325f47bb6fb5d18ce04d7a758ae470125970cc4aeb6",
+    derivedBytes: 15374,
+    derivedSha256: "a8e3d0eb07f114487cab3144993abc40b0f2bc3c546b53f094bc3e5cc8e275d2",
   },
   {
     file: "foundry-icon-blue.svg",
     bytes: 417,
     sha256: "de5f865ad31075d16f671d1fd05c93737db997d974e6e16e99bacf822bc85dd0",
+    derivedBytes: 15406,
+    derivedSha256: "ed9a51e630740d0e886d687e412bb9ea367015251b36db0c0e488ba543624983",
   },
   {
     file: "foundry-icon-white.svg",
     bytes: 417,
     sha256: "fda4e303cf2de4f5a3a8ea39e5967d1587cf0eaf7ed7c5160edb2b8959d8541a",
+    derivedBytes: 15046,
+    derivedSha256: "f8a5b5b6fe0023a8d8dde9be48ecefc723d02f3d49f6ff7e9a83c1dcf66a3edb",
   },
 ];
 
@@ -47,6 +57,7 @@ const brandDir = path.resolve(process.cwd(), "public/brand");
 
 let missing = 0;
 let mismatched = 0;
+let derivedCount = 0;
 
 for (const entry of MANIFEST) {
   const filePath = path.join(brandDir, entry.file);
@@ -62,15 +73,24 @@ for (const entry of MANIFEST) {
   const buffer = await readFile(filePath);
   const digest = createHash("sha256").update(buffer).digest("hex");
 
-  if (stats.size !== entry.bytes || digest !== entry.sha256) {
-    mismatched += 1;
-    console.error(`  MISMATCH  ${entry.file}`);
-    console.error(`            expected ${entry.bytes} bytes / ${entry.sha256}`);
-    console.error(`            actual   ${stats.size} bytes / ${digest}`);
+  if (stats.size === entry.bytes && digest === entry.sha256) {
+    console.log(`  OK        ${entry.file}  (delivered master)`);
     continue;
   }
 
-  console.log(`  OK        ${entry.file}`);
+  if (stats.size === entry.derivedBytes && digest === entry.derivedSha256) {
+    derivedCount += 1;
+    console.log(`  OK        ${entry.file}  (derived from the supplied Foundry logo.pdf)`);
+    continue;
+  }
+
+  mismatched += 1;
+  console.error(`  MISMATCH  ${entry.file}`);
+  console.error(`            delivered master  ${entry.bytes} bytes / ${entry.sha256}`);
+  console.error(
+    `            derived variant   ${entry.derivedBytes} bytes / ${entry.derivedSha256}`,
+  );
+  console.error(`            actual            ${stats.size} bytes / ${digest}`);
 }
 
 if (mismatched > 0) {
@@ -90,5 +110,14 @@ if (missing > 0) {
 }
 
 if (missing === 0 && mismatched === 0) {
-  console.log("\nAll brand assets verified against the Appendix A.1 manifest.");
+  if (derivedCount > 0) {
+    console.log(
+      `\nAll brand assets verified. ${derivedCount} of ${MANIFEST.length} are derived from the` +
+        "\nowner-supplied Foundry logo.pdf rather than the delivered Appendix A.1 masters." +
+        "\nGeometry is identical; only the flat fill colour differs. Supplying the original" +
+        "\nSVG masters remains preferable — see public/brand/README.md.",
+    );
+  } else {
+    console.log("\nAll brand assets verified against the Appendix A.1 manifest.");
+  }
 }

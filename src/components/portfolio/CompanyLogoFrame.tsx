@@ -29,6 +29,8 @@ export type CompanyLogoFrameProps = {
   logo: ImageAsset | null;
   name: string;
   logoFit: "contain" | "wide" | "compact";
+  /** Which field the artwork needs behind it — see `Company.logoSurface`. */
+  logoSurface?: "dark" | "light";
   opticalScale: number;
   policy: PolicyContext;
   sizes: string;
@@ -43,6 +45,7 @@ export function CompanyLogoFrame({
   logo,
   name,
   logoFit,
+  logoSurface = "dark",
   opticalScale,
   policy,
   sizes,
@@ -62,6 +65,9 @@ export function CompanyLogoFrame({
     <div
       className={cx(styles.frame, className)}
       data-fit={logoFit}
+      // The typographic fallback is set in white, so it always wants the dark
+      // field regardless of what the missing artwork would have needed.
+      data-surface={showLogo ? logoSurface : "dark"}
       style={{ "--logo-optical-scale": scale } as CSSProperties}
     >
       {showLogo ? (

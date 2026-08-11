@@ -6,6 +6,7 @@ content owner approves it.
 
 | Item | Origin | Blocking question |
 |---|---|---|
+| `BuilderBase_Logotype-Primary-Black.png` | Supplied by the content owner 2026-08-11, in `assets-supplied/` | BuilderBase is not one of the eight companies on the live portfolio. Is it a portfolio company? Until that is answered it has no seed record and its logo is not published. |
 | `bright.svg` | Claude Design archive, `portfolio/bright.svg` (sha256 `4a4103e0…`) | Is Bright a current portfolio company? It does not appear on the live portfolio. |
 | "Natively" | Claude Design prototype fallback list | Not present on the live portfolio; needs explicit verification. |
 | "Agaton Group" | Claude Design prototype fallback list | Must not be merged automatically with the live entry "Agaton". |

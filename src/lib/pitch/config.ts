@@ -24,6 +24,26 @@ export type PitchConfig = {
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/**
+ * Names the hosting platform when the container filesystem is ephemeral, or
+ * null when writes are expected to survive a redeploy.
+ *
+ * This is not Vercel-specific: every container PaaS rebuilds the filesystem on
+ * deploy. Railway is the exception that proves it — storage there is durable
+ * only under a mounted volume, which the platform advertises through
+ * `RAILWAY_VOLUME_MOUNT_PATH`.
+ */
+function ephemeralHost(): string | null {
+  if (process.env.VERCEL === "1") return "Vercel";
+  if (process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PROJECT_ID) {
+    return process.env.RAILWAY_VOLUME_MOUNT_PATH ? null : "Railway";
+  }
+  if (process.env.RENDER === "true") return "Render";
+  if (process.env.FLY_APP_NAME) return "Fly.io";
+  if (process.env.DYNO) return "Heroku";
+  return null;
+}
+
 /** Rejects traversal and absolute paths so the store cannot escape `.data/`. */
 function sanitizeSubfolder(raw: string | undefined): string | null {
   const value = raw?.trim();
@@ -106,12 +126,14 @@ export function checkPitchReadiness(config: PitchConfig = readPitchConfig()): Re
       message: "The in-memory store is not durable and must never be used in production.",
     });
   }
-  if (config.storeDriver === "file" && process.env.VERCEL === "1") {
-    problems.push({
-      key: "PITCH_STORE_DRIVER",
-      message:
-        "The filesystem store is ephemeral on serverless hosts. Configure a durable store before launch.",
-    });
+  if (config.storeDriver === "file") {
+    const host = ephemeralHost();
+    if (host) {
+      problems.push({
+        key: "PITCH_STORE_DRIVER",
+        message: `The filesystem store writes to the container's own disk, which ${host} discards on every redeploy — stored pitches would silently disappear. Configure a durable store, or mount a persistent volume and point the store at it.`,
+      });
+    }
   }
   if (config.fingerprintSalt === "foundry-dev-salt") {
     problems.push({

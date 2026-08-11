@@ -241,10 +241,27 @@ an empty string and is reported as missing, which is the intended behaviour.
 
 ## Deployment
 
-Any host that can run `next build` and `next start` on Node ≥ 20.9. There is one
-platform-aware behaviour: when `VERCEL=1`, the pitch readiness check rejects the
-filesystem submission store, because a serverless filesystem does not survive the
-request.
+Any host that can run `next build` and `next start` on Node ≥ 20.9.
+`next start` binds `0.0.0.0` and honours the `PORT` the platform assigns.
+
+One platform-aware behaviour: the pitch readiness check rejects the filesystem
+submission store on hosts whose container disk is rebuilt on deploy — Vercel,
+Railway, Render, Fly.io and Heroku. Railway is durable only under a mounted
+volume, which the check recognises via `RAILWAY_VOLUME_MOUNT_PATH`.
+
+### Railway
+
+`railway.json` pins the build and start commands so a deploy does not depend on
+autodetection. Two variables decide what a Railway deploy actually serves:
+
+| Variable                         | Set it to                         | Why                                                                                                                                                                                               |
+| -------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `FOUNDRY_ENFORCE_CANONICAL_HOST` | **leave unset** until DNS cutover | With it on, every request 308-redirects to `www.foundryventures.ai`, so the `*.up.railway.app` URL looks dead.                                                                                    |
+| `FOUNDRY_POLICY_MODE`            | unset (or `production`)           | Production policy renders only owner-approved fields, so the first deploy is deliberately sparse — see the top of this file. Set `preview` on a staging service to review the full migrated site. |
+
+A first deploy needs no other variables: the content layer falls back to the
+local seed adapter, and `/pitch` shows its contact fallback rather than a form it
+cannot deliver.
 
 Before a production deploy:
 

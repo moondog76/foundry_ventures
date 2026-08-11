@@ -56,16 +56,16 @@ external; if both are null the card is not a link at all.
 
 Defined in `src/styles/tokens.css`. Use them; no magic numbers in components.
 
-| Purpose | Token |
-|---|---|
-| Container max | `--container-max` (1600px), `--container-inner-max` (1440px) |
-| Gutter | `--gutter` (6vw mobile / 3vw desktop) |
-| Grid | `--grid-columns` (8 mobile / 24 desktop), `--grid-gap` (11px) |
-| Section rhythm | `--section-y`, `--section-y-sm`, `--section-y-lg` |
-| Spacing | `--space-3xs` … `--space-4xl` |
-| Type scale | `--text-xs` … `--text-h1` |
-| Foundry easing | `--ease-foundry`, `--duration-underline` (600ms) |
-| Header height | `--header-height` (already fed to `scroll-margin-top`) |
+| Purpose        | Token                                                         |
+| -------------- | ------------------------------------------------------------- |
+| Container max  | `--container-max` (1600px), `--container-inner-max` (1440px)  |
+| Gutter         | `--gutter` (6vw mobile / 3vw desktop)                         |
+| Grid           | `--grid-columns` (8 mobile / 24 desktop), `--grid-gap` (11px) |
+| Section rhythm | `--section-y`, `--section-y-sm`, `--section-y-lg`             |
+| Spacing        | `--space-3xs` … `--space-4xl`                                 |
+| Type scale     | `--text-xs` … `--text-h1`                                     |
+| Foundry easing | `--ease-foundry`, `--duration-underline` (600ms)              |
+| Header height  | `--header-height` (already fed to `scroll-margin-top`)        |
 
 Breakpoints, content-driven:
 
@@ -106,6 +106,7 @@ must be derived from already-approved page fields — never invented in the
 component.
 
 Feature-flagged routes that are off must:
+
 - call `notFound()` in production,
 - export `HIDDEN_ROUTE_METADATA`,
 - be absent from navigation (already handled by `getSiteSettings`) and sitemap.
@@ -117,12 +118,14 @@ Use `@/lib/filters/engine`:
 `countSelected`, `matchesFilters`, `filtersToHref`.
 
 Rules the engine already enforces — do not re-implement them:
+
 - repeated params, never comma lists;
 - fixed group order, alphabetical values;
 - unknown keys/values dropped, duplicates deduped;
 - `status=exit-realized` expands to `status=exited&status=realized`.
 
 Client behaviour:
+
 - every explicit user action uses `router.push(url, { scroll: false })` so back
   goes one filter step at a time;
 - `router.replace(url, { scroll: false })` is used **only** to normalise a

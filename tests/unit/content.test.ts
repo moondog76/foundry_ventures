@@ -1,11 +1,13 @@
 /**
  * §26.1 — the content API (`src/content/index.ts`) against the real seed.
  *
- * These tests are deliberately written against the *actual* frozen 2026-08-10
- * dataset rather than a hand-made one: the point of the content layer is that
- * production renders only what a content owner has approved, and the honest
- * current answer for most of it is "nothing". A test that quietly swapped in
- * approved-looking data would hide exactly the behaviour worth protecting.
+ * These tests are deliberately written against the *actual* shipping dataset
+ * rather than a hand-made one. The content owner approved publication on
+ * 2026-08-11, but only of what Foundry already states: company names, websites,
+ * logos and the live captions. Taxonomy, status, founders and body copy stay
+ * unapproved, so no detail route is generated and no invented fact can reach a
+ * card. A test that swapped in approved-looking data would hide exactly the
+ * behaviour worth protecting.
  *
  * The one exception is the related-content algorithm, which needs more than one
  * publishable post to have any behaviour at all. That runs against the clearly
@@ -49,44 +51,44 @@ afterEach(() => __setAdapterForTests(null));
 /* ------------------------------------------------------------- Companies */
 
 describe("getCompanies (real seed)", () => {
-  it("returns all eight observed portfolio companies in preview", async () => {
+  const LIVE_ORDER = [
+    "empley",
+    "agaton",
+    "grand",
+    "wilgot",
+    "openroll",
+    "newly",
+    "skattio",
+    "memmo",
+    // Confirmed by the content owner on 2026-08-11, after the live snapshot.
+    "builderbase",
+  ];
+
+  it("returns every portfolio company in the observed live order", async () => {
     const summaries = await getCompanies(undefined, PREVIEW_POLICY);
-
-    expect(summaries).toHaveLength(8);
-    expect(summaries.map((summary) => summary.slug)).toEqual([
-      "empley",
-      "agaton",
-      "grand",
-      "wilgot",
-      "openroll",
-      "newly",
-      "skattio",
-      "memmo",
-    ]);
+    expect(summaries.map((summary) => summary.slug)).toEqual(LIVE_ORDER);
   });
 
-  it("publishes nothing in production, because every seeded field is only observed", async () => {
-    // This is the correct production state for the frozen dataset, not a bug:
-    // the seed records are `review` + `observed`, and observation is not approval.
-    expect(await getCompanies(undefined, PRODUCTION_POLICY)).toEqual([]);
-    expect(await getFeaturedCompanies([], 8, PRODUCTION_POLICY)).toEqual([]);
+  it("publishes the same companies in production, because the owner approved them", async () => {
+    const summaries = await getCompanies(undefined, PRODUCTION_POLICY);
+    expect(summaries.map((summary) => summary.slug)).toEqual(LIVE_ORDER);
+    expect(await getFeaturedCompanies(["empley"], 8, PRODUCTION_POLICY)).not.toEqual([]);
   });
 
-  it("exposes no tagline and no status for any seeded company in production", async () => {
+  it("publishes only what Foundry actually states about each company", async () => {
     const companies = await rawContent.companies();
     const summaries = companies.map((company) => toCompanySummary(company, PRODUCTION_POLICY));
 
-    expect(summaries).toHaveLength(8);
     for (const summary of summaries) {
-      expect(summary.tagline).toBeNull();
+      // Approval covered name, website, logo and the live caption. It did not
+      // cover taxonomy, status or founders — the live site states none of them,
+      // so none may appear.
       expect(summary.status).toBeNull();
       expect(summary.stages).toEqual([]);
       expect(summary.sectors).toEqual([]);
       expect(summary.focuses).toEqual([]);
       expect(summary.founders).toEqual([]);
 
-      // The logo is the one exception: the content owner supplied these files
-      // directly on 2026-08-11, which approves the artwork — and nothing else.
       expect(summary.logo).not.toBeNull();
       expect(summary.logo?.available).toBe(true);
       expect(summary.logo?.rightsStatus).toBe("approved");
@@ -94,7 +96,39 @@ describe("getCompanies (real seed)", () => {
       // Each mark declares the field it needs so a black wordmark is never
       // rendered onto a black card.
       expect(["dark", "light"]).toContain(summary.logoSurface);
+
+      // No company has body copy, so none may generate a thin detail route.
+      expect(summary.href).toBeNull();
     }
+  });
+
+  it("invents no caption for the companies that have none", async () => {
+    const companies = await rawContent.companies();
+    const bySlug = new Map(
+      companies.map((company) => [company.slug, toCompanySummary(company, PRODUCTION_POLICY)]),
+    );
+
+    // Live captions are Foundry's own published words and migrate with the rest.
+    expect(bySlug.get("empley")?.tagline).toContain("AI-powered simulation platform");
+    expect(bySlug.get("memmo")?.tagline).toBe("Study smarter, get better grades.");
+
+    // These three have no caption anywhere, so the card shows logo and name only.
+    for (const slug of ["newly", "skattio", "builderbase"]) {
+      expect(bySlug.get(slug)?.tagline).toBeNull();
+    }
+  });
+
+  it("links out only where a website was actually supplied", async () => {
+    const companies = await rawContent.companies();
+    const bySlug = new Map(
+      companies.map((company) => [company.slug, toCompanySummary(company, PRODUCTION_POLICY)]),
+    );
+
+    expect(bySlug.get("empley")?.externalHref).toBe("https://empley.com/");
+    // BuilderBase has no confirmed URL, so its card is deliberately not a link
+    // rather than pointing at a guessed domain.
+    expect(bySlug.get("builderbase")?.externalHref).toBeNull();
+    expect(bySlug.get("builderbase")?.href).toBeNull();
   });
 
   it("still carries the company name and a card sort order in production", async () => {

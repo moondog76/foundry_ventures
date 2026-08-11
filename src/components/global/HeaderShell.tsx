@@ -159,15 +159,19 @@ export function HeaderShell({
           </nav>
 
           <div className={styles.actions}>
-            <a
-              href={linkedinUrl}
-              className={styles.iconLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`${brandName} on LinkedIn (opens in a new tab)`}
-            >
-              <LinkedInIcon />
-            </a>
+            {/* Omitted entirely when no verified URL exists — an empty href
+                resolves to the current page and is worse than no link. */}
+            {linkedinUrl ? (
+              <a
+                href={linkedinUrl}
+                className={styles.iconLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${brandName} on LinkedIn (opens in a new tab)`}
+              >
+                <LinkedInIcon />
+              </a>
+            ) : null}
 
             {pitchItem ? (
               <Link

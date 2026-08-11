@@ -252,7 +252,17 @@ function buildFoundryBrand() {
   }
   const [sourceColour] = colours;
 
+  /*
+   * The PDF exports its blue as rgb(15.5%, 25.9%, 54.9%) — #28428C — which is a
+   * CMYK→sRGB conversion artefact rather than the brand blue. The content owner
+   * confirmed on 2026-08-11 that #00308F (the `--color-foundry-blue` token) is
+   * correct, so the blue variant is normalised to it. Geometry is untouched and
+   * the assertion below still proves that.
+   */
+  const BRAND_BLUE = "rgb(0%,18.823529%,56.078431%)";
+
   const variants = {
+    "foundry-logo-blue.svg": blue.split(sourceColour).join(BRAND_BLUE),
     // §5.1: the black variant deliberately uses #1f1f1f, not absolute black.
     "foundry-logo-black.svg": blue
       .split(sourceColour)
@@ -267,7 +277,7 @@ function buildFoundryBrand() {
       .replace(/viewBox="0 0 355\.677 134\.703"/, 'viewBox="0 0 77.01 134.703"')
       .replace(/width="355\.677"/, 'width="77.01"');
 
-  variants["foundry-icon-blue.svg"] = toIcon(blue);
+  variants["foundry-icon-blue.svg"] = toIcon(variants["foundry-logo-blue.svg"]);
   variants["foundry-icon-white.svg"] = toIcon(variants["foundry-logo-white.svg"]);
 
   for (const [name, content] of Object.entries(variants)) {
@@ -298,6 +308,7 @@ const PORTFOLIO_LOGOS = [
   { slug: "openroll", file: "Openroll_Logo_NoTagline_black (kopia).png" },
   { slug: "skattio", file: "skattio.png" },
   { slug: "memmo", file: "memmo.svg" },
+  { slug: "builderbase", file: "BuilderBase_Logotype-Primary-Black.png" },
 ];
 
 function buildPortfolioLogos() {

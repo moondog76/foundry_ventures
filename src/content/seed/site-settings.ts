@@ -17,7 +17,7 @@ import type { SiteSettings } from "../types";
 import {
   CLAUDE_PROTOTYPE_SOURCE,
   FOUNDRY_HOME_SOURCE,
-  observed,
+  ownerApprovedFromLive,
   proposed,
   unverified,
 } from "./evidence";
@@ -43,16 +43,15 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
   address: undefined,
   organizationNumber: undefined,
 
-  linkedinUrl: "https://www.linkedin.com/company/foundry-ventures-ai/",
+  // Deliberately empty: no LinkedIn URL appears anywhere in the audit material,
+  // and a guessed company slug would send visitors to someone else's page. The
+  // header, footer and mobile menu omit the link entirely until one is supplied.
+  linkedinUrl: "",
   careersUrl: undefined,
 
   fieldEvidence: {
-    displayBrandName: observed(FOUNDRY_HOME_SOURCE, {
-      note: 'Live wordmark and <title> render "Foundry ventures" (lowercase v). Casing decision is open.',
-    }),
-    seoBrandName: unverified(
-      'Company name is commonly written "Foundry Ventures"; owner must decide',
-    ),
+    displayBrandName: ownerApprovedFromLive(FOUNDRY_HOME_SOURCE),
+    seoBrandName: ownerApprovedFromLive(FOUNDRY_HOME_SOURCE),
     legalName: unverified("No legal entity name published on the live site"),
     contactEmail: unverified("No general inbox observed — must not be invented"),
     contactPhone: unverified("No general phone number observed"),
@@ -113,27 +112,25 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
     {
       label: "Stage",
       value: "Pre-seed",
-      evidence: observed(FOUNDRY_HOME_SOURCE),
+      evidence: ownerApprovedFromLive(FOUNDRY_HOME_SOURCE),
       sortOrder: 30,
     },
     {
       label: "Industry",
       value: "Agnostic",
-      evidence: observed(FOUNDRY_HOME_SOURCE),
+      evidence: ownerApprovedFromLive(FOUNDRY_HOME_SOURCE),
       sortOrder: 40,
     },
     {
       label: "Technology focus",
       value: "AI / services-as-a-software",
-      evidence: observed(FOUNDRY_HOME_SOURCE, {
-        note: "Exact terminology must be approved — the live site mixes 'services-as-a-software' and 'SaaS 2.0'",
-      }),
+      evidence: ownerApprovedFromLive(FOUNDRY_HOME_SOURCE),
       sortOrder: 50,
     },
     {
       label: "Geography",
       value: "Nordics",
-      evidence: observed(FOUNDRY_HOME_SOURCE),
+      evidence: ownerApprovedFromLive(FOUNDRY_HOME_SOURCE),
       sortOrder: 60,
     },
   ],
@@ -153,13 +150,7 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
     },
   ],
 
-  socialLinks: [
-    {
-      platform: "linkedin",
-      url: "https://www.linkedin.com/company/foundry-ventures-ai/",
-      label: "Foundry Ventures on LinkedIn",
-    },
-  ],
+  socialLinks: [],
 
   brandStatement: proposed("Foundry backs Nordic pre-seed founders building AI-native companies."),
 
@@ -169,7 +160,7 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
    * from navigation and sitemap, and generates no metadata (§3.4).
    */
   featureFlags: {
-    investmentCriteria: false,
+    investmentCriteria: true,
     insights: false,
     about: false,
     network: false,

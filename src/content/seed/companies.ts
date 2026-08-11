@@ -4,15 +4,16 @@
  * Source: Appendix C.4 — the frozen 2026-08-10 live snapshot. Hard rules from
  * §8.5 that this file obeys literally:
  *
- *  - Every *claim* is `observed`, never `owner-approved`. The one exception is
- *    `logo`: the owner supplied those files directly on 2026-08-11, which
- *    approves the artwork and nothing else.
- *  - Newly and Skattio have **no** caption on the live site. None is invented;
- *    the image `alt` filename fallback is explicitly not approved copy.
+ *  - The content owner approved publication on 2026-08-11. Approval covers only
+ *    what Foundry already publishes about each company: name, website, logo and
+ *    the live caption. Taxonomy, status, founders, investment year and deal lead
+ *    stay `unverified` — the live site states none of them, so neither do we.
+ *  - Newly, Skattio and BuilderBase have **no** caption. None is invented; those
+ *    cards render the logo and the name alone.
  *  - The prototype's note fields (Openroll = "AI-native hiring", Agaton =
  *    "Industrial software") are placeholders and are NOT seeded.
- *  - Natively and Bright are NOT added. Bright's logo stays in
- *    `content-quarantine/`.
+ *  - BuilderBase was confirmed as a portfolio company by the owner on
+ *    2026-08-11. Natively and Bright are still NOT added.
  *  - "Agaton Group" (prototype) is not merged with "Agaton" (live).
  *  - No stage/sector/focus/status is seeded: the live site publishes no
  *    taxonomy, so inventing one would be fabricating facts.
@@ -22,7 +23,12 @@
  */
 
 import type { Company } from "../types";
-import { FOUNDRY_PORTFOLIO_SOURCE, observed, ownerApproved, unverified } from "./evidence";
+import {
+  FOUNDRY_PORTFOLIO_SOURCE,
+  ownerApprovedFromLive,
+  ownerConfirmed,
+  unverified,
+} from "./evidence";
 import { SUPPLIED_PORTFOLIO_LOGOS } from "./images";
 
 /**
@@ -30,14 +36,13 @@ import { SUPPLIED_PORTFOLIO_LOGOS } from "./images";
  * which is an owner approval of the artwork itself — not of any other company
  * fact. Names, taglines, taxonomy and status all remain `observed`.
  */
-const LOGO_SUPPLIED = ownerApproved("anders.nygren@asortventures.com", "2026-08-11", [
-  { label: "Logo files supplied directly by the content owner", observedAt: "2026-08-11" },
-]);
+const LOGO_SUPPLIED = ownerConfirmed("Logo file supplied directly by the content owner");
 
 type SeedCompanyInput = {
   slug: string;
   name: string;
-  websiteUrl: string;
+  /** Omitted when the owner has not supplied one; never guessed. */
+  websiteUrl?: string;
   /** Verbatim live caption, or null when the live site has none. */
   caption: string | null;
   logo: Company["logo"];
@@ -50,31 +55,31 @@ type SeedCompanyInput = {
 };
 
 function seedCompany(input: SeedCompanyInput): Company {
+  // A live caption is Foundry's own published copy, approved with the rest of
+  // the migration. Where the live site has none, none is invented — the card
+  // simply shows the logo and the name (§C.6).
   const captionEvidence = input.caption
-    ? observed(
-        FOUNDRY_PORTFOLIO_SOURCE,
-        input.captionNote ? { note: input.captionNote } : undefined,
-      )
-    : unverified(`No <figcaption> on the live portfolio for ${input.name}`);
+    ? ownerApprovedFromLive(FOUNDRY_PORTFOLIO_SOURCE)
+    : unverified(`No caption exists for ${input.name}; nothing may be invented`);
 
   return {
     id: `company-${input.slug}`,
     name: input.name,
     slug: input.slug,
-    publicationStatus: "review",
+    publicationStatus: "published",
     verificationStatus: "partially-verified",
     dataCompleteness: {
-      // Name + website + logo were all observed, but observation is not approval.
-      coreIdentity: false,
+      // Name, website and logo are owner-approved; editorial copy is not.
+      coreIdentity: true,
       editorial: false,
       relations: false,
       seo: false,
     },
     fieldEvidence: {
-      name: observed(FOUNDRY_PORTFOLIO_SOURCE, {
-        note: "Identified from logo, link domain and filename; the live gallery markup has no company-name field",
-      }),
-      websiteUrl: observed(FOUNDRY_PORTFOLIO_SOURCE),
+      name: ownerApprovedFromLive(FOUNDRY_PORTFOLIO_SOURCE),
+      websiteUrl: input.websiteUrl
+        ? ownerApprovedFromLive(FOUNDRY_PORTFOLIO_SOURCE)
+        : unverified("No website URL supplied yet"),
       logo: LOGO_SUPPLIED,
       tagline: captionEvidence,
       shortDescription: captionEvidence,
@@ -105,7 +110,7 @@ function seedCompany(input: SeedCompanyInput): Company {
 
 /**
  * Observed live order (§8.5): Empley, Agaton, Grand, Wilgot, Openroll, Newly,
- * Skattio, Memmo.
+ * Skattio, Memmo — then BuilderBase, which the owner added on 2026-08-11.
  */
 export const SEED_COMPANIES: Company[] = [
   seedCompany({
@@ -198,6 +203,20 @@ export const SEED_COMPANIES: Company[] = [
     logoFit: "wide",
     opticalScale: 1,
     sortOrder: 70,
+  }),
+  seedCompany({
+    slug: "builderbase",
+    name: "BuilderBase",
+    // No website supplied and none on the live portfolio, so none is invented.
+    // The card renders logo + name until a URL is confirmed.
+    websiteUrl: undefined,
+    caption: null,
+    logo: SUPPLIED_PORTFOLIO_LOGOS.builderbase,
+    // Measured luminance 61 — a dark mark that needs a light field.
+    logoSurface: "light",
+    logoFit: "wide",
+    opticalScale: 0.92,
+    sortOrder: 90,
   }),
   seedCompany({
     slug: "memmo",

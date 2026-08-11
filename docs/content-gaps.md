@@ -4,11 +4,40 @@ Everything below is derived from the actual seed dataset in
 `src/content/seed/**`, not from a wishlist. Each row names the field, what is
 missing, why the publishing policy refuses it, and who can resolve it.
 
-**The short version.** A production build of the current dataset publishes
-**zero companies, zero team members, zero posts and no home-page copy**. That is
-the evidence gate doing its job ([decision D-004](./decisions.md#d-004)), not a
-bug. Nothing here is an engineering task unless the Owner column says
-_Engineering_.
+## Status — updated 2026-08-11
+
+The content owner approved publication on 2026-08-11. Production now renders the
+home page, the team and **nine portfolio companies**. The approval deliberately
+covers only what Foundry already states publicly, so the gate still refuses
+everything below.
+
+**Published.** Company names, websites, logos and the live captions; the migrated
+home copy (hero, vision, offering, contact); Anders' and Julia's names, roles and
+email addresses; Anders' phone number; four investment criteria (Stage, Industry,
+Technology focus, Geography).
+
+**Still refused, by design.**
+
+| Blocked                                      | Why                                                                                                                                                                                 |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Every company detail route                   | No company has body copy, so `canPublishDetail` is false. Cards link straight to the company website instead of generating a thin page.                                             |
+| Stage / sector / focus / status filters      | No approved taxonomy exists, so `getCompanyFacets()` returns nothing and the filter UI hides itself.                                                                                |
+| Founders, investment year, deal lead, HQ     | The live site states none of them.                                                                                                                                                  |
+| Ticket range €50k–€300k and sweet spot €200k | Claude-prototype values, never live-verified. The other four criteria publish; these two stay hidden.                                                                               |
+| Captions for Newly, Skattio and BuilderBase  | None exists anywhere. Those three cards show logo and name only.                                                                                                                    |
+| BuilderBase's website                        | Not supplied. Its card is deliberately not a link rather than pointing at a guessed domain.                                                                                         |
+| Insights, About, Network                     | Feature flags off; no real content.                                                                                                                                                 |
+| Team profile pages                           | Neither person has a long bio, so `/team/[slug]` is not generated.                                                                                                                  |
+| Legal entity name, address, org. number      | Unknown.                                                                                                                                                                            |
+| Foundry's LinkedIn URL                       | Never confirmed. The guessed URL was **removed** on 2026-08-11 — the header, footer and mobile menu now omit the link entirely rather than sending visitors to someone else's page. |
+
+**Placeholders knowingly in production** (owner instruction, 2026-08-11): the
+ocean hero, the brutalist architecture image and the dark silhouette are all
+Foundry-authored stand-ins, and team portraits fall back to the typographic
+treatment. `pnpm content:gate` lists them on every run so they cannot ship
+unnoticed once the licensed originals exist.
+
+Nothing here is an engineering task unless the Owner column says _Engineering_.
 
 Two commands report the live state of these gaps:
 

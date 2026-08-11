@@ -480,7 +480,7 @@ transparent header marks itself `data-hero="full-bleed"`, and
 it is out of flow. Visual QA at 1280×720 showed the `Team` H1 clipped behind it
 and the `Portfolio` H1 colliding with the logo — every inner page was affected,
 because only the home hero was built to sit underneath. Putting the offset on
-`main` and opting *out* is the safe direction: a browser without `:has()` support
+`main` and opting _out_ is the safe direction: a browser without `:has()` support
 gets extra whitespace on the home page rather than occluded content everywhere.
 
 **Spec.** §6.1, §6.2, §7.1, §19.1.
@@ -596,3 +596,58 @@ case but should still be checked against the artwork.
 
 **Reversal.** Remove the field and the `[data-surface="light"]` rule; the dark
 frame returns, and three logos disappear.
+
+## D-018 — The content owner approved publication on 2026-08-11
+
+**Date.** 2026-08-11
+
+**Decision.** The dataset is published. `publicationStatus` is `published` for
+all nine companies, both team members and the home page, and
+`ownerApprovedFromLive` / `ownerConfirmed` in `src/content/seed/evidence.ts`
+record the approval against a named approver and date. Approval covers exactly
+what Foundry already publishes: company names, websites, logos, the live
+captions, the migrated home copy, the team's names/roles/contact details, and the
+four investment criteria the live site states.
+
+**Rationale.** The owner asked for the site to go live and supplied the artwork.
+The evidence model exists to stop _this project_ inventing facts, not to stop the
+firm publishing its own words — so the approval is recorded through the same
+audited helper any other approval would use, and it is reversible by editing one
+constant.
+
+What the approval deliberately does not cover: taxonomy, company status,
+founders, investment year, deal lead, body copy, the prototype's €50k–€300k
+ticket range, and captions for the three companies that have none. Those are
+still `unverified`, so no company gets a detail route, the portfolio filters stay
+hidden, and three cards render logo-and-name only.
+
+**Spec.** §16.8, §25.1, §30.
+
+**Consequence.** The production gate no longer blocks on content, only on
+environment configuration and the placeholder artwork. `docs/content-gaps.md`
+records exactly what is still refused.
+
+**Reversal.** Change `migratedVerbatim` back to `approvalStatus: "unapproved"`
+and swap `ownerApprovedFromLive` for `observed` in the seed files.
+
+## D-019 — The unverified LinkedIn URL was removed, not published
+
+**Date.** 2026-08-11
+
+**Decision.** `SiteSettings.linkedinUrl` is an empty string and `socialLinks` is
+empty. The header, mobile menu and footer omit the link entirely when no URL is
+configured.
+
+**Rationale.** The URL previously in the seed was a plausible-looking guess at a
+company slug, marked `unverified` — but it was rendered unconditionally, so an
+unverified value was reaching real visitors. A wrong LinkedIn slug does not
+degrade gracefully; it sends people to somebody else's page. An empty `href` is
+worse still, because it silently resolves to the current page.
+
+**Spec.** §16.1, §31.13, §31.15.
+
+**Consequence.** There is no LinkedIn link anywhere on the site until a real URL
+is supplied. That is the honest state.
+
+**Reversal.** Set `linkedinUrl` and add the matching `socialLinks` entry with
+`ownerConfirmed` evidence; every surface picks it up automatically.

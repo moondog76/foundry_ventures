@@ -165,6 +165,7 @@ export const SUPPLIED_PORTFOLIO_LOGOS = {
   // The viewBox is tightened to the artwork by the prep script, so these are
   // the wordmark's own proportions rather than the 810×810 artboard.
   memmo: suppliedLogo("memmo", "memmo.svg", 639, 98, "Memmo"),
+  builderbase: suppliedLogo("builderbase", "builderbase.png", 1258, 196, "BuilderBase"),
 } as const;
 
 /** Superseded live-CDN references, retained for the migration record. */

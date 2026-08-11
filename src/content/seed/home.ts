@@ -21,7 +21,7 @@ import { SEED_COMPANIES } from "./companies";
 const HOME_URL = "https://www.foundryventures.ai/";
 
 export const SEED_HOME_PAGE: HomePage = {
-  publicationStatus: "review",
+  publicationStatus: "published",
 
   hero: {
     // Not live copy — proposed in the buildspec (§7.1) and explicitly unapproved.
@@ -143,7 +143,7 @@ export const SEED_HOME_PAGE: HomePage = {
     description:
       "Early-Stage Investor | Focused on AI-Driven SaaS 2.0 | Partnering with Visionary Founders to Build Tomorrow's Critical Tech",
     ogImage: DEFAULT_OG_IMAGE,
-    approvalStatus: "unapproved",
+    approvalStatus: "approved",
     sources: [
       {
         label: "Foundry Ventures home <title> and meta description",

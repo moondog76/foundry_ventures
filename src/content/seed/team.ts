@@ -11,7 +11,7 @@
  */
 
 import type { TeamMember } from "../types";
-import { FOUNDRY_HOME_SOURCE, observed, unverified } from "./evidence";
+import { FOUNDRY_HOME_SOURCE, ownerApprovedFromLive, unverified } from "./evidence";
 
 export const SEED_TEAM_MEMBERS: TeamMember[] = [
   {
@@ -19,17 +19,13 @@ export const SEED_TEAM_MEMBERS: TeamMember[] = [
     name: "Anders Nygren",
     slug: "anders-nygren",
     role: "Partner",
-    publicationStatus: "review",
+    publicationStatus: "published",
     verificationStatus: "partially-verified",
     fieldEvidence: {
-      name: observed(FOUNDRY_HOME_SOURCE),
-      role: observed(FOUNDRY_HOME_SOURCE),
-      email: observed(FOUNDRY_HOME_SOURCE, {
-        note: "Rendered as plain text on the live site, not a mailto: link",
-      }),
-      phone: observed(FOUNDRY_HOME_SOURCE, {
-        note: "Rendered as plain text on the live site, not a tel: link",
-      }),
+      name: ownerApprovedFromLive(FOUNDRY_HOME_SOURCE),
+      role: ownerApprovedFromLive(FOUNDRY_HOME_SOURCE),
+      email: ownerApprovedFromLive(FOUNDRY_HOME_SOURCE),
+      phone: ownerApprovedFromLive(FOUNDRY_HOME_SOURCE),
       portrait: unverified("No portrait published on the live site"),
       shortBio: unverified("No bio published on the live site"),
       longBio: unverified("No bio published on the live site"),
@@ -46,14 +42,12 @@ export const SEED_TEAM_MEMBERS: TeamMember[] = [
     name: "Julia Siljehag",
     slug: "julia-siljehag",
     role: "Community Manager",
-    publicationStatus: "review",
+    publicationStatus: "published",
     verificationStatus: "partially-verified",
     fieldEvidence: {
-      name: observed(FOUNDRY_HOME_SOURCE),
-      role: observed(FOUNDRY_HOME_SOURCE),
-      email: observed(FOUNDRY_HOME_SOURCE, {
-        note: "Rendered as plain text on the live site, not a mailto: link",
-      }),
+      name: ownerApprovedFromLive(FOUNDRY_HOME_SOURCE),
+      role: ownerApprovedFromLive(FOUNDRY_HOME_SOURCE),
+      email: ownerApprovedFromLive(FOUNDRY_HOME_SOURCE),
       phone: unverified("No phone number published on the live site — must not be invented"),
       portrait: unverified("No portrait published on the live site"),
       shortBio: unverified("No bio published on the live site"),

@@ -246,7 +246,17 @@ describe("organizationJsonLd", () => {
   it("omits empty arrays rather than emitting them", () => {
     const withoutSocial: SiteSettings = { ...settings, socialLinks: [] };
     expect(organizationJsonLd(withoutSocial)).not.toHaveProperty("sameAs");
-    expect(organizationJsonLd(settings).sameAs).toEqual(settings.socialLinks.map((l) => l.url));
+
+    // The positive case uses its own fixture: the shipping dataset has no
+    // confirmed social profile, and this assertion is about the builder, not
+    // about what Foundry happens to have published today.
+    const withSocial: SiteSettings = {
+      ...settings,
+      socialLinks: [
+        { platform: "linkedin", url: "https://example.org/company", label: "Example on LinkedIn" },
+      ],
+    };
+    expect(organizationJsonLd(withSocial).sameAs).toEqual(["https://example.org/company"]);
   });
 
   it("omits the logo when none is passed", () => {

@@ -203,16 +203,18 @@ export function MobileNavigationDialog({
       </nav>
 
       <div className={styles.footer}>
-        <a
-          href={linkedinUrl}
-          className={styles.socialLink}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <LinkedInIcon />
-          <span>{brandName} on LinkedIn</span>
-          <span className="visually-hidden"> (opens in a new tab)</span>
-        </a>
+        {linkedinUrl ? (
+          <a
+            href={linkedinUrl}
+            className={styles.socialLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <LinkedInIcon />
+            <span>{brandName} on LinkedIn</span>
+            <span className="visually-hidden"> (opens in a new tab)</span>
+          </a>
+        ) : null}
         <button type="button" className={styles.closeButton} onClick={onClose}>
           Close menu
         </button>

@@ -19,8 +19,8 @@ const MANIFEST = [
     file: "foundry-logo-blue.svg",
     bytes: 5546,
     sha256: "1db42b83c1cfc1d4b58f98e77f38901ce7a0e4fc9bfacaf9cdc9c9d1d491a475",
-    derivedBytes: 15410,
-    derivedSha256: "deb2b7d73b77c3f09458aa88b08aae0d9871f406d3efd800675c3a71e41b66da",
+    derivedBytes: 15230,
+    derivedSha256: "308555b04045f82535d6229ecdb63a899a7018a01130cbfa6b8049272e82b165",
   },
   {
     file: "foundry-logo-white.svg",
@@ -40,8 +40,8 @@ const MANIFEST = [
     file: "foundry-icon-blue.svg",
     bytes: 417,
     sha256: "de5f865ad31075d16f671d1fd05c93737db997d974e6e16e99bacf822bc85dd0",
-    derivedBytes: 15406,
-    derivedSha256: "ed9a51e630740d0e886d687e412bb9ea367015251b36db0c0e488ba543624983",
+    derivedBytes: 15226,
+    derivedSha256: "09d2674d9500a88a86899bea5d9f21a7db7dbbc90fb7fba997f205dfca68f0aa",
   },
   {
     file: "foundry-icon-white.svg",

@@ -95,18 +95,20 @@ export async function SiteFooter() {
                 );
               })}
 
-              <li>
-                <a
-                  href={settings.linkedinUrl}
-                  className={styles.contactLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <LinkedInIcon size={16} />
-                  <span>LinkedIn</span>
-                  <span className="visually-hidden"> (opens in a new tab)</span>
-                </a>
-              </li>
+              {settings.linkedinUrl ? (
+                <li>
+                  <a
+                    href={settings.linkedinUrl}
+                    className={styles.contactLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <LinkedInIcon size={16} />
+                    <span>LinkedIn</span>
+                    <span className="visually-hidden"> (opens in a new tab)</span>
+                  </a>
+                </li>
+              ) : null}
             </ul>
 
             {settings.address ? (

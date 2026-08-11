@@ -31,11 +31,15 @@ Technology focus, Geography).
 | Legal entity name, address, org. number      | Unknown.                                                                                                                                                                            |
 | Foundry's LinkedIn URL                       | Never confirmed. The guessed URL was **removed** on 2026-08-11 — the header, footer and mobile menu now omit the link entirely rather than sending visitors to someone else's page. |
 
-**Placeholders knowingly in production** (owner instruction, 2026-08-11): the
-ocean hero, the brutalist architecture image and the dark silhouette are all
-Foundry-authored stand-ins, and team portraits fall back to the typographic
-treatment. `pnpm content:gate` lists them on every run so they cannot ship
-unnoticed once the licensed originals exist.
+**Photography** is now the owner's own, supplied 2026-08-11: the ocean hero, the
+brutalist architecture image and the dark silhouette. No placeholder artwork
+remains, and `pnpm content:gate` confirms it.
+
+One caveat: the hero arrived as a **screen capture** (1664×1108) rather than the
+original export (2500×1667). Same 3:2 framing, but it is upscaled on a wide
+display. The original would be better.
+
+Team portraits are still absent, so both people render the typographic fallback.
 
 Nothing here is an engineering task unless the Owner column says _Engineering_.
 
@@ -185,14 +189,14 @@ are the specific wording questions visible in the seed:
 
 ## G. Image rights
 
-| #   | Item                                     | What is missing                                                                                                                                                                                                                                                                                                                                                                     | Owner                      |
-| --- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
-| G1  | **Ocean / motion-blur hero photograph**  | Live source is a Squarespace-hosted `pexels-matthardy-1533720_motion_blur.jpg` (2500×1667, focal 50%/50%). Rights `unverified`, `available: false` — never hotlinked. Confirm the Pexels licence terms and export a rights-cleared original, or replace the image.                                                                                                                  | Design owner               |
-| G2  | **Architecture image** (offering)        | Squarespace-hosted `visualelectric-…png`, 1024×1024, focal 0.8%/16.8%. AI-generated via Visual Electric; confirm the generation terms and commercial usage rights.                                                                                                                                                                                                                  | Design owner               |
-| G3  | **Silhouette image** (offering)          | Squarespace-hosted `visualelectric-…png`, 896×1280, centred. Same question as G2.                                                                                                                                                                                                                                                                                                   | Design owner               |
-| G4  | **Placeholder artwork currently in use** | Three Foundry-authored SVGs (`public/images/placeholder/ocean.svg`, `architecture.svg`, `silhouette.svg`) render in place of G1–G3. Their rights are clear — Foundry authored them — so nothing at runtime stops them shipping, which is exactly why `pnpm content:gate` fails while any of them is still referenced. They exist so the layout can be reviewed, not to be launched. | Design owner + Engineering |
-| G5  | The eight portfolio logos                | See B4. Export references only; each needs a rights-cleared file from the company.                                                                                                                                                                                                                                                                                                  | Content owner              |
-| G6  | Duplicate ocean asset                    | The live site serves the same ocean bytes under two asset IDs. The rebuild deduplicates to one. Confirm no second, genuinely different image was intended.                                                                                                                                                                                                                          | Design owner               |
+| #   | Item                                    | What is missing                                                                                                                                                                                                                                                    | Owner         |
+| --- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------- |
+| G1  | **Ocean / motion-blur hero photograph** | Live source is a Squarespace-hosted `pexels-matthardy-1533720_motion_blur.jpg` (2500×1667, focal 50%/50%). Rights `unverified`, `available: false` — never hotlinked. Confirm the Pexels licence terms and export a rights-cleared original, or replace the image. | Design owner  |
+| G2  | **Architecture image** (offering)       | Squarespace-hosted `visualelectric-…png`, 1024×1024, focal 0.8%/16.8%. AI-generated via Visual Electric; confirm the generation terms and commercial usage rights.                                                                                                 | Design owner  |
+| G3  | **Silhouette image** (offering)         | Squarespace-hosted `visualelectric-…png`, 896×1280, centred. Same question as G2.                                                                                                                                                                                  | Design owner  |
+| G4  | ~~Placeholder artwork in use~~          | **Resolved 2026-08-11.** The owner supplied the real photography and the three Foundry-authored stand-ins were deleted. `pnpm content:gate` now passes this check.                                                                                                 | —             |
+| G5  | The eight portfolio logos               | See B4. Export references only; each needs a rights-cleared file from the company.                                                                                                                                                                                 | Content owner |
+| G6  | Duplicate ocean asset                   | The live site serves the same ocean bytes under two asset IDs. The rebuild deduplicates to one. Confirm no second, genuinely different image was intended.                                                                                                         | Design owner  |
 
 ---
 

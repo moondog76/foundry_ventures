@@ -207,9 +207,8 @@ export const SEED_COMPANIES: Company[] = [
   seedCompany({
     slug: "builderbase",
     name: "BuilderBase",
-    // No website supplied and none on the live portfolio, so none is invented.
-    // The card renders logo + name until a URL is confirmed.
-    websiteUrl: undefined,
+    // Supplied by the content owner 2026-08-11.
+    websiteUrl: "https://builderbase.com/",
     caption: null,
     logo: SUPPLIED_PORTFOLIO_LOGOS.builderbase,
     // Measured luminance 61 — a dark mark that needs a light field.

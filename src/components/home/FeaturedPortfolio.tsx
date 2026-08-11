@@ -40,6 +40,10 @@ function CardBody({ summary, policy }: { summary: CompanySummary; policy: Policy
       <div
         className={styles.surface}
         data-fit={summary.logoFit}
+        // The artwork dictates the field behind it: Agaton, Openroll, Memmo and
+        // BuilderBase supplied black marks that vanish on the black tile. The
+        // typographic fallback is set in white, so it always keeps the dark one.
+        data-surface={hasLogo ? summary.logoSurface : "dark"}
         // Optical calibration from the CMS: mismatched logo aspect ratios are
         // scaled so they read as equal weight across the grid (§5.5).
         style={{ "--logo-scale": summary.opticalScale } as CSSProperties}

@@ -342,7 +342,9 @@ together — they are two copies of one fact and must move as a pair.
 silhouette pair) are recorded as **export references** — `sourceUrl` pointing at
 the Squarespace CDN, `rightsStatus: "unverified"`, `available: false` — so
 `canRenderImage()` refuses them everywhere. Three Foundry-authored SVGs in
-`public/images/placeholder/` render in their place, flagged `isPlaceholder: true`.
+`public/images/placeholder/` rendered in their place, flagged `isPlaceholder: true`
+(superseded by [D-020](#d-020) — the owner supplied the real photography on
+2026-08-11 and the stand-ins were deleted).
 Portfolio logos are export references with no stand-in at all: they degrade to
 the typographic company-name treatment. `next.config.ts` sets
 `images.remotePatterns: []`, so hotlinking is not merely discouraged but
@@ -651,3 +653,50 @@ is supplied. That is the honest state.
 
 **Reversal.** Set `linkedinUrl` and add the matching `socialLinks` entry with
 `ownerConfirmed` evidence; every surface picks it up automatically.
+
+## D-020 — Supplied photography replaces the placeholder artwork
+
+**Date.** 2026-08-11
+
+**Decision.** The three Foundry-authored placeholder SVGs are gone. The ocean
+hero, brutalist architecture and dark silhouette are now the owner's own files,
+copied byte-for-byte into `public/images/editorial/` by the prep script. The
+Appendix A.2 focal points are carried into `ImageAsset.hotspot` so the crops
+behave as they do on the live site.
+
+**Rationale.** Two of the three arrived with filenames matching Appendix A.2
+exactly (`visualelectric-1736931308116`, `visualelectric-1737705941785`) and the
+right dimensions. The third was a screen capture, so it was identified by its
+colour composition — a light sky band, a sharp horizon transition, dark sea
+below, and zero near-white pixels, which rules out a screenshot of the website
+itself — before being used as the hero.
+
+**Spec.** §5.5, Appendix A.2.
+
+**Consequence.** The hero is 1664×1108 against the live site's 2500×1667: same
+3:2 framing, lower resolution, so it upscales on a wide display. Recorded in
+`docs/content-gaps.md`.
+
+**Reversal.** The placeholder generator was removed with the artwork; restoring
+it means reinstating `placeholder()` in `src/content/seed/images.ts`.
+
+## D-021 — The logo tile's polarity follows the artwork everywhere
+
+**Date.** 2026-08-11
+
+**Decision.** `Company.logoSurface` now drives the home page's featured grid as
+well as the portfolio cards, and the external-link arrow follows the same value.
+
+**Rationale.** D-017 added the field but only wired it into `CompanyLogoFrame`.
+The home grid kept its own always-black tile, so with the real artwork in place
+Agaton, Openroll and BuilderBase rendered black-on-black and were effectively
+invisible — visible only in a screenshot, not in any automated check. The arrow
+had the same bug in reverse: white on an off-white tile.
+
+**Spec.** §5.5, §7.5, §20.3.
+
+**Consequence.** Two components read the same field, so a new company sets it
+once. The hover crossfade layer inherits the tile colour rather than hard-coding
+black.
+
+**Reversal.** Remove the `[data-surface="light"]` rules; three logos disappear.

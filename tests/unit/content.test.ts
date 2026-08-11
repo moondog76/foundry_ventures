@@ -118,17 +118,21 @@ describe("getCompanies (real seed)", () => {
     }
   });
 
-  it("links out only where a website was actually supplied", async () => {
+  it("links every card out to its own confirmed website", async () => {
     const companies = await rawContent.companies();
-    const bySlug = new Map(
-      companies.map((company) => [company.slug, toCompanySummary(company, PRODUCTION_POLICY)]),
+    const summaries = companies.map((company) => toCompanySummary(company, PRODUCTION_POLICY));
+
+    expect(summaries.find((s) => s.slug === "empley")?.externalHref).toBe("https://empley.com/");
+    expect(summaries.find((s) => s.slug === "builderbase")?.externalHref).toBe(
+      "https://builderbase.com/",
     );
 
-    expect(bySlug.get("empley")?.externalHref).toBe("https://empley.com/");
-    // BuilderBase has no confirmed URL, so its card is deliberately not a link
-    // rather than pointing at a guessed domain.
-    expect(bySlug.get("builderbase")?.externalHref).toBeNull();
-    expect(bySlug.get("builderbase")?.href).toBeNull();
+    // No company has body copy, so every destination is the external site and
+    // none of them is a thin internal page.
+    for (const summary of summaries) {
+      expect(summary.href).toBeNull();
+      expect(summary.externalHref).toMatch(/^https:\/\//);
+    }
   });
 
   it("still carries the company name and a card sort order in production", async () => {

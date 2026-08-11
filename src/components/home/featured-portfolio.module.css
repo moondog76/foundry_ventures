@@ -77,6 +77,12 @@
   color: var(--text-inverse);
 }
 
+/* A dark mark needs a light field, or it disappears into the tile. */
+.surface[data-surface="light"] {
+  background-color: var(--color-off-white);
+  color: var(--text-default);
+}
+
 /*
  * The only element on the page that starts transparent, and deliberately so: it
  * is a decorative `alt=""` layer behind the logo, it holds no text, and its
@@ -86,7 +92,7 @@
 .card .cardImageFrame {
   position: absolute;
   inset: 0;
-  background-color: var(--color-black);
+  background-color: inherit;
   opacity: 0;
   transition: opacity var(--duration-crossfade) var(--ease-standard);
 }
@@ -163,12 +169,22 @@
   color: var(--text-muted);
 }
 
+/*
+ * Sits over the logo tile, so it has to follow that tile's polarity rather than
+ * assuming a dark one — on a light field a white arrow is invisible. The colour
+ * is driven by the sibling surface's `data-surface`, which is the same value the
+ * artwork itself declares.
+ */
 .externalMark {
   position: absolute;
   top: var(--space-2xs);
   right: var(--space-2xs);
   display: inline-flex;
   color: var(--text-inverse);
+}
+
+.card:has(.surface[data-surface="light"]) .externalMark {
+  color: var(--text-default);
 }
 
 /* -------------------------------------------------------------------- CTA */

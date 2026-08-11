@@ -8,37 +8,12 @@
  *   - `available`  : whether the binary exists in this workspace
  *   - `hotspot`    : the observed focal point, to be carried into the CMS crop
  *
- * Until originals land, Foundry-owned placeholder artwork renders in its place.
- * The content-integrity report lists every placeholder still in use.
+ * The editorial photography and every logo are now the owner's own originals,
+ * supplied 2026-08-11. `isPlaceholder` remains part of the model so any future
+ * stand-in is still listed by the content-integrity report.
  */
 
 import type { ImageAsset } from "../types";
-import { OBSERVED_AT } from "./evidence";
-
-/**
- * Foundry-owned stand-in artwork. Rights are clear (we authored it), so it may
- * render, but it is flagged as a placeholder so it can never ship unnoticed.
- */
-function placeholder(
-  id: string,
-  src: string,
-  width: number,
-  height: number,
-  options: Partial<ImageAsset> = {},
-): ImageAsset {
-  return {
-    id,
-    src,
-    width,
-    height,
-    rightsStatus: "approved",
-    rightsOwner: "Foundry Ventures (placeholder artwork authored for this rebuild)",
-    available: true,
-    isPlaceholder: true,
-    alt: "",
-    ...options,
-  };
-}
 
 /**
  * A live asset recorded for migration. Never rendered — `available: false`
@@ -65,45 +40,77 @@ export function exportReference(
 }
 
 /**
+ * Editorial photography supplied by the content owner on 2026-08-11 and copied
+ * byte-for-byte by `scripts/prepare-supplied-assets.mjs`. These replace the
+ * Foundry-authored placeholder artwork the rebuild shipped with.
+ *
+ * The `hotspot` values are the focal points observed on the live site
+ * (Appendix A.2), carried through so the crop behaves the same at every
+ * breakpoint. `sourceUrl` keeps the provenance chain intact, but the bytes are
+ * the owner's own originals rather than the Squarespace CDN.
+ */
+function suppliedEditorialImage(
+  id: string,
+  file: string,
+  width: number,
+  height: number,
+  options: Partial<ImageAsset> = {},
+): ImageAsset {
+  return {
+    id,
+    src: `/images/editorial/${file}`,
+    width,
+    height,
+    rightsStatus: "approved",
+    rightsOwner: "Foundry Ventures",
+    available: true,
+    alt: "",
+    ...options,
+  };
+}
+
+/**
  * The live site serves the same ocean bytes under two asset IDs; the rebuild
  * deduplicates to a single asset (§5.5, §28.2).
+ *
+ * Supplied as a screen capture rather than the original export, so it is
+ * 1664×1108 against the live site's 2500×1667 — same 3:2 framing, lower
+ * resolution. Tracked in docs/content-gaps.md.
  */
-export const OCEAN_IMAGE: ImageAsset = placeholder(
+export const OCEAN_IMAGE: ImageAsset = suppliedEditorialImage(
   "hero-ocean",
-  "/images/placeholder/ocean.svg",
-  2500,
-  1667,
+  "hero-ocean.png",
+  1664,
+  1108,
   {
     hotspot: { x: 0.5, y: 0.5 },
     sourceUrl:
       "https://images.squarespace-cdn.com/content/v1/67ab5780efadac2ccbdd70ea/15102936-1965-4aea-a4ca-f0b698b89536/pexels-matthardy-1533720_motion_blur.jpg?format=original",
-    caption: `Placeholder pending licensed original (observed ${OBSERVED_AT}: 2500×1667, cover, focal 50%/50%).`,
   },
 );
 
-export const ARCHITECTURE_IMAGE: ImageAsset = placeholder(
+export const ARCHITECTURE_IMAGE: ImageAsset = suppliedEditorialImage(
   "offering-architecture",
-  "/images/placeholder/architecture.svg",
+  "offering-architecture.png",
   1024,
   1024,
   {
+    // Observed live focal point — an asymmetric crop that must be preserved.
     hotspot: { x: 0.008, y: 0.168 },
     sourceUrl:
       "https://images.squarespace-cdn.com/content/v1/67ab5780efadac2ccbdd70ea/35139d14-b3a4-415c-a79d-3d022a82a236/visualelectric-1736931308116.png?format=original",
-    caption: `Placeholder pending licensed original (observed ${OBSERVED_AT}: 1024×1024, cover, focal 0.8%/16.8%).`,
   },
 );
 
-export const SILHOUETTE_IMAGE: ImageAsset = placeholder(
+export const SILHOUETTE_IMAGE: ImageAsset = suppliedEditorialImage(
   "offering-silhouette",
-  "/images/placeholder/silhouette.svg",
+  "offering-silhouette.png",
   896,
   1280,
   {
     hotspot: { x: 0.5, y: 0.5 },
     sourceUrl:
       "https://images.squarespace-cdn.com/content/v1/67ab5780efadac2ccbdd70ea/e624d0a7-e9d5-495e-94c1-93a4ca778230/visualelectric-1737705941785.png?format=original",
-    caption: `Placeholder pending licensed original (observed ${OBSERVED_AT}: 896×1280, contain, centred).`,
   },
 );
 

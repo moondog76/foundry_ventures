@@ -18,6 +18,7 @@ import {
   CLAUDE_PROTOTYPE_SOURCE,
   FOUNDRY_HOME_SOURCE,
   ownerApprovedFromLive,
+  ownerConfirmed,
   proposed,
   unverified,
 } from "./evidence";
@@ -43,10 +44,11 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
   address: undefined,
   organizationNumber: undefined,
 
-  // Deliberately empty: no LinkedIn URL appears anywhere in the audit material,
-  // and a guessed company slug would send visitors to someone else's page. The
-  // header, footer and mobile menu omit the link entirely until one is supplied.
-  linkedinUrl: "",
+  // Supplied by the content owner 2026-08-11. The URL they sent carried a
+  // `lipi` session-tracking parameter from their own LinkedIn view; that is
+  // personal telemetry, not part of the address, so only the canonical company
+  // path is stored (§16.1 requires a canonical HTTPS URL).
+  linkedinUrl: "https://www.linkedin.com/company/105719187/",
   careersUrl: undefined,
 
   fieldEvidence: {
@@ -57,9 +59,7 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
     contactPhone: unverified("No general phone number observed"),
     address: unverified("No physical address published on the live site"),
     organizationNumber: unverified("No organisation number published on the live site"),
-    linkedinUrl: unverified(
-      "LinkedIn company URL not confirmed in the audit material — verify the canonical HTTPS URL before publishing",
-    ),
+    linkedinUrl: ownerConfirmed("LinkedIn company URL supplied by the content owner"),
     careersUrl: unverified("No careers destination configured"),
   },
 
@@ -89,8 +89,9 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
 
   /**
    * §7.2. Ticket range and sweet spot come only from the Claude prototype and
-   * are NOT live-verified — they stay `unverified` and cannot render. The four
-   * live-observed rows are `observed`, which is still not enough to publish.
+   * are NOT live-verified, so they stay `unverified` and never render — the grid
+   * redistributes around them rather than leaving empty cells. The four rows the
+   * live site does state were owner-approved on 2026-08-11 and publish.
    * `Industry: Agnostic` and `Technology focus` stay separate rows; they are
    * deliberately not collapsed into an ambiguous "Sector: Generalist".
    */
@@ -150,7 +151,13 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
     },
   ],
 
-  socialLinks: [],
+  socialLinks: [
+    {
+      platform: "linkedin",
+      url: "https://www.linkedin.com/company/105719187/",
+      label: "Foundry Ventures on LinkedIn",
+    },
+  ],
 
   brandStatement: proposed("Foundry backs Nordic pre-seed founders building AI-native companies."),
 

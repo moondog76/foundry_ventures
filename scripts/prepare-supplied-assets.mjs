@@ -300,6 +300,21 @@ function buildFoundryBrand() {
 
 /* ------------------------------------------------------- Portfolio logos */
 
+/**
+ * Editorial photography supplied by the content owner on 2026-08-11, replacing
+ * the Foundry-authored placeholder artwork. Copied byte-for-byte; the crop and
+ * focal point live in the content layer, not in the file.
+ *
+ * `hero-ocean.png` arrived as a screen capture rather than the original export,
+ * so it is 1664×1108 where the live site serves 2500×1667. Same 3:2 framing,
+ * lower resolution — noted in docs/content-gaps.md.
+ */
+const EDITORIAL_IMAGES = [
+  { slug: "hero-ocean", file: "hero-ocean.png" },
+  { slug: "offering-architecture", file: "visualelectric-1736931308116.png" },
+  { slug: "offering-silhouette", file: "visualelectric-1737705941785.png" },
+];
+
 const PORTFOLIO_LOGOS = [
   { slug: "empley", file: "Empley_large (1).png" },
   { slug: "agaton", file: "Agaton.png" },
@@ -366,15 +381,31 @@ function buildPortfolioLogos() {
   }
 }
 
+function buildEditorialImages() {
+  const out = path.join(root, "public/images/editorial");
+  mkdirSync(out, { recursive: true });
+
+  for (const { slug, file } of EDITORIAL_IMAGES) {
+    const source = path.join(SUPPLIED, file);
+    if (!existsSync(source)) {
+      log(`${slug}: ${file} not supplied — skipped`);
+      continue;
+    }
+    copyFileSync(source, path.join(out, `${slug}${path.extname(file)}`));
+    log(`${slug}: copied ${file} verbatim`);
+  }
+}
+
 /* ----------------------------------------------------------------- Report */
 
 requirePdftocairo();
 console.log("Preparing supplied assets\n");
 buildFoundryBrand();
 buildPortfolioLogos();
+buildEditorialImages();
 
 console.log("\nGenerated assets:");
-for (const dir of [BRAND_OUT, PORTFOLIO_OUT]) {
+for (const dir of [BRAND_OUT, PORTFOLIO_OUT, path.join(root, "public/images/editorial")]) {
   if (!existsSync(dir)) continue;
   for (const name of readdirSync(dir)
     .filter((n) => !n.endsWith(".md"))

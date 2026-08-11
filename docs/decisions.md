@@ -771,3 +771,95 @@ recorded correctly and then ignored at the render site.
 **Consequence.** The footer has no brand statement until one is approved.
 
 **Reversal.** Approve the string, or replace it with Foundry's own wording.
+
+## D-025 — The header logotype animates its size with the colour
+
+**Date.** 2026-08-11
+
+**Decision.** One mark per colour, both driven by a single transitioned
+`--logo-height`, instead of a `display` swap between differently-sized images.
+`FoundryLogo` gained `sizing="inherit"` so CSS owns the height.
+
+**Rationale.** The colour cross-fade ran for 300ms while the size changed
+instantly at the scroll threshold, so mid-transition the mark was already at its
+compact size while still fading between colours — measured as a hard 74px → 44px
+jump. It now interpolates 74 → 72.8 → 67.7 → 58.4 → 51.7 → 47.8 → 44 alongside
+the fade, and a frame-by-frame check finds no frame where the two variants differ
+in height.
+
+**Spec.** §5.1, §6.1.
+
+**Consequence.** The header renders two logo images rather than six.
+
+## D-026 — Pitch and the Portfolio nav entry removed
+
+**Date.** 2026-08-11
+
+**Decision.** On owner instruction: `featureFlags.pitch` is off, and Portfolio
+left the header navigation. `/pitch` and `POST /api/pitch` return 404, and every
+pitch surface is gone — the header CTA, the hero CTA, the investment-criteria
+CTA, the contact CTA and `PitchBanner`. Portfolio remains a route and stays in
+the footer.
+
+**Rationale.** Flagged rather than deleted, like Team, so the whole conversion
+path — form, validation, durable store, outbox, notifier — comes back with one
+boolean. The API returns 404 too: an open submission endpoint behind a removed
+page is an invitation to spam.
+
+A new `isRoutePublished()` backs this. Navigation was already filtered by flag,
+but a CTA is authored content with its own `href`, so without it turning a
+section off leaves buttons pointing at a 404. Where the primary CTA disappears
+the secondary is promoted, so no section ends without an action.
+
+With Team, Pitch and Portfolio all out of the header, the primary nav and the
+hamburger are both empty — so neither renders. An empty landmark is worse than
+none.
+
+**Spec.** §3.4, §6.1, §11.
+
+**Consequence.** The header is the logotype and the LinkedIn icon. The privacy
+notice still describes pitch processing, which is correct for submissions already
+stored but describes a form that is not currently reachable.
+
+**Reversal.** Set `featureFlags.pitch` to true; re-add the Portfolio nav entry.
+
+## D-027 — The hero runs the supplied ocean loop
+
+**Date.** 2026-08-11
+
+**Decision.** The still hero image is replaced by the owner's
+`ocean-motion-background` package, ported into `AmbientOcean` — a client
+component scoped to the hero. The original package is kept verbatim in
+`assets-supplied/`.
+
+**Rationale.** §7.1 allows motion only with a static fallback, a reduced-motion
+path and a device fallback; the supplied package already had all three, which is
+why it could be adopted rather than rebuilt. Two deliberate changes: it is
+positioned inside the hero rather than `fixed` behind the document, and its
+listeners live in an effect with real teardown instead of a global IIFE.
+
+The poster is painted by CSS, not only by the video's `poster` attribute, so the
+still frame is there before any video loads and survives a refused autoplay, a
+decode error, Save-Data or reduced motion. Verified: playing normally
+(`currentTime` advancing), and paused at 0 with `display: none` under
+`prefers-reduced-motion`.
+
+**Spec.** §7.1, §20.4, §22.1 — no WebGL, no animation runtime.
+
+**Consequence.** ~1.9MB of video sits in `public/media/ocean/`, served only to
+visitors who allow motion. `media-src 'self'` was added to the CSP.
+
+## D-028 — `logoFit: "bleed"` for artwork that carries its own field
+
+**Date.** 2026-08-11
+
+**Decision.** Newly fills its frame edge to edge on a dark surface.
+
+**Rationale.** Newly's mark is a black square with the wordmark inside it, not a
+transparent logo. Contained inside a padded frame it read as a small tile
+floating on a different colour. Filling the frame gives the card the same solid
+weight as Grand's, which is what the owner asked for.
+
+**Spec.** §5.5, §8.4.
+
+**Consequence.** A third fit option both logo frames understand.

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Demo av en mjukt animerad havsbakgrund som reagerar på mus och scroll."
+    />
+    <meta name="theme-color" content="#173f49" />
+    <title>Ocean Motion – interaktiv bakgrund</title>
+    <link rel="preload" as="image" href="./assets/ocean-poster.jpg" />
+    <link rel="stylesheet" href="./motion-background.css" />
+    <link rel="stylesheet" href="./demo.css" />
+    <script src="./motion-background.js" defer></script>
+  </head>
+  <body>
+    <div
+      class="ambient-background"
+      data-ambient-background
+      aria-hidden="true"
+    >
+      <video
+        class="ambient-background__video"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        poster="./assets/ocean-poster.jpg"
+      >
+        <source
+          src="./assets/ocean-loop-mobile.webm"
+          type="video/webm"
+          media="(max-width: 767px)"
+        />
+        <source
+          src="./assets/ocean-loop-mobile.mp4"
+          type="video/mp4"
+          media="(max-width: 767px)"
+        />
+        <source
+          src="./assets/ocean-loop-1440p.webm"
+          type="video/webm"
+        />
+        <source src="./assets/ocean-loop-1440p.mp4" type="video/mp4" />
+      </video>
+      <div class="ambient-background__veil"></div>
+    </div>
+
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Till sidans början">
+        <span class="brand__mark"></span>
+        Ocean Motion
+      </a>
+      <span class="demo-label">Interaktiv demo</span>
+    </header>
+
+    <main class="site-content" id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero__copy">
+          <p class="eyebrow">Stillhet, med djup</p>
+          <h1 id="hero-title">En bakgrund som rör sig med dig.</h1>
+          <p class="hero__intro">
+            Rör muspekaren över bilden och scrolla långsamt. Videon fortsätter
+            sin lugna loop medan perspektivet svarar mjukt på din rörelse.
+          </p>
+        </div>
+
+        <a class="scroll-cue" href="#details">
+          <span class="scroll-cue__line"></span>
+          Scrolla för att testa
+        </a>
+      </section>
+
+      <section class="showcase" id="details" aria-labelledby="details-title">
+        <div class="glass-panel">
+          <p class="eyebrow">Byggd för webben</p>
+          <h2 id="details-title">Lugn nog för innehåll. Levande nog att kännas.</h2>
+          <p>
+            Bakgrunden är ljudlös, sömlös och levereras i både WebM och
+            MP4. Om besökaren har valt reducerad rörelse visas posterbilden i
+            stället.
+          </p>
+          <dl class="spec-list">
+            <div>
+              <dt>Upplösning</dt>
+              <dd>2560 × 1440</dd>
+            </div>
+            <div>
+              <dt>Loop</dt>
+              <dd>8 sekunder</dd>
+            </div>
+            <div>
+              <dt>Interaktion</dt>
+              <dd>Mus + scroll</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="closing" aria-labelledby="closing-title">
+        <div>
+          <p class="eyebrow">Redo att använda</p>
+          <h2 id="closing-title">Lägg innehållet ovanpå och låt havet göra resten.</h2>
+        </div>
+        <p class="closing__note">
+          All kod för den här effekten ligger i paketet tillsammans med videon.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

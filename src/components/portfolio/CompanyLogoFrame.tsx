@@ -28,7 +28,7 @@ export type CompanyLogoFrameProps = {
   /** Already policy-gated by `toCompanySummary`; null means "no approved logo". */
   logo: ImageAsset | null;
   name: string;
-  logoFit: "contain" | "wide" | "compact";
+  logoFit: "contain" | "wide" | "compact" | "bleed";
   /** Which field the artwork needs behind it — see `Company.logoSurface`. */
   logoSurface?: "dark" | "light";
   opticalScale: number;

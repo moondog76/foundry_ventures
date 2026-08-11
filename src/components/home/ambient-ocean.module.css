@@ -1,0 +1,57 @@
+/*
+ * Ambient ocean background, ported from the supplied package.
+ *
+ * The poster is a CSS background on the scene rather than only the video's
+ * `poster` attribute, so the still frame is painted immediately and stays put
+ * if the video is hidden, refused, unsupported or still loading. Nothing here
+ * depends on JavaScript to look correct.
+ */
+
+.scene {
+  --motion-x: 0px;
+  --motion-y: 0px;
+  --scroll-y: 0px;
+  --motion-rotate: 0deg;
+
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: #173f49 url("/media/ocean/ocean-poster.jpg") center / cover no-repeat;
+  /* Isolates paint and layout: the hero's own content must never reflow because
+     the background moved. */
+  contain: strict;
+}
+
+.video {
+  position: absolute;
+  /* Oversized so the parallax offset can never reveal an edge. */
+  inset: -8%;
+  width: 116%;
+  height: 116%;
+  max-width: none;
+  object-fit: cover;
+  transform: translate3d(var(--motion-x), calc(var(--motion-y) + var(--scroll-y)), 0)
+    rotate(var(--motion-rotate));
+  transform-origin: center;
+  will-change: transform;
+}
+
+/* Set by the component when motion is refused, unavailable or the tab is
+   hidden. The still poster underneath becomes the whole background. */
+.scene[data-static="true"] .video {
+  display: none;
+}
+
+/*
+ * The CSS switch runs even if the script never does, so a reduced-motion
+ * visitor gets the still frame from the very first paint rather than after
+ * hydration (§5.6, §20.4).
+ */
+@media (prefers-reduced-motion: reduce) {
+  .video {
+    display: none;
+    transform: none;
+  }
+}

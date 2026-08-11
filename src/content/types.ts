@@ -161,6 +161,7 @@ export type Address = {
 export type FeatureFlags = {
   investmentCriteria: boolean;
   team: boolean;
+  pitch: boolean;
   insights: boolean;
   about: boolean;
   network: boolean;
@@ -327,7 +328,12 @@ export type Company = {
   fieldEvidence: Partial<Record<CompanyFactField, FieldEvidence>>;
   logo?: ImageAsset;
   logoAlt?: string;
-  logoFit?: "contain" | "wide" | "compact";
+  /**
+   * `bleed` is for artwork that carries its own field — Newly's mark ships as a
+   * black square with the wordmark inside it, so it fills the frame instead of
+   * floating as a small tile on a different colour.
+   */
+  logoFit?: "contain" | "wide" | "compact" | "bleed";
   /**
    * The surface this logo needs behind it. Founders supply whichever variant
    * they have: some marks are white-on-transparent and need a dark field,
@@ -376,7 +382,7 @@ export type CompanySummary = {
   externalHref: string | null;
   logo: ImageAsset | null;
   logoAlt: string;
-  logoFit: "contain" | "wide" | "compact";
+  logoFit: "contain" | "wide" | "compact" | "bleed";
   logoSurface: "dark" | "light";
   opticalScale: number;
   cardImage: ImageAsset | null;

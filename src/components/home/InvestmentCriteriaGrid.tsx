@@ -19,6 +19,8 @@ export type InvestmentCriteriaGridProps = {
   /** Destination and label for the closing CTA, resolved by the page. */
   ctaHref: string;
   ctaLabel: string;
+  /** False when that destination is behind a disabled flag (§3.4). */
+  ctaEnabled?: boolean;
 };
 
 /**
@@ -66,6 +68,7 @@ export function InvestmentCriteriaGrid({
   criteria,
   ctaHref,
   ctaLabel,
+  ctaEnabled = true,
 }: InvestmentCriteriaGridProps) {
   if (criteria.length === 0) return null;
 
@@ -115,11 +118,15 @@ export function InvestmentCriteriaGrid({
             ))}
           </dl>
 
-          <div className={styles.cta}>
-            <ButtonLink href={ctaHref} full>
-              {ctaLabel}
-            </ButtonLink>
-          </div>
+          {/* §7.2 closes this section with a full-width CTA, but only while
+              its destination exists — a button to a 404 is worse than none. */}
+          {ctaEnabled ? (
+            <div className={styles.cta}>
+              <ButtonLink href={ctaHref} full>
+                {ctaLabel}
+              </ButtonLink>
+            </div>
+          ) : null}
         </Reveal>
       </Container>
     </Section>

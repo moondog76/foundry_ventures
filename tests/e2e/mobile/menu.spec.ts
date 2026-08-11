@@ -68,10 +68,13 @@ test("following a link navigates, closes the dialog and returns focus to the tri
   await page.goto("/");
   await openMenu(page);
 
-  await dialog(page).getByRole("link", { name: "Portfolio", exact: true }).click();
+  // Portfolio is no longer in the navigation; Team is the first entry the
+  // fixture dataset publishes, and the assertion is about the dialog's
+  // behaviour on navigation rather than about any particular destination.
+  await dialog(page).getByRole("link", { name: "Team", exact: true }).click();
 
-  await expect(page).toHaveURL(/\/portfolio$/);
-  await expect(page.getByRole("heading", { level: 1, name: "Portfolio" })).toBeVisible();
+  await expect(page).toHaveURL(/\/team$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Team" })).toBeVisible();
 
   // Closed, removed from the tree, and the trigger has its place in the tab
   // order back.

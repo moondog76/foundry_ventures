@@ -27,10 +27,6 @@ export type HeaderShellProps = {
   brandName: string;
   logoOnDark: ReactNode;
   logoOnLight: ReactNode;
-  logoCompactOnDark: ReactNode;
-  logoCompactOnLight: ReactNode;
-  logoMobileOnDark: ReactNode;
-  logoMobileOnLight: ReactNode;
 };
 
 /**
@@ -73,10 +69,6 @@ export function HeaderShell({
   brandName,
   logoOnDark,
   logoOnLight,
-  logoCompactOnDark,
-  logoCompactOnLight,
-  logoMobileOnDark,
-  logoMobileOnLight,
 }: HeaderShellProps) {
   const pathname = usePathname() ?? "/";
   const scrolled = useSyncExternalStore(
@@ -118,45 +110,50 @@ export function HeaderShell({
             aria-label={`${brandName} — home`}
             onClick={() => track({ name: "nav_click", destination: "/", placement: "header" })}
           >
-            {/* Both variants are rendered and cross-faded so the swap cannot flash. */}
+            {/*
+             * Both colour variants sit in the same grid cell and cross-fade, so
+             * the swap cannot flash. They share one CSS-driven height, which
+             * transitions on the same timing as the compaction — otherwise the
+             * mark snaps between two sizes while the colour is still fading.
+             */}
             <span className={styles.logoOnDark} aria-hidden={!transparent}>
-              <span className={styles.logoLarge}>{logoOnDark}</span>
-              <span className={styles.logoCompact}>{logoCompactOnDark}</span>
-              <span className={styles.logoMobile}>{logoMobileOnDark}</span>
+              {logoOnDark}
             </span>
             <span className={styles.logoOnLight} aria-hidden={transparent}>
-              <span className={styles.logoLarge}>{logoOnLight}</span>
-              <span className={styles.logoCompact}>{logoCompactOnLight}</span>
-              <span className={styles.logoMobile}>{logoMobileOnLight}</span>
+              {logoOnLight}
             </span>
           </Link>
 
-          <nav className={styles.desktopNav} aria-label="Primary">
-            <ul className={styles.navList}>
-              {primaryItems.map((item) => {
-                const active = isActiveRoute(pathname, item.href);
-                return (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      className={styles.navLink}
-                      data-active={active ? "true" : undefined}
-                      aria-current={active ? "page" : undefined}
-                      onClick={() =>
-                        track({
-                          name: "nav_click",
-                          destination: item.href,
-                          placement: "header",
-                        })
-                      }
-                    >
-                      {item.label}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
+          {/* An empty landmark is worse than none: with Team, Pitch and
+              Portfolio all out of the header, there is nothing to navigate. */}
+          {primaryItems.length > 0 ? (
+            <nav className={styles.desktopNav} aria-label="Primary">
+              <ul className={styles.navList}>
+                {primaryItems.map((item) => {
+                  const active = isActiveRoute(pathname, item.href);
+                  return (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        className={styles.navLink}
+                        data-active={active ? "true" : undefined}
+                        aria-current={active ? "page" : undefined}
+                        onClick={() =>
+                          track({
+                            name: "nav_click",
+                            destination: item.href,
+                            placement: "header",
+                          })
+                        }
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
+          ) : null}
 
           <div className={styles.actions}>
             {/* Omitted entirely when no verified URL exists — an empty href
@@ -184,24 +181,27 @@ export function HeaderShell({
               </Link>
             ) : null}
 
-            <button
-              ref={triggerRef}
-              type="button"
-              className={styles.menuTrigger}
-              aria-expanded={menuOpen}
-              aria-controls={menuId}
-              onClick={() => setMenuOpen((open) => !open)}
-            >
-              <span className="visually-hidden">{menuOpen ? "Close menu" : "Open menu"}</span>
-              <span
-                className={styles.menuIcon}
-                data-open={menuOpen ? "true" : "false"}
-                aria-hidden="true"
+            {/* Nothing to open when navigation is empty. */}
+            {navItems.length > 0 ? (
+              <button
+                ref={triggerRef}
+                type="button"
+                className={styles.menuTrigger}
+                aria-expanded={menuOpen}
+                aria-controls={menuId}
+                onClick={() => setMenuOpen((open) => !open)}
               >
-                <span />
-                <span />
-              </span>
-            </button>
+                <span className="visually-hidden">{menuOpen ? "Close menu" : "Open menu"}</span>
+                <span
+                  className={styles.menuIcon}
+                  data-open={menuOpen ? "true" : "false"}
+                  aria-hidden="true"
+                >
+                  <span />
+                  <span />
+                </span>
+              </button>
+            ) : null}
           </div>
         </div>
       </header>

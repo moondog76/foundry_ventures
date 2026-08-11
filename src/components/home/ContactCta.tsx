@@ -29,6 +29,8 @@ export type ContactCtaProps = {
   image: ImageAsset;
   /** Nav-derived label used when the authored CTA label is unapproved. */
   primaryCtaFallbackLabel: string;
+  /** False when the CTA's destination is behind a disabled flag (§3.4). */
+  primaryCtaEnabled?: boolean;
 };
 
 export function ContactCta({
@@ -37,6 +39,7 @@ export function ContactCta({
   policy,
   image,
   primaryCtaFallbackLabel,
+  primaryCtaEnabled = true,
 }: ContactCtaProps) {
   const heading = renderableText(contact.heading, policy);
   const paragraphs = renderableTexts(contact.paragraphs, policy);
@@ -89,11 +92,17 @@ export function ContactCta({
               </p>
             ))}
             <div className={styles.actions}>
-              <ButtonLink href={contact.primaryCta.href} onDark>
-                {primaryLabel}
-              </ButtonLink>
+              {primaryCtaEnabled ? (
+                <ButtonLink href={contact.primaryCta.href} onDark>
+                  {primaryLabel}
+                </ButtonLink>
+              ) : null}
               {secondaryEmail && secondaryLabel ? (
-                <ButtonLink href={secondaryEmail} variant="secondary" onDark>
+                <ButtonLink
+                  href={secondaryEmail}
+                  variant={primaryCtaEnabled ? "secondary" : "primary"}
+                  onDark
+                >
                   {secondaryLabel}
                 </ButtonLink>
               ) : null}

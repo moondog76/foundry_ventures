@@ -406,6 +406,7 @@ const siteSettings: SiteSettings = {
   featureFlags: {
     investmentCriteria: true,
     team: true,
+    pitch: true,
     insights: true,
     about: true,
     network: true,

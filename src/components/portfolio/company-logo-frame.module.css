@@ -50,6 +50,21 @@
 }
 
 /*
+ * Artwork that carries its own field fills the frame edge to edge, so the card
+ * reads as one solid tile rather than a small square floating on another
+ * colour. The frame's own padding would reintroduce that border, so it goes.
+ */
+.frame[data-fit="bleed"] {
+  --logo-width: 100%;
+  --logo-height: 100%;
+  padding: 0;
+}
+
+.frame[data-fit="bleed"] .logoBox img {
+  object-fit: cover;
+}
+
+/*
  * Two class selectors so this always beats `.imageFrame` from ui.module.css
  * regardless of stylesheet order — the shared primitive paints a charcoal
  * background that would otherwise sit as a visible slab inside this frame.

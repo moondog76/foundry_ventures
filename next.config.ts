@@ -20,6 +20,8 @@ const csp = [
   "script-src 'self' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
+  // The hero's ambient loop is self-hosted; no third-party media is ever loaded.
+  "media-src 'self'",
   "font-src 'self' data:",
   "connect-src 'self'",
   // Rich-text embeds are provider-allowlisted in code; mirror that here.

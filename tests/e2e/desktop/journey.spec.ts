@@ -39,9 +39,12 @@ test("a visitor can go from the home page to a company and on to the pitch form"
   await test.step("navigate to the portfolio archive", async () => {
     // The header's primary navigation, not a body CTA: it is present on every
     // route and its label comes from site settings rather than editorial copy.
+    // Portfolio left the header navigation on 2026-08-11, so the archive is
+    // reached the way a visitor now reaches it: the home page's own CTA.
     await page
-      .getByRole("navigation", { name: "Primary" })
-      .getByRole("link", { name: "Portfolio", exact: true })
+      .getByRole("main")
+      .getByRole("link", { name: /portfolio/i })
+      .first()
       .click();
 
     await expect(page).toHaveURL(/\/portfolio$/);

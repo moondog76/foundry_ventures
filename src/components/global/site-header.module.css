@@ -44,11 +44,38 @@
 
 /* ------------------------------------------------------------------ Logo */
 
+/*
+ * One mark per colour, both at the same height.
+ *
+ * The height is a transitioned custom property rather than a `display` swap
+ * between two differently-sized images. With the swap, the mark snapped from
+ * 74px to 44px the instant the scroll threshold passed while the colour was
+ * still cross-fading for another 300ms — so mid-transition you saw the old
+ * colour at the new size. Now size and colour move together.
+ */
 .logoLink {
   display: grid;
   align-items: center;
   flex: none;
   text-decoration: none;
+  --logo-height: 30px;
+}
+
+@media (min-width: 992px) {
+  .logoLink {
+    --logo-height: 74px;
+  }
+
+  .header[data-compact="true"] .logoLink {
+    --logo-height: 44px;
+  }
+}
+
+.logoLink img,
+.logoLink [data-brand-asset-missing] {
+  height: var(--logo-height);
+  width: auto;
+  transition: height var(--duration-compact) var(--ease-standard);
 }
 
 /* Both variants occupy the same grid cell so swapping cannot shift layout. */
@@ -64,30 +91,6 @@
 .header[data-transparent="false"] .logoOnDark {
   opacity: 0;
   pointer-events: none;
-}
-
-.logoLarge,
-.logoCompact,
-.logoMobile {
-  display: none;
-}
-
-.logoMobile {
-  display: flex;
-}
-
-@media (min-width: 992px) {
-  .logoMobile {
-    display: none;
-  }
-
-  .header[data-compact="false"] .logoLarge {
-    display: flex;
-  }
-
-  .header[data-compact="true"] .logoCompact {
-    display: flex;
-  }
 }
 
 /* ------------------------------------------------------------ Desktop nav */

@@ -13,8 +13,8 @@
 import type { HomePage } from "@/content/types";
 import type { PolicyContext } from "@/content/policy";
 import { ButtonLink, Container } from "@/components/ui";
-import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
 import { renderableText, renderableTexts } from "./text";
+import { AmbientOcean } from "./AmbientOcean";
 import styles from "./home-hero.module.css";
 
 export type HomeHeroProps = {
@@ -29,6 +29,8 @@ export type HomeHeroProps = {
   fallbackHeading: string;
   /** Nav-derived labels, used when the authored CTA label is unapproved. */
   primaryCtaFallbackLabel: string;
+  /** False when the CTA's destination is behind a disabled flag (§3.4). */
+  primaryCtaEnabled?: boolean;
   secondaryCtaFallbackLabel: string;
 };
 
@@ -37,6 +39,7 @@ export function HomeHero({
   policy,
   fallbackHeading,
   primaryCtaFallbackLabel,
+  primaryCtaEnabled = true,
   secondaryCtaFallbackLabel,
 }: HomeHeroProps) {
   const eyebrow = renderableText(hero.eyebrow, policy);
@@ -60,19 +63,12 @@ export function HomeHero({
       aria-labelledby="home-hero-heading"
     >
       {/*
-        The crop is decorative: the heading carries the meaning, so alt is empty.
-        No `fallbackLabel` is passed — when the licensed original is missing the
-        image simply drops out and the deep-navy wash below stands on its own,
-        rather than printing a caption across the whole viewport.
+        Decorative: the heading carries the meaning, so the layer is aria-hidden
+        and carries no alt text. The still poster is painted by CSS before any
+        video loads, and remains the entire background under reduced motion,
+        Save-Data, a refused autoplay or a decode error (§7.1, §20.4).
       */}
-      <ResponsiveImage
-        image={hero.image}
-        policy={policy}
-        alt=""
-        sizes="100vw"
-        priority
-        frameClassName={styles.mediaFrame}
-      />
+      <AmbientOcean className={styles.mediaFrame} />
       <div className={styles.overlay} aria-hidden="true" />
 
       <Container className={styles.container}>
@@ -95,10 +91,18 @@ export function HomeHero({
           ) : null}
 
           <div className={styles.actions}>
-            <ButtonLink href={hero.primaryCta.href} onDark>
-              {primaryLabel}
-            </ButtonLink>
-            <ButtonLink href={hero.secondaryCta.href} variant="secondary" onDark>
+            {primaryCtaEnabled ? (
+              <ButtonLink href={hero.primaryCta.href} onDark>
+                {primaryLabel}
+              </ButtonLink>
+            ) : null}
+            {/* The secondary CTA becomes the primary one when the first is
+                gone, so the hero never ends without an action. */}
+            <ButtonLink
+              href={hero.secondaryCta.href}
+              variant={primaryCtaEnabled ? "secondary" : "primary"}
+              onDark
+            >
               {secondaryLabel}
             </ButtonLink>
           </div>

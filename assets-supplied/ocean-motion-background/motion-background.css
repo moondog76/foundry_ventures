@@ -1,0 +1,60 @@
+.ambient-background {
+  --motion-x: 0px;
+  --motion-y: 0px;
+  --scroll-y: 0px;
+  --motion-rotate: 0deg;
+
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: #173f49 url("./assets/ocean-poster.jpg") center / cover no-repeat;
+  contain: strict;
+}
+
+.ambient-background__video {
+  position: absolute;
+  inset: -8%;
+  width: 116%;
+  height: 116%;
+  max-width: none;
+  object-fit: cover;
+  transform: translate3d(
+      var(--motion-x),
+      calc(var(--motion-y) + var(--scroll-y)),
+      0
+    )
+    rotate(var(--motion-rotate));
+  transform-origin: center;
+  will-change: transform;
+}
+
+.ambient-background__veil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at 18% 36%,
+      rgb(8 29 35 / 4%) 0,
+      rgb(8 29 35 / 18%) 48%,
+      rgb(8 29 35 / 24%) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgb(6 25 31 / 8%) 0%,
+      rgb(6 25 31 / 5%) 42%,
+      rgb(6 25 31 / 35%) 100%
+    );
+}
+
+.ambient-background.is-static .ambient-background__video {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-background__video {
+    display: none;
+    transform: none;
+  }
+}

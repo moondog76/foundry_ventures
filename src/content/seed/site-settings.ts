@@ -70,12 +70,11 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
    * out entirely rather than rendered as dead navigation.
    */
   navigation: [
-    { label: "Portfolio", href: "/portfolio" },
     { label: "Team", href: "/team", featureFlag: "team" },
     { label: "Insights", href: "/insights", featureFlag: "insights" },
     { label: "About", href: "/about", featureFlag: "about" },
     { label: "Network", href: "/network", featureFlag: "network" },
-    { label: "Pitch", href: "/pitch" },
+    { label: "Pitch", href: "/pitch", featureFlag: "pitch" },
   ],
 
   footerNavigation: [
@@ -84,7 +83,7 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
     { label: "Team", href: "/team", featureFlag: "team" },
     { label: "Insights", href: "/insights", featureFlag: "insights" },
     { label: "About", href: "/about", featureFlag: "about" },
-    { label: "Pitch", href: "/pitch" },
+    { label: "Pitch", href: "/pitch", featureFlag: "pitch" },
   ],
 
   legalNavigation: [{ label: "Privacy", href: "/privacy" }],
@@ -174,6 +173,10 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
     // the contact block instead. Flip to true when portraits and bios exist and
     // the route, navigation and sitemap entries all come back.
     team: false,
+    // Off on owner instruction 2026-08-11. The whole conversion path — route,
+    // form, API, banner and every CTA — is intact behind this one boolean;
+    // contact runs through Anders instead.
+    pitch: false,
     insights: false,
     about: false,
     network: false,

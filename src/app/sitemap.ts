@@ -94,7 +94,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { canonicalOrigin, featureFlags } = settings;
 
   // Routes that exist unconditionally. `/` is the canonical root — never `/home`.
-  const entries: SitemapEntry[] = [{ path: "/" }, { path: "/portfolio" }, { path: "/pitch" }];
+  const entries: SitemapEntry[] = [{ path: "/" }, { path: "/portfolio" }];
 
   // The privacy notice is a real document with a real revision date, so it can
   // carry an honest `lastModified`. It is listed only when the record exists.
@@ -106,6 +106,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // A route behind a disabled flag 404s in production and is absent from
   // navigation (§3.4); it must be absent here for exactly the same reason.
   if (featureFlags.team) entries.push({ path: "/team" });
+  if (featureFlags.pitch) entries.push({ path: "/pitch" });
   if (featureFlags.insights) entries.push({ path: "/insights" });
   if (featureFlags.about) entries.push({ path: "/about" });
 

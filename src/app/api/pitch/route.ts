@@ -19,6 +19,7 @@
  */
 
 import { submitPitch } from "@/lib/pitch/service";
+import { getFeatureFlags } from "@/content";
 import type { PitchApiMethodNotAllowed, PitchApiResponse } from "@/components/forms/pitch-api";
 
 /** The store writes to the filesystem, so this cannot run on the edge runtime. */
@@ -77,6 +78,11 @@ function byteLength(value: string): number {
 }
 
 export async function POST(request: Request): Promise<Response> {
+  // The public form is gone while the flag is off, so the endpoint refuses too:
+  // an open submission endpoint behind a removed page is an invitation to spam.
+  const flags = await getFeatureFlags();
+  if (!flags.pitch) return new Response(null, { status: 404 });
+
   if (!isJsonRequest(request)) return rejected(415);
 
   // Cheap pre-check on the declared size, before a single byte is buffered.

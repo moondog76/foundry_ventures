@@ -191,12 +191,12 @@ export const SEED_COMPANIES: Company[] = [
     description:
       "Newly turns a plain-English description of an app into a working native build for iOS and Android. It handles design, development and deployment on React Native and Expo, and hands over the full source code.",
     logo: SUPPLIED_PORTFOLIO_LOGOS.newly,
-    // The supplied artwork is a black tile rather than a transparent mark, so
-    // it reads as a deliberate tile against the light field and disappears
-    // against a dark one.
-    logoSurface: "light",
-    logoFit: "compact",
-    opticalScale: 1.25,
+    // The supplied artwork is a black square with the wordmark inside it, not a
+    // transparent mark. It fills the frame so the card reads as one solid tile,
+    // the same weight as Grand's, instead of a small square on another colour.
+    logoSurface: "dark",
+    logoFit: "bleed",
+    opticalScale: 1,
     sortOrder: 60,
   }),
   seedCompany({

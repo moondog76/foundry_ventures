@@ -40,6 +40,13 @@ export type FoundryLogoProps = {
   title?: string;
   className?: string;
   priority?: boolean;
+  /**
+   * `"fixed"` stamps the height from `LOGO_SIZES` inline. `"inherit"` leaves it
+   * to CSS, which is what the header needs: its logo has to *animate* between
+   * two sizes in step with the colour change, and an inline height cannot be
+   * transitioned by a stylesheet.
+   */
+  sizing?: "fixed" | "inherit";
 };
 
 export function FoundryLogo({
@@ -49,6 +56,7 @@ export function FoundryLogo({
   title = "Foundry Ventures",
   className,
   priority = false,
+  sizing = "fixed",
 }: FoundryLogoProps) {
   const assetKey = VARIANT_TO_ASSET[variant];
   const asset = BRAND_ASSETS[assetKey];
@@ -65,18 +73,22 @@ export function FoundryLogo({
       width={dimensions.width}
       height={dimensions.height}
       className={styles.mark}
-      style={{ height: `${dimensions.height}px`, width: "auto" }}
+      style={sizing === "fixed" ? { height: `${dimensions.height}px`, width: "auto" } : undefined}
       fetchPriority={priority ? "high" : undefined}
       decoding={priority ? "sync" : "async"}
     />
   ) : (
     <span
       className={styles.missing}
-      style={{
-        height: `${dimensions.height}px`,
-        width: `${dimensions.width}px`,
-        aspectRatio: `${asset.width} / ${asset.height}`,
-      }}
+      style={
+        sizing === "fixed"
+          ? {
+              height: `${dimensions.height}px`,
+              width: `${dimensions.width}px`,
+              aspectRatio: `${asset.width} / ${asset.height}`,
+            }
+          : { aspectRatio: `${asset.width} / ${asset.height}` }
+      }
       role="img"
       aria-label={title}
       data-brand-asset-missing={asset.file}

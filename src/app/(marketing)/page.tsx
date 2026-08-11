@@ -29,6 +29,7 @@ import {
   getSiteSettings,
   getStats,
   getTestimonials,
+  isRoutePublished,
 } from "@/content";
 import { resolvePolicyContext } from "@/content/context";
 import { buildMetadata } from "@/lib/seo/metadata";
@@ -74,6 +75,9 @@ export default async function HomePage() {
   const policy = await resolvePolicyContext();
   const [home, settings] = await Promise.all([getHomePage(), getSiteSettings(policy)]);
 
+  // A CTA must never point at a route behind a disabled flag (§3.4).
+  const pitchEnabled = await isRoutePublished(home.hero.primaryCta.href, policy);
+
   const featuredSlugs = home.featuredPortfolio.companyIds.map((company) => company.slug);
   const [criteria, featuredCompanies, stats, testimonials, latestPosts, contactPeople] =
     await Promise.all([
@@ -98,6 +102,7 @@ export default async function HomePage() {
   return (
     <>
       <HomeHero
+        primaryCtaEnabled={pitchEnabled}
         hero={home.hero}
         policy={policy}
         // The brand name is rendered unconditionally by the header, footer and
@@ -109,6 +114,7 @@ export default async function HomePage() {
       />
 
       <InvestmentCriteriaGrid
+        ctaEnabled={pitchEnabled}
         criteria={criteria}
         ctaHref={pitchCta.href}
         ctaLabel={heroPitchLabel}
@@ -149,6 +155,7 @@ export default async function HomePage() {
       />
 
       <ContactCta
+        primaryCtaEnabled={pitchEnabled}
         contact={home.contact}
         people={contactPeople}
         policy={policy}

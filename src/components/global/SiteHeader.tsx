@@ -23,23 +23,17 @@ export async function SiteHeader() {
           variant="white"
           size="headerLarge"
           title={settings.displayBrandName}
+          sizing="inherit"
           priority
         />
       }
       logoOnLight={
-        <FoundryLogo variant="blue" size="headerLarge" title={settings.displayBrandName} />
-      }
-      logoCompactOnDark={
-        <FoundryLogo variant="white" size="headerCompact" title={settings.displayBrandName} />
-      }
-      logoCompactOnLight={
-        <FoundryLogo variant="blue" size="headerCompact" title={settings.displayBrandName} />
-      }
-      logoMobileOnDark={
-        <FoundryLogo variant="white" size="mobile" title={settings.displayBrandName} />
-      }
-      logoMobileOnLight={
-        <FoundryLogo variant="blue" size="mobile" title={settings.displayBrandName} />
+        <FoundryLogo
+          variant="blue"
+          size="headerLarge"
+          title={settings.displayBrandName}
+          sizing="inherit"
+        />
       }
     />
   );

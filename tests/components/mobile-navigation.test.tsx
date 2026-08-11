@@ -48,10 +48,6 @@ function renderHeader() {
       brandName="Foundry Ventures"
       logoOnDark={slot("logo-dark")}
       logoOnLight={slot("logo-light")}
-      logoCompactOnDark={slot("logo-compact-dark")}
-      logoCompactOnLight={slot("logo-compact-light")}
-      logoMobileOnDark={slot("logo-mobile-dark")}
-      logoMobileOnLight={slot("logo-mobile-light")}
     />,
   );
 }

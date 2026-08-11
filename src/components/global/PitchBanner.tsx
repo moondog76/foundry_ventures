@@ -6,7 +6,7 @@
  * ends on the conversion path.
  */
 
-import { getHomePage } from "@/content";
+import { getHomePage, isRoutePublished } from "@/content";
 import { resolvePolicyContext } from "@/content/context";
 import { canRenderEditorialText } from "@/content/policy";
 import { ButtonLink, Container, Section } from "@/components/ui";
@@ -19,6 +19,9 @@ export async function PitchBanner() {
 
   // Unapproved copy is hidden in production rather than rendered as a stub.
   if (!canRenderEditorialText(heading, policy)) return null;
+  // And a banner whose only job is to send people to a route that no longer
+  // exists is worse than no banner.
+  if (!(await isRoutePublished(primaryCta.href, policy))) return null;
 
   const intro = paragraphs.filter((p) => canRenderEditorialText(p, policy));
   const ctaLabel = canRenderEditorialText(primaryCta.label, policy)

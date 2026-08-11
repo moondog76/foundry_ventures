@@ -33,6 +33,7 @@ import {
 } from "./policy";
 import type {
   AboutPage,
+  FeatureFlagKey,
   Company,
   CompanyDetailView,
   CompanySummary,
@@ -108,6 +109,31 @@ export async function getRawSiteSettings(): Promise<SiteSettings> {
 
 export async function getFeatureFlags(): Promise<SiteSettings["featureFlags"]> {
   return (await getAdapter().getSiteSettings()).featureFlags;
+}
+
+/**
+ * Routes that only exist while their flag is on.
+ *
+ * Navigation is filtered by `filterNav`, but a call-to-action button is authored
+ * content with its own `href`, so it needs the same check — otherwise turning a
+ * section off leaves buttons pointing at a 404.
+ */
+const FLAGGED_ROUTES: ReadonlyArray<[string, FeatureFlagKey]> = [
+  ["/team", "team"],
+  ["/insights", "insights"],
+  ["/about", "about"],
+  ["/network", "network"],
+  ["/pitch", "pitch"],
+];
+
+export async function isRoutePublished(href: string, context?: PolicyContext): Promise<boolean> {
+  const policy = await ctx(context);
+  if (policy.mode === "preview") return true;
+  const settings = await getAdapter().getSiteSettings();
+  const match = FLAGGED_ROUTES.find(
+    ([prefix]) => href === prefix || href.startsWith(`${prefix}/`) || href.startsWith(`${prefix}#`),
+  );
+  return match ? settings.featureFlags[match[1]] : true;
 }
 
 export async function getInvestmentCriteria(

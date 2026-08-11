@@ -18,12 +18,13 @@
  */
 
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getContactPeople, getSiteSettings, teamContactChannels } from "@/content";
-import { resolvePolicyContext } from "@/content/context";
+import { resolveFeatureGate } from "@/components/insights/feature-gate";
 import { canPublishTeamField } from "@/content/policy";
 import { checkPitchReadiness } from "@/lib/pitch/config";
 import { mailtoHref } from "@/lib/security/url";
-import { buildMetadata } from "@/lib/seo/metadata";
+import { HIDDEN_ROUTE_METADATA, buildMetadata } from "@/lib/seo/metadata";
 import { Container, Section } from "@/components/ui";
 import { PITCH_TITLE, PitchIntro, PitchNextSteps } from "@/components/forms/PitchIntro";
 import { PitchForm } from "@/components/forms/PitchForm";
@@ -35,7 +36,8 @@ const NEXT_STEPS_HEADING_ID = "pitch-next-steps";
 const UNAVAILABLE_HEADING_ID = "pitch-unavailable";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const policy = await resolvePolicyContext();
+  const { policy, hidden } = await resolveFeatureGate("pitch");
+  if (hidden) return HIDDEN_ROUTE_METADATA;
   const settings = await getSiteSettings(policy);
 
   return buildMetadata({
@@ -50,7 +52,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PitchPage() {
-  const policy = await resolvePolicyContext();
+  const { policy, hidden } = await resolveFeatureGate("pitch");
+  if (hidden) notFound();
   const contactPeople = await getContactPeople(policy);
 
   const problems = checkPitchReadiness();

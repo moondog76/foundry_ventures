@@ -101,7 +101,7 @@ export const SEED_HOME_PAGE: HomePage = {
       {
         number: "03",
         body: authoredOnInstruction(
-          "Legal and operations support, so the work that does not build the product stops landing on the founders.",
+          "Operations support best practices so you can build, ship and scale.",
         ),
       },
       {
@@ -121,7 +121,13 @@ export const SEED_HOME_PAGE: HomePage = {
       slug: c.slug,
       name: c.name,
     })),
-    ctaLabel: authoredOnInstruction("See the full portfolio"),
+    /*
+     * No trailing link under the tiles, on owner instruction 2026-08-11: the
+     * hero's own button and the footer already reach the archive, and a third
+     * link directly beneath nine cards that are themselves links added nothing.
+     * The destination stays so restoring it means supplying a label again.
+     */
+    ctaLabel: undefined,
     ctaHref: "/portfolio",
   },
 

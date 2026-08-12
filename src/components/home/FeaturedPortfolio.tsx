@@ -25,7 +25,8 @@ export type FeaturedPortfolioProps = {
   /** Approved section heading and intro, or null while still unapproved. */
   heading: string | null;
   intro: string | null;
-  ctaLabel: string;
+  /** Omit to end the section on the tiles, with no trailing link. */
+  ctaLabel?: string;
   ctaHref: string;
 };
 
@@ -170,9 +171,11 @@ export function FeaturedPortfolio({
           ))}
         </ul>
 
-        <p className={styles.cta}>
-          <TextLink href={ctaHref}>{ctaLabel}</TextLink>
-        </p>
+        {ctaLabel ? (
+          <p className={styles.cta}>
+            <TextLink href={ctaHref}>{ctaLabel}</TextLink>
+          </p>
+        ) : null}
       </Container>
     </Section>
   );

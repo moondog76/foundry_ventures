@@ -535,7 +535,8 @@ export type HomePage = {
     heading: EditorialText;
     intro?: EditorialText;
     companyIds: CompanyRef[];
-    ctaLabel: EditorialText;
+    /** Omitted when the section should end on the tiles themselves. */
+    ctaLabel?: EditorialText;
     ctaHref: "/portfolio";
   };
   optionalSections?: {

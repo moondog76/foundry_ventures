@@ -146,6 +146,24 @@ describe("FeaturedPortfolio", () => {
       "/portfolio",
     );
   });
+
+  // The section ends on the tiles when no label is supplied. Guarded because the
+  // obvious "fix" for a missing label is a hardcoded fallback, which would put
+  // the link back without anyone noticing.
+  it("omits the archive link entirely when no label is supplied", () => {
+    render(
+      <FeaturedPortfolio
+        companies={[COMPANY]}
+        policy={PRODUCTION_POLICY}
+        heading="Portfolio"
+        intro={null}
+        ctaHref="/portfolio"
+      />,
+    );
+
+    expect(screen.getByRole("heading", { level: 3, name: "Testcorp Fixture" })).toBeInTheDocument();
+    expect(screen.queryAllByRole("link", { name: /portfolio/i })).toHaveLength(0);
+  });
 });
 
 describe("LatestInsights", () => {

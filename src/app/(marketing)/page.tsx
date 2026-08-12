@@ -129,7 +129,12 @@ export default async function HomePage() {
         policy={policy}
         heading={renderableText(home.featuredPortfolio.heading, policy)}
         intro={renderableText(home.featuredPortfolio.intro, policy)}
-        ctaLabel={renderableText(home.featuredPortfolio.ctaLabel, policy) ?? portfolioLabel}
+        // No fallback: an absent label means the section deliberately has no link.
+        ctaLabel={
+          home.featuredPortfolio.ctaLabel
+            ? (renderableText(home.featuredPortfolio.ctaLabel, policy) ?? portfolioLabel)
+            : undefined
+        }
         ctaHref={home.featuredPortfolio.ctaHref}
       />
 

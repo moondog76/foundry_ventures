@@ -441,7 +441,9 @@ function approveHome(page: HomePage): HomePage {
     featuredPortfolio: {
       ...page.featuredPortfolio,
       heading: t(page.featuredPortfolio.heading.value),
-      ctaLabel: t(page.featuredPortfolio.ctaLabel.value),
+      ctaLabel: page.featuredPortfolio.ctaLabel
+        ? t(page.featuredPortfolio.ctaLabel.value)
+        : undefined,
       companyIds: companies
         .filter((c) => c.featured)
         .map((c) => ({ id: c.id, slug: c.slug, name: c.name })),

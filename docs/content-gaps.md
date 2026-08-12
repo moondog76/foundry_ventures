@@ -184,6 +184,33 @@ Two records in `src/content/seed/team.ts`, both `publicationStatus: "review"`.
 
 ---
 
+## F3. Where the enhancement brief reverses your own instructions
+
+The 2026-08-12 rebuild was built to the website enhancement brief, on the
+instruction to "build according to plan". On six points that plan reverses
+something you told me directly in the preceding days. All six are implemented as
+the brief specifies; each row names the one place to change to put it back.
+
+| # | Your instruction | What the brief says | Where to revert |
+|---|---|---|---|
+| 1 | "Foundry is not a venture fund" (11 Aug) | Delete it — category confusion that undercuts a fund actively raising (§6.5) | `seed/home.ts`, hero paragraph |
+| 2 | Position as an "industrialised super angel"; "industrial angel" in the thesis | Remove from public category copy; may survive as internal shorthand (§6.5) | `seed/home.ts`, `vision.paragraphs` |
+| 3 | "We only invest in AI. We only invest in teams." | "We invest in teams **first**" — "teams only" reads as not caring about the market (§6.4) | `seed/home.ts`, `hero.heading` |
+| 4 | Less interested in PMF and moats | Reframe as epistemic humility, not absent diligence (§6.5) | `seed/home.ts`, `vision.paragraphs` |
+| 5 | "Remove Portfolio from the navigation" (11 Aug) | The header must reach Portfolio and Fund without a hero CTA or the footer (§2.8, §7.2) | `seed/site-settings.ts`, `navigation` |
+| 6 | "Make the ocean motion way more on scroll and cursor"; parallax on the stills | No cursor-following distortion; parallax no greater than a few percent; one continuous motion source (§2.5, §10.4) | `AmbientOcean.tsx`, `SCROLL_TRAVEL` |
+
+Numbers 3 and 5 are the two most likely to matter to you. The brief itself offers
+an escape hatch on 3 — §6.4 says the current headline may be kept if it is
+non-negotiable, provided the support line identifies Foundry as a fund. That is
+already true, so reverting the headline alone is safe.
+
+Also removed on the brief's instruction, and worth knowing: the silhouette image
+(§2.3 called it semantically weak), the two-image composition in the offering
+section (§8.6), and the `/pitch`, `/insights`, `/network`, `/team` and `/about`
+routes with their components, API and tests (§7.1, §17). All are recoverable from
+git history at commit `58dbcd0`.
+
 ## F2. Copy drift introduced 2026-08-12
 
 The owner supplied four new "What you get" items. They are the strongest-provenance

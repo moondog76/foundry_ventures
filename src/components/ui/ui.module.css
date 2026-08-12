@@ -390,3 +390,15 @@
   vertical-align: baseline;
   flex: none;
 }
+
+/*
+ * Text link on a dark surface. Used by the hero's secondary action, where a
+ * second filled button would break §9.7's one-primary-action rule.
+ */
+.textLinkOnDark {
+  color: var(--color-white);
+}
+
+.textLinkOnDark::after {
+  background: var(--color-white);
+}

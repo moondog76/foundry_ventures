@@ -234,7 +234,7 @@ describe("portfolio zero states", () => {
     expect(screen.getByText("No companies match these filters")).toBeInTheDocument();
     const clear = screen.getByRole("link", { name: "Clear all filters" });
     expect(clear).toHaveAttribute("href", "/portfolio");
-    expect(screen.getByRole("link", { name: "Pitch us" })).toHaveAttribute("href", "/pitch");
+    expect(screen.getByRole("link", { name: "How we invest" })).toHaveAttribute("href", "/fund");
   });
 
   it("says plainly that nothing is published, rather than blaming a filter", () => {

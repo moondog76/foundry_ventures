@@ -8,7 +8,12 @@
   justify-content: flex-end;
   /* svh, never vh: collapsing mobile browser chrome must not resize the hero
      under the user's finger (§19.1). */
-  min-height: 100svh;
+  /*
+   * §8.2: `max(760px, 92svh)`, not a forced 100vh. On a short laptop a full
+   * viewport hero spent the whole first screen before revealing any proof,
+   * which §2.3 called out; 92svh leaves a visible edge of the next section.
+   */
+  min-height: max(760px, 92svh);
   /* Contains the negative-space overlay and the media layer. */
   isolation: isolate;
   overflow: hidden;
@@ -84,14 +89,31 @@
 }
 
 .heading {
-  /*
-   * The migrated heading is 80 characters long. On the bare --text-h1 ramp it
-   * wraps to five lines at 1440px and pushes the CTAs below the fold, so the
-   * hero rides a ramp that lands between --text-h2 and --text-h1 instead.
-   */
-  font-size: clamp(2.125rem, 1.05rem + 4.4vw, 5rem);
+  /* §8.2 mobile target: clamp(40px, 11vw, 54px). */
+  font-size: clamp(2.5rem, 11vw, 3.375rem);
   line-height: var(--leading-display);
-  text-wrap: balance;
+  /*
+   * `balance` is deliberately off. The heading is broken on its own sentence
+   * boundaries below, and letting the browser re-balance would fight that —
+   * producing a ragged second line that splits a sentence anyway.
+   */
+  text-wrap: pretty;
+  margin: 0;
+}
+
+/*
+ * Editorial line breaks (§8.2).
+ *
+ * The heading is two sentences, and the natural break is between them — not
+ * wherever the measure happens to run out. Rendering each sentence as its own
+ * block puts the break exactly there and still lets a long sentence wrap
+ * normally inside its own line on a narrow screen.
+ *
+ * Below 768px the sentences run together as normal inline text, because at that
+ * width forcing two blocks would strand single words.
+ */
+.headingSentence {
+  display: inline;
 }
 
 .support {
@@ -120,14 +142,30 @@
   }
 }
 
+@media (min-width: 768px) {
+  .headingSentence {
+    display: block;
+  }
+
+  .heading {
+    /* §8.2 desktop target: clamp(64px, 6.4vw, 112px). */
+    font-size: clamp(4rem, 6.4vw, 7rem);
+  }
+}
+
 @media (min-width: 992px) {
   .hero {
     padding-top: calc(var(--header-height) + var(--space-2xl));
   }
 
-  /* ~15 of the 24 columns for the heading (§7.1). */
+  /*
+   * 19 of 24 columns. Wide enough that each sentence of the headline holds a
+   * single line at the §8.2 type size — the whole point of breaking on sentence
+   * boundaries is lost if the sentences then wrap anyway. Measured against the
+   * longest line, "We invest in teams first." at 6.4vw.
+   */
   .headingBlock {
-    grid-column: 1 / span 15;
+    grid-column: 1 / span 19;
   }
 
   .support {
@@ -141,7 +179,7 @@
 
 @media (min-width: 1440px) {
   .headingBlock {
-    grid-column: 1 / span 15;
+    grid-column: 1 / span 18;
   }
 
   .support {

@@ -10,11 +10,18 @@
 
 :root {
   /* ---------------------------------------------------------------- Typefaces */
-  /* Ivar Display is identity-bearing (§1.2). Georgia is the documented fallback
-     until licensed WOFF2 files are supplied — never silently substitute Inter. */
-  --font-display:
-    "Ivar Display", IvarDisplay, "IvarDisplay Fallback", Georgia, "Times New Roman", serif;
-  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  /*
+   * Both families are self-hosted and loaded by `src/styles/fonts.ts`. The
+   * `--font-*-loaded` variables come from `next/font/local` and already carry
+   * the metric-adjusted fallback, so the literal families listed after them are
+   * a belt-and-braces last resort rather than the working fallback.
+   *
+   * Ivar Display is gone. Foundry does not hold web rights to it, and the site
+   * spent its whole life rendering Georgia while claiming otherwise (§2.3).
+   * Newsreader is the licensed substitute — see scripts/prepare-fonts.mjs.
+   */
+  --font-display: var(--font-display-loaded), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-sans-loaded), "Helvetica Neue", Helvetica, Arial, sans-serif;
 
   /* ------------------------------------------------------------------ Colours */
   /* Core live-site identity. */
@@ -76,12 +83,24 @@
   --tracking-body: 0.02em;
   --tracking-label: 0.08em;
 
-  --leading-display: 1.06;
+  /* §8.2 asks for ~0.94-1.0 on the h1 depending on the licensed face. Measured
+     against Newsreader at 112px: 0.98 keeps two-line headlines tight without
+     the descenders of line one touching the caps of line two. */
+  --leading-display: 0.98;
   --leading-heading: 1.12;
   --leading-body: 1.5;
 
   --weight-regular: 400;
   --weight-medium: 500;
+
+  /* ----------------------------------------------------------------- Motion */
+  /* §10.2. One continuous source (the ocean); everything else is punctuation. */
+  --duration-instant: 100ms;
+  --duration-fast: 180ms;
+  --duration-base: 280ms;
+  --duration-reveal: 560ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-foundry: cubic-bezier(0.22, 1, 0.36, 1);
 
   /* ---------------------------------------------------------------- Spacing */
   --space-3xs: 0.25rem;
@@ -113,7 +132,8 @@
   --grid-columns: 8;
 
   /* -------------------------------------------------------------- Chrome */
-  --header-height: 64px;
+  /* §8.1: 64-72px on mobile, 96-110px on large screens. */
+  --header-height: 68px;
   --radius-none: 0;
   --radius-sm: 2px;
   --border-hairline: 1px;

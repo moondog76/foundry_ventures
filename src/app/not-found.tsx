@@ -10,8 +10,10 @@
  * which link brought the visitor here, so we do not guess. No status codes in
  * prose, no "the resource could not be located", no apology theatre — just the
  * three destinations that cover almost every reason someone is on this site.
- * All three routes exist unconditionally (they are not feature-flagged), so no
- * link here can ever become a dead end.
+ * All three routes exist unconditionally, so no link here can ever become a
+ * dead end. The fourth used to be "Pitch us" pointing at `/pitch`, which was
+ * itself a 404 — a 404 page offering a 404 (§2.9 defect 6). `/fund` replaces it
+ * and is a real destination.
  */
 
 import type { Metadata } from "next";
@@ -72,8 +74,8 @@ export default function NotFound() {
             <ButtonLink href="/portfolio" variant="secondary">
               See the portfolio
             </ButtonLink>
-            <ButtonLink href="/pitch" variant="secondary">
-              Pitch us
+            <ButtonLink href="/fund" variant="secondary">
+              The fund
             </ButtonLink>
           </div>
         </Reveal>

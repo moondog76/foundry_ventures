@@ -14,7 +14,7 @@ import { expectNoAxeViolations } from "../support/helpers";
 const SCANNED_ROUTES = [
   { route: "/", description: "home" },
   { route: "/portfolio", description: "portfolio archive" },
-  { route: "/pitch", description: "pitch form" },
+  { route: "/fund", description: "fund page" },
 ] as const;
 
 for (const { route, description } of SCANNED_ROUTES) {

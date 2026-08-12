@@ -54,12 +54,25 @@
   align-items: center;
   flex: none;
   text-decoration: none;
-  --logo-height: 30px;
+  /*
+   * §8.1 wants the mobile mark around 108-128px wide. The wordmark's own
+   * aspect ratio is 195:74 ≈ 2.64:1, so 44px of height renders ~116px wide —
+   * measured from the asset rather than set as a width, which would distort it
+   * if the artwork is ever replaced.
+   */
+  --logo-height: 44px;
 }
 
 @media (min-width: 992px) {
   .logoLink {
-    --logo-height: 74px;
+    /*
+     * §8.1: 56-64px rendered height, down from 74px. At 74 the wordmark
+     * out-weighed the navigation beside it; 60 keeps the mark authoritative
+     * while letting Portfolio and Fund read as peers rather than afterthoughts.
+     * There is still exactly one size — the header does not compact on scroll,
+     * so the mark never changes size as its colour flips.
+     */
+    --logo-height: 60px;
   }
 }
 

@@ -25,13 +25,11 @@
  *    `src/styles/tokens.css` (`--color-black`, `--color-white`,
  *    `--color-foundry-blue`, `--color-muted-on-dark`) and must be kept in step
  *    with it by hand.
- *  - **no font is loaded.** Ivar Display is identity-bearing but is not
- *    licensed for redistribution here, and Satori cannot read the WOFF2 format
- *    the site uses anyway; it also has no access to system fonts, so a serif
- *    stack cannot resolve the way it does in the browser. The declared stack
- *    below states the intent and is the single place a `fonts:` entry would
- *    attach if a licensed TTF/OTF is ever delivered. Until then the card
- *    deliberately carries no typographic identity claim rather than a faked one.
+ *  - **the display face is loaded explicitly.** Satori has no access to system
+ *    fonts and cannot read WOFF2, so the card previously rendered in a fallback
+ *    and carried no typographic identity at all. `src/fonts/newsreader-og.ttf`
+ *    is a ~90-character TTF subset built by `scripts/prepare-fonts.mjs` for
+ *    exactly this purpose; the OFL permits the embedding.
  */
 
 import { readFileSync } from "node:fs";
@@ -55,9 +53,9 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 /* Literal copies of the design tokens — see the note above. */
-const FOUNDRY_BLACK = "#000000";
 const FOUNDRY_WHITE = "#ffffff";
 const FOUNDRY_BLUE = "#00308f";
+const FOUNDRY_DEEP_BLUE = "#001848";
 const MUTED_ON_DARK = "rgba(255, 255, 255, 0.74)";
 
 /**
@@ -89,17 +87,36 @@ function inlineLogo(): string | null {
   }
 }
 
+/**
+ * The display face, read once per render from the subset built for this card.
+ *
+ * Best-effort in the same way as the logo: if the file cannot be read the card
+ * still renders, in Satori's fallback, rather than failing the route and
+ * serving no social image at all.
+ */
+function displayFace(): Buffer | null {
+  try {
+    return readFileSync(path.resolve(process.cwd(), "src/fonts/newsreader-og.ttf"));
+  } catch {
+    return null;
+  }
+}
+
 export default async function OpenGraphImage(): Promise<ImageResponse> {
   // The card is a public artefact: it answers for the published site, never for
   // an editor's preview session (§21.4).
   const settings = await getSiteSettings(publicPolicyContext());
 
   const title = settings.defaultSeoTitle;
-  const description = settings.defaultSeoDescription;
-  // A short, factual label. The canonical host is the one piece of context that
-  // is true by construction and needs no approval.
-  const label = new URL(settings.canonicalOrigin).host.replace(/^www\./, "");
+  /*
+   * §12.4's recommended composition is a short line, not the meta description —
+   * a 130-character paragraph set at 26px is unreadable in a LinkedIn feed
+   * thumbnail. This is the same claim the site's own eyebrow makes, so it needs
+   * no separate approval.
+   */
+  const description = "Nordic AI pre-seed. Teams first.";
   const logo = inlineLogo();
+  const face = displayFace();
 
   return new ImageResponse(
     <div
@@ -109,7 +126,9 @@ export default async function OpenGraphImage(): Promise<ImageResponse> {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        backgroundColor: FOUNDRY_BLACK,
+        // §12.4: a deep-blue field, not black. It ties the card to the hero and
+        // is more distinctive than black in a feed of black cards.
+        backgroundColor: FOUNDRY_DEEP_BLUE,
         padding: `${PADDING_Y}px ${PADDING_X}px`,
       }}
     >
@@ -135,19 +154,9 @@ export default async function OpenGraphImage(): Promise<ImageResponse> {
         <div
           style={{
             display: "flex",
-            fontSize: 22,
-            letterSpacing: 3,
-            color: MUTED_ON_DARK,
-            marginBottom: 22,
-          }}
-        >
-          {label}
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            fontFamily: 'Georgia, "Times New Roman", Times, serif',
+            // Falls back silently to Satori's default when the subset is
+            // unreadable, which is the same posture as the missing logo above.
+            fontFamily: face ? "Newsreader" : "serif",
             fontSize: 76,
             lineHeight: 1.06,
             letterSpacing: 1,
@@ -171,6 +180,11 @@ export default async function OpenGraphImage(): Promise<ImageResponse> {
         </div>
       </div>
     </div>,
-    size,
+    {
+      ...size,
+      ...(face
+        ? { fonts: [{ name: "Newsreader", data: face, weight: 400, style: "normal" as const }] }
+        : {}),
+    },
   );
 }

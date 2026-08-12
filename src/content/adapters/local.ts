@@ -14,12 +14,9 @@
 import type { ContentAdapter } from "./types";
 import { SEED_SITE_SETTINGS } from "../seed/site-settings";
 import { SEED_HOME_PAGE } from "../seed/home";
-import { SEED_ABOUT_PAGE } from "../seed/about";
+import { SEED_FUND_PAGE } from "../seed/fund";
 import { SEED_COMPANIES } from "../seed/companies";
 import { SEED_TEAM_MEMBERS } from "../seed/team";
-import { SEED_POSTS } from "../seed/posts";
-import { SEED_TESTIMONIALS } from "../seed/testimonials";
-import { SEED_NETWORK_PEOPLE } from "../seed/network";
 import { SEED_LEGAL_PAGES } from "../seed/legal";
 import { FIXTURE_DATASET, isFixtureModeEnabled } from "../seed/fixtures";
 
@@ -32,23 +29,14 @@ export const localAdapter: ContentAdapter = {
   async getHomePage() {
     return isFixtureModeEnabled() ? FIXTURE_DATASET.homePage : SEED_HOME_PAGE;
   },
-  async getAboutPage() {
-    return isFixtureModeEnabled() ? FIXTURE_DATASET.aboutPage : SEED_ABOUT_PAGE;
+  async getFundPage() {
+    return isFixtureModeEnabled() ? FIXTURE_DATASET.fundPage : SEED_FUND_PAGE;
   },
   async getCompanies() {
     return isFixtureModeEnabled() ? FIXTURE_DATASET.companies : SEED_COMPANIES;
   },
   async getTeamMembers() {
     return isFixtureModeEnabled() ? FIXTURE_DATASET.teamMembers : SEED_TEAM_MEMBERS;
-  },
-  async getPosts() {
-    return isFixtureModeEnabled() ? FIXTURE_DATASET.posts : SEED_POSTS;
-  },
-  async getTestimonials() {
-    return isFixtureModeEnabled() ? FIXTURE_DATASET.testimonials : SEED_TESTIMONIALS;
-  },
-  async getNetworkPeople() {
-    return isFixtureModeEnabled() ? FIXTURE_DATASET.networkPeople : SEED_NETWORK_PEOPLE;
   },
   async getLegalPages() {
     return SEED_LEGAL_PAGES;

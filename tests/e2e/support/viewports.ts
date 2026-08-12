@@ -31,4 +31,4 @@ export const VIEWPORT_MATRIX: readonly Viewport[] = [
 ] as const;
 
 /** Routes that must survive every width in the matrix without overflowing. */
-export const LAYOUT_ROUTES = ["/", "/portfolio", "/team", "/pitch"] as const;
+export const LAYOUT_ROUTES = ["/", "/portfolio", "/fund", "/privacy"] as const;

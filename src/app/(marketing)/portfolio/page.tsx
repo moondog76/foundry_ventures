@@ -19,7 +19,6 @@ import type { FacetGroup } from "@/content/types";
 import { parseFilters } from "@/lib/filters/engine";
 import { buildCompanyFilterSchema } from "@/lib/filters/schemas";
 import { buildMetadata } from "@/lib/seo/metadata";
-import { PitchBanner } from "@/components/global/PitchBanner";
 import { PortfolioArchive } from "@/components/portfolio/PortfolioArchive";
 import { PORTFOLIO_TITLE, PortfolioHero } from "@/components/portfolio/PortfolioHero";
 
@@ -96,8 +95,6 @@ export default async function PortfolioPage({
         companies={companies}
         totalCount={allCompanies.length}
       />
-
-      <PitchBanner />
     </>
   );
 }

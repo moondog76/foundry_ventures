@@ -11,19 +11,34 @@
   --motion-x: 0px;
   --motion-y: 0px;
   --motion-rotate: 0deg;
-  /* Must match `OVERSCAN` in AmbientOcean.tsx — the component clamps its offsets
-     to this, so the two values cannot drift apart without exposing an edge. */
-  --overscan: 22%;
+  /*
+   * Must match `SETTINGS.overscan` in AmbientOcean.tsx — the hook clamps its
+   * offsets to this, so a smaller CSS value would expose an edge and a larger
+   * one just upscales the video for nothing. It drifted to 22% when the motion
+   * was strong; §10.4 cut the travel to 5%, so 8% is now the whole budget.
+   */
+  --overscan: 8%;
 
   position: absolute;
   inset: 0;
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
-  background: #173f49 url("/media/ocean/ocean-poster.jpg") center / cover no-repeat;
+  /*
+   * A 1280x720 crop on small screens (§12.2: do not serve a 2560px source to a
+   * 390px viewport). The subject is an out-of-focus horizon, so the smaller
+   * encode is indistinguishable and costs ~60 KiB less on mobile.
+   */
+  background: #173f49 url("/media/ocean/ocean-poster-mobile.jpg") center / cover no-repeat;
   /* Isolates paint and layout: the hero's own content must never reflow because
      the background moved. */
   contain: strict;
+}
+
+@media (min-width: 768px) {
+  .scene {
+    background-image: url("/media/ocean/ocean-poster.jpg");
+  }
 }
 
 .video {

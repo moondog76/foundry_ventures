@@ -46,8 +46,17 @@ type SeedCompanyInput = {
   name: string;
   /** Omitted when the owner has not supplied one; never guessed. */
   websiteUrl?: string;
-  /** Two sentences drafted from the company's own website. */
-  description: string;
+  /**
+   * The homepage card descriptor: 10-14 words (§8.4). One clause, no second
+   * sentence — nine of these sit in a grid and any longer turns proof of taste
+   * into a corporate directory.
+   */
+  cardDescriptor: string;
+  /**
+   * The portfolio-page descriptor: 22-28 words (§8.10). Room for what the
+   * company does and who it is for, still short enough to scan down a column.
+   */
+  descriptor: string;
   logo: Company["logo"];
   logoFit: NonNullable<Company["logoFit"]>;
   /** Which field the supplied artwork needs — measured, not guessed. */
@@ -58,7 +67,25 @@ type SeedCompanyInput = {
   reviewNote?: string;
 };
 
+/**
+ * §8.4 and §8.10 give the two descriptor lengths as hard budgets. They are
+ * enforced here rather than trusted, because the failure mode is silent: an
+ * over-long card descriptor does not break anything, it just quietly turns the
+ * homepage grid back into the corporate directory the rebuild set out to remove.
+ */
+function assertDescriptorBudget(name: string, field: string, text: string, min: number, max: number) {
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  if (words < min || words > max) {
+    throw new Error(
+      `${name}: ${field} is ${words} words, outside the ${min}-${max} word budget. Edit the copy rather than the budget.`,
+    );
+  }
+}
+
 function seedCompany(input: SeedCompanyInput): Company {
+  assertDescriptorBudget(input.name, "cardDescriptor", input.cardDescriptor, 10, 14);
+  assertDescriptorBudget(input.name, "descriptor", input.descriptor, 22, 28);
+
   // Descriptions are drafted from each company's own website (owner instruction,
   // 2026-08-11), so the claims are the company's own rather than invented. The
   // evidence records the site it came from and that Foundry has not yet read it.
@@ -106,9 +133,10 @@ function seedCompany(input: SeedCompanyInput): Company {
     logoFit: input.logoFit,
     logoSurface: input.logoSurface,
     opticalScale: input.opticalScale,
-    // The description doubles as the card tagline; both share one evidence record.
-    tagline: input.description,
-    shortDescription: input.description,
+    // Two lengths, one provenance: both are compressions of the same
+    // website-drafted source, so they share an evidence record.
+    tagline: input.cardDescriptor,
+    shortDescription: input.descriptor,
     websiteUrl: input.websiteUrl,
     featured: true,
     sortOrder: input.sortOrder,
@@ -124,8 +152,10 @@ export const SEED_COMPANIES: Company[] = [
     slug: "empley",
     name: "Empley",
     websiteUrl: "https://empley.com/",
-    description:
-      "Empley connects workforce planning to business strategy and financial execution in a single platform. Its AI agents watch for capacity gaps, recommend where to hire, reallocate or upskill, and track those decisions through to execution.",
+    cardDescriptor:
+      "Workforce planning tied to strategy and budget, watched by AI agents.",
+    descriptor:
+      "Connects workforce planning to strategy and financial execution. Its agents flag capacity gaps, recommend where to hire or upskill, and track the decision through.",
     logo: SUPPLIED_PORTFOLIO_LOGOS.empley,
     logoSurface: "dark",
     logoFit: "wide",
@@ -136,8 +166,10 @@ export const SEED_COMPANIES: Company[] = [
     slug: "agaton",
     name: "Agaton",
     websiteUrl: "https://www.agaton.ai/",
-    description:
-      "Agaton builds AI agents for sales and customer service teams, using voice analysis to coach people in real time. It plugs into the systems a team already runs, with the aim of lifting conversion rates and turning service into a revenue function.",
+    cardDescriptor:
+      "Real-time voice coaching for sales and service teams, inside their own tools.",
+    descriptor:
+      "Builds AI agents for sales and service teams, using voice analysis to coach people in real time inside the systems those teams already run.",
     logo: SUPPLIED_PORTFOLIO_LOGOS.agaton,
     logoSurface: "light",
     logoFit: "wide",
@@ -150,8 +182,10 @@ export const SEED_COMPANIES: Company[] = [
     slug: "grand",
     name: "Grand",
     websiteUrl: "https://grandsystems.com/en/",
-    description:
-      "Grand is a cloud property management system for hotels and venues, covering bookings, calendars, catering, proposals and housekeeping in one place. AI assistance runs through the operations so teams can do more across every guest interaction.",
+    cardDescriptor:
+      "Cloud property management for hotels and venues, with AI through operations.",
+    descriptor:
+      "A cloud property management system covering bookings, calendars, catering, proposals and housekeeping for hotels and venues, with AI assistance running through daily operations.",
     logo: SUPPLIED_PORTFOLIO_LOGOS.grand,
     logoSurface: "dark",
     logoFit: "wide",
@@ -162,8 +196,10 @@ export const SEED_COMPANIES: Company[] = [
     slug: "wilgot",
     name: "Wilgot",
     websiteUrl: "https://www.wilgot.ai/",
-    description:
-      "Wilgot rewrites product catalogues so AI search engines, ad systems and shopping agents can find and recommend what a retailer sells. It reads real customer queries and market data to generate product content built for agentic commerce.",
+    cardDescriptor:
+      "Rewrites product catalogues so AI shopping agents can find them.",
+    descriptor:
+      "Rewrites retail product catalogues so AI search, ad systems and shopping agents can find and recommend them, generating content built for agentic commerce.",
     logo: SUPPLIED_PORTFOLIO_LOGOS.wilgot,
     logoSurface: "dark",
     logoFit: "wide",
@@ -174,8 +210,10 @@ export const SEED_COMPANIES: Company[] = [
     slug: "openroll",
     name: "Openroll",
     websiteUrl: "https://www.openroll.com/",
-    description:
-      "Openroll connects to the systems People and Finance teams already run and automates compensation reviews, headcount planning and budget tracking. Teams ask questions in plain language and get auditable answers and live dashboards back.",
+    cardDescriptor:
+      "Compensation reviews, headcount planning and budgets, answered in plain language with an audit trail.",
+    descriptor:
+      "Automates compensation reviews, headcount planning and budget tracking on top of existing People and Finance systems, answering questions in plain language with auditable results.",
     logo: SUPPLIED_PORTFOLIO_LOGOS.openroll,
     logoSurface: "light",
     logoFit: "wide",
@@ -188,8 +226,10 @@ export const SEED_COMPANIES: Company[] = [
     slug: "newly",
     name: "Newly",
     websiteUrl: "https://newly.app/",
-    description:
-      "Newly turns a plain-English description of an app into a working native build for iOS and Android. It handles design, development and deployment on React Native and Expo, and hands over the full source code.",
+    cardDescriptor:
+      "Turns a plain-English brief into a shipped native iOS and Android app.",
+    descriptor:
+      "Turns a plain-English description of an app into a working native build for iOS and Android, handing over the full React Native source code.",
     logo: SUPPLIED_PORTFOLIO_LOGOS.newly,
     // The supplied artwork is a black square with the wordmark inside it, not a
     // transparent mark. It fills the frame so the card reads as one solid tile,
@@ -203,8 +243,10 @@ export const SEED_COMPANIES: Company[] = [
     slug: "skattio",
     name: "Skattio",
     websiteUrl: "https://skattio.se/",
-    description:
-      "Skattio reads a Swedish limited company's bookkeeping and finds where salary, dividend and preliminary-tax decisions are costing it money. It turns that into specific, quantified recommendations for the owner.",
+    cardDescriptor:
+      "Finds where a Swedish company's salary and dividend decisions cost money.",
+    descriptor:
+      "Reads a Swedish limited company's bookkeeping and finds where salary, dividend and preliminary-tax decisions cost the owner money, quantified as specific recommendations.",
     logo: SUPPLIED_PORTFOLIO_LOGOS.skattio,
     logoSurface: "dark",
     logoFit: "wide",
@@ -216,8 +258,10 @@ export const SEED_COMPANIES: Company[] = [
     name: "BuilderBase",
     // Supplied by the content owner 2026-08-11.
     websiteUrl: "https://builderbase.com/",
-    description:
-      "BuilderBase runs hackathons, accelerators and sprints from one place, covering applications, team formation, judging, sponsors and reporting. It is built to keep the administration of an event in a single tool rather than spread across several.",
+    cardDescriptor:
+      "Runs hackathons, accelerators and sprints end to end from one place.",
+    descriptor:
+      "Runs hackathons, accelerators and sprints from a single tool, covering applications, team formation, judging, sponsors and reporting instead of spreading them across several.",
     logo: SUPPLIED_PORTFOLIO_LOGOS.builderbase,
     // Measured luminance 61 — a dark mark that needs a light field.
     logoSurface: "light",
@@ -229,8 +273,10 @@ export const SEED_COMPANIES: Company[] = [
     slug: "memmo",
     name: "Memmo",
     websiteUrl: "https://www.memmo.org/",
-    description:
-      "Memmo turns course notes, documents and lectures into quizzes, flashcards, summaries and podcasts. It tracks what a student actually knows and connects to a library of more than 300,000 textbooks.",
+    cardDescriptor:
+      "Turns course notes and lectures into quizzes, flashcards, summaries and podcasts.",
+    descriptor:
+      "Turns course notes, documents and lectures into quizzes, flashcards, summaries and podcasts, tracking what a student knows across a library of 300,000+ textbooks.",
     logo: SUPPLIED_PORTFOLIO_LOGOS.memmo,
     logoSurface: "light",
     logoFit: "wide",

@@ -2,7 +2,7 @@
  * Offering (§7.4).
  *
  * Carries the stable `#offering` anchor: `/offering` from the old Squarespace IA
- * 308-redirects to `/#offering` (§15.2), so this id is a published contract and
+ * 308-redirects to `/#offering` (§12.6), so this id is a published contract and
  * must not be renamed. `scroll-margin-top` keeps the target clear of the fixed
  * header.
  *
@@ -12,10 +12,9 @@
  */
 
 import type { HomePage } from "@/content/types";
-import { canRenderImage, type PolicyContext } from "@/content/policy";
+import { type PolicyContext } from "@/content/policy";
 import { Container, Section, cx } from "@/components/ui";
 import { Reveal } from "@/components/ui/Reveal";
-import { EditorialImagePair } from "./EditorialImagePair";
 import { renderableText } from "./text";
 import styles from "./offering-grid.module.css";
 
@@ -29,12 +28,9 @@ export function OfferingGrid({ offering, policy }: OfferingGridProps) {
   const items = offering.items
     .map((item) => ({ number: item.number, body: renderableText(item.body, policy) }))
     .filter((item): item is { number: string; body: string } => item.body !== null);
-  const hasImages = offering.images.some((image) => canRenderImage(image, policy));
 
-  // No approved copy and no rights-cleared artwork: the section is omitted
-  // entirely. `/offering` then lands at the top of the home page, which is a
-  // correct destination — better than an empty anchored frame (§7.4, §15.2).
-  if (items.length === 0 && !hasImages) return null;
+  // No approved copy means no section — better than an empty anchored frame.
+  if (items.length === 0) return null;
 
   return (
     <Section
@@ -76,8 +72,6 @@ export function OfferingGrid({ offering, policy }: OfferingGridProps) {
             ))}
           </ol>
         ) : null}
-
-        <EditorialImagePair images={offering.images} policy={policy} />
       </Container>
     </Section>
   );

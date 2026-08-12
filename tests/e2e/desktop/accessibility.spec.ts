@@ -15,13 +15,13 @@
 
 import { expect, test } from "@playwright/test";
 import { COMPANY_WITH_DETAIL, LISTED_COMPANY_COUNT } from "../support/fixture-data";
-import { expectNoAxeViolations, isFocused } from "../support/helpers";
+import { expectNoAxeViolations } from "../support/helpers";
 
 const SCANNED_ROUTES = [
   { route: "/", description: "home" },
   { route: "/portfolio", description: "portfolio archive" },
+  { route: "/fund", description: "fund page" },
   { route: `/portfolio/${COMPANY_WITH_DETAIL.slug}`, description: "company detail" },
-  { route: "/team", description: "team index" },
   { route: "/pitch", description: "pitch form" },
   { route: "/privacy", description: "privacy notice" },
 ] as const;
@@ -46,17 +46,6 @@ test("the portfolio archive is still clean with filters applied", async ({ page 
   await page.goto("/portfolio?stage=seed&status=realized");
   await expectNoAxeViolations(page, "/portfolio with an empty result");
 });
-
-test("the pitch form is still clean while showing validation errors", async ({ page }) => {
-  await page.goto("/pitch");
-  await page.getByRole("button", { name: "Send pitch" }).click();
-  await expect(page.locator("#pitch-error-summary")).toBeVisible();
-
-  // Error messages, `aria-invalid`, and the summary's links are all new DOM that
-  // never existed in the first scan.
-  await expectNoAxeViolations(page, "/pitch with validation errors");
-});
-
 test("the filters are fully operable from the keyboard and keep focus", async ({ page }) => {
   await page.goto("/portfolio");
 
@@ -104,27 +93,6 @@ test("a filter group can be collapsed and expanded from the keyboard", async ({ 
   await page.keyboard.press("Enter");
   await expect(stageToggle).toHaveAttribute("aria-expanded", "true");
 });
-
-test("the pitch form submits and surfaces its errors from the keyboard alone", async ({ page }) => {
-  await page.goto("/pitch");
-
-  // Submitting with Enter from inside a field is the ordinary keyboard path.
-  await page.getByLabel("First name").focus();
-  await page.keyboard.press("Enter");
-
-  const summary = page.locator("#pitch-error-summary");
-  await expect(summary).toBeVisible();
-  expect(await isFocused(summary)).toBe(true);
-
-  // From the focused summary, Tab reaches its first link and Enter jumps to the
-  // control that produced the message.
-  await page.keyboard.press("Tab");
-  const firstError = summary.getByRole("link").first();
-  await expect(firstError).toBeFocused();
-  await page.keyboard.press("Enter");
-  await expect(page.getByLabel("Country")).toBeFocused();
-});
-
 test("the testimonials block is operable without a pointer", async ({ page }) => {
   await page.goto("/");
 

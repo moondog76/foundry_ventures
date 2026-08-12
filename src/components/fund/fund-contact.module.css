@@ -1,0 +1,35 @@
+.block {
+  display: grid;
+  gap: var(--space-sm);
+  max-width: 56ch;
+}
+
+.heading {
+  font-size: var(--text-h3);
+  line-height: var(--leading-heading);
+  margin: 0;
+}
+
+.body {
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  margin: 0;
+}
+
+.email {
+  justify-self: start;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-lg);
+  color: var(--text-default);
+  text-decoration: none;
+  border-bottom: var(--border-hairline) solid var(--line-default);
+  padding-bottom: 2px;
+  transition: border-color var(--duration-fast) var(--ease-standard);
+  /* Long addresses must never push the page wide at 320px. */
+  overflow-wrap: anywhere;
+}
+
+.email:hover,
+.email:focus-visible {
+  border-color: currentcolor;
+}

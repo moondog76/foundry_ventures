@@ -27,11 +27,25 @@ export const APEX_HOST = "foundryventures.ai";
 const GONE_PATHS = new Set(["/instructors", "/pricing"]);
 
 /**
- * P0 target for `/offering` is the stable home anchor. It moves to
- * `/about#offering` only once About is published and link-tested (§30).
+ * Migration map for the Squarespace-era URLs (§12.6).
+ *
+ * Every destination is a route that exists today, checked against §7.1 — a
+ * redirect to a 404 is worse than no redirect, because it launders a dead link
+ * into a live-looking one. `/instructors` and `/pricing` stay in `GONE_PATHS`
+ * above rather than moving here: they were template demo pages with no
+ * successor, and §12.6 warns against redirecting every unknown URL somewhere
+ * plausible.
  */
 const LEGACY_REDIRECTS: Record<string, string> = {
   "/home": "/",
+  /*
+   * §12.6 offers `/fund` or a what-changes anchor. The anchor is the closer
+   * match — the old page described what a founder gets, not the fund — but the
+   * id stays `#offering` rather than being renamed to match the brief's example
+   * URL. It is already a published contract with end-to-end coverage, and
+   * breaking a live anchor to match an illustrative map would trade a real
+   * inbound link for a cosmetic one.
+   */
   "/offering": "/#offering",
 };
 
@@ -89,7 +103,20 @@ export function proxy(request: NextRequest): NextResponse {
   }
 
   // 4. Canonical request — hand off to the route.
-  return NextResponse.next();
+  const response = NextResponse.next();
+
+  /*
+   * Belt-and-braces `noindex` for every non-production deployment (§12.5).
+   *
+   * The per-route `robots` metadata already says this, but a header also covers
+   * responses that carry no meta tag at all — the sitemap, JSON, redirects and
+   * any asset served through this matcher. Both layers read the same env var,
+   * so they can never disagree.
+   */
+  if (process.env.FOUNDRY_INDEXABLE !== "1") {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
+  }
+  return response;
 }
 
 export const config = {

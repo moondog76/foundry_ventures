@@ -82,7 +82,7 @@ test("an unknown path returns 404 with the branded page", async ({ page, request
   await expect(page.getByRole("contentinfo")).toBeVisible();
   await expect(page.getByRole("link", { name: "Go to the home page" })).toBeVisible();
   await expect(page.getByRole("link", { name: "See the portfolio" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Pitch us" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "The fund" })).toBeVisible();
 });
 
 test("a trailing slash normalises in one hop", async ({ request }) => {

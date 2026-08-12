@@ -22,7 +22,8 @@
     "fonts:check": "node scripts/check-fonts.mjs",
     "content:gate": "node scripts/content-integrity.mjs",
     "predev": "node scripts/check-fonts.mjs",
-    "verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm build"
+    "verify": "pnpm fonts:check && pnpm typecheck && pnpm lint && pnpm test && pnpm build",
+    "fonts:build": "node scripts/prepare-fonts.mjs"
   },
   "dependencies": {
     "@sanity/client": "^7.26.2",

@@ -165,15 +165,29 @@ export type Address = {
 
 /* --------------------------------------------------------- Feature flags */
 
+/**
+ * Feature flags, reduced to the three surfaces that can genuinely be on or off.
+ *
+ * The old set gated routes that no longer exist. §7.1 fixes the public site at
+ * `/`, `/portfolio`, `/fund` and `/privacy`, and §17 rules out the blog, pitch
+ * form, network directory, stats wall and testimonial carousel permanently — so
+ * a flag for each was a switch wired to nothing.
+ *
+ * What remains are the three surfaces blocked on *content* rather than on a
+ * decision, which is exactly what a flag should express.
+ */
 export type FeatureFlags = {
+  /** The six-fact investment model strip (§8.3). */
   investmentCriteria: boolean;
-  team: boolean;
-  pitch: boolean;
-  insights: boolean;
-  about: boolean;
-  network: boolean;
-  stats: boolean;
-  testimonials: boolean;
+  /** The single founder quote (§8.7). Off until one is approved for publication. */
+  founderQuote: boolean;
+  /**
+   * Legal entity, registered address, organisation number and any regulatory
+   * statement, on `/fund` and in the footer (§8.11). Off until counsel approves
+   * the values — §16 blocks release of draft legal language rather than
+   * publishing a placeholder.
+   */
+  institutionalDetails: boolean;
 };
 
 export type FeatureFlagKey = keyof FeatureFlags;
@@ -190,19 +204,6 @@ export type InvestmentCriterion = {
 };
 
 /* ------------------------------------------------------------------- Stats */
-
-export type Stat = {
-  value: number;
-  prefix?: string;
-  suffix?: string;
-  label: string;
-  sourceNote?: string;
-  asOfDate?: string;
-  /** When set, `value` is recomputed from live content instead of trusted. */
-  derivedKey?: "activeCompanyCount" | "totalCompanyCount";
-  evidence: FieldEvidence;
-  sortOrder: number;
-};
 
 /* ------------------------------------------------------------ SiteSettings */
 
@@ -237,7 +238,6 @@ export type SiteSettings = {
   footerNavigation: NavItem[];
   legalNavigation: NavItem[];
   investmentCriteria: InvestmentCriterion[];
-  stats: Stat[];
   socialLinks: SocialLink[];
   brandStatement?: EditorialText;
   featureFlags: FeatureFlags;
@@ -271,6 +271,15 @@ export type TeamMember = {
   email?: string;
   phone?: string;
   linkedinUrl?: string;
+  /**
+   * Whether this person materially owns investment decisions (§8.7).
+   *
+   * This is what the decision-maker block and `/fund` render from — not
+   * "everyone on the team". §8.7 forbids implying a team larger than reality,
+   * and separating the two means adding an operations hire later cannot
+   * silently promote them into the investment story.
+   */
+  ownsInvestmentDecision: boolean;
   active: boolean;
   sortOrder: number;
   seo?: SeoFields;
@@ -280,7 +289,6 @@ export type TeamMemberRef = { id: string; slug: string; name: string };
 
 /** Team profile view model, with reverse relations resolved (§16.4.1). */
 export type TeamMemberView = TeamMember & {
-  authoredPosts: PostSummary[];
   dealLeadCompanies: CompanySummary[];
 };
 
@@ -407,7 +415,6 @@ export type CompanyDetailView = {
   company: Company;
   summary: CompanySummary;
   dealLead: TeamMember | null;
-  relatedPosts: PostSummary[];
   previous: CompanySummary | null;
   next: CompanySummary | null;
 };
@@ -416,93 +423,9 @@ export type CompanyDetailView = {
 
 export type PostType = "article" | "portfolio-news";
 
-export type Post = {
-  id: string;
-  publicationStatus: PublicationStatus;
-  editorialApprovalStatus: ApprovalStatus;
-  title: string;
-  slug?: string;
-  type: PostType;
-  target: "internal" | "external";
-  externalUrl?: string;
-  publishedAt?: string;
-  updatedAt?: string;
-  heroImage?: ImageAsset;
-  excerpt: string;
-  body?: RichText;
-  authors: TeamMemberRef[];
-  companies: CompanyRef[];
-  relatedPosts?: PostRef[];
-  featured: boolean;
-  sortOrder?: number;
-  seo?: SeoFields;
-};
-
-export type PostRef = { id: string; slug?: string; title: string };
-
-export type PostSummary = {
-  id: string;
-  title: string;
-  type: PostType;
-  href: string;
-  isExternal: boolean;
-  excerpt: string;
-  publishedAt: string | null;
-  heroImage: ImageAsset | null;
-  authors: TeamMemberRef[];
-  companies: CompanyRef[];
-  readingTimeMinutes: number | null;
-};
-
-export type PostDetailView = {
-  post: Post;
-  summary: PostSummary;
-  authors: TeamMember[];
-  companies: CompanySummary[];
-  related: PostSummary[];
-};
-
 /* ----------------------------------------------------------- Testimonials */
 
-export type Testimonial = {
-  id: string;
-  publicationStatus: PublicationStatus;
-  consentStatus: "missing" | "requested" | "granted" | "revoked";
-  quote: string;
-  personName: string;
-  personTitle?: string;
-  company?: CompanyRef;
-  image?: ImageAsset;
-  featured: boolean;
-  sortOrder: number;
-  fieldEvidence: Partial<
-    Record<"quote" | "personName" | "personTitle" | "company" | "image", FieldEvidence>
-  >;
-};
-
 /* -------------------------------------------------------- Network people */
-
-export type NetworkPerson = {
-  id: string;
-  name: string;
-  slug: string;
-  publicationStatus: PublicationStatus;
-  verificationStatus: VerificationStatus;
-  fieldEvidence: Partial<
-    Record<
-      "name" | "group" | "image" | "roleLine" | "linkedinUrl" | "verticals" | "expertise",
-      FieldEvidence
-    >
-  >;
-  group: "operating-partner" | "advisor" | "angel-network";
-  image?: ImageAsset;
-  roleLine: string;
-  linkedinUrl?: string;
-  verticals: TaxonomyRef[];
-  expertise: TaxonomyRef[];
-  featured: boolean;
-  sortOrder: number;
-};
 
 /* ------------------------------------------------------------- Home page */
 
@@ -529,7 +452,12 @@ export type HomePage = {
   offering: {
     eyebrow: EditorialText;
     items: Array<{ number: string; body: EditorialText }>;
-    images: ImageAsset[];
+    /**
+     * Editorial imagery beside the items. Optional and currently unused: §8.6
+     * removes the two-image composition unless replacement art passes the
+     * §9.8 standard, and §16 says use less imagery rather than fill the gap.
+     */
+    images?: ImageAsset[];
   };
   featuredPortfolio: {
     heading: EditorialText;
@@ -539,18 +467,56 @@ export type HomePage = {
     ctaLabel?: EditorialText;
     ctaHref: "/portfolio";
   };
-  optionalSections?: {
-    statsHeading?: EditorialText;
-    testimonialsHeading?: EditorialText;
-    latestInsightsHeading?: EditorialText;
-    latestInsightsCtaLabel?: EditorialText;
-  };
   contact: {
     heading: EditorialText;
     paragraphs: EditorialText[];
-    primaryCta: CtaContent;
-    secondaryCta: { label: EditorialText; contactPerson: TeamMemberRef };
+    /**
+     * The single closing action, addressed to a person rather than a route.
+     * §9.7 allows one primary action per section and §17 rules out a form, so
+     * there is deliberately no second CTA to compete with this one.
+     */
+    primaryCta: { label: EditorialText; contactPerson: TeamMemberRef };
     contactPeople: TeamMemberRef[];
+  };
+  seo: SeoFields;
+};
+
+/**
+ * The quiet institutional layer (§8.11).
+ *
+ * Budget: ~400-500 words, at most four modules before the footer, and no
+ * repetition of homepage copy. Deliberately absent from this model, per §8.11's
+ * explicit exclusions: fund size, vintage, deployment data, target returns, LP
+ * names, data room, portal links and any lead form.
+ */
+export type FundPage = {
+  publicationStatus: PublicationStatus;
+  hero: {
+    heading: EditorialText;
+    /** One paragraph, maximum 45 words. */
+    intro: EditorialText;
+  };
+  /** The same six facts as the homepage strip, from one source of truth. */
+  factsHeading: EditorialText;
+  model: {
+    heading: EditorialText;
+    /** One 70-100 word explanation of team-first underwriting. */
+    body: EditorialText;
+    /**
+     * Three compact steps. §8.11 warns against false timeline promises, so
+     * these describe sequence, never duration.
+     */
+    steps: Array<{ number: string; title: EditorialText; body: EditorialText }>;
+  };
+  people: {
+    heading: EditorialText;
+    /** Rendered from `TeamMember` records where `ownsInvestmentDecision`. */
+    memberIds: TeamMemberRef[];
+  };
+  contact: {
+    heading: EditorialText;
+    body: EditorialText;
+    contactPerson: TeamMemberRef;
   };
   seo: SeoFields;
 };
@@ -563,17 +529,6 @@ export type LegalPage = {
   lastUpdated: string;
   body: RichText;
   seo?: SeoFields;
-};
-
-export type AboutPage = {
-  publicationStatus: PublicationStatus;
-  heading: EditorialText;
-  intro: EditorialText[];
-  beliefs: Array<{ title: EditorialText; body: EditorialText }>;
-  howWeWork: Array<{ number: string; body: EditorialText }>;
-  whatWeLookFor: Array<{ title: EditorialText; body: EditorialText }>;
-  process: Array<{ step: string; title: EditorialText; body: EditorialText }>;
-  seo: SeoFields;
 };
 
 /* --------------------------------------------------------------- Filters */

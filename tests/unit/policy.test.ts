@@ -15,16 +15,11 @@ import {
   PRODUCTION_POLICY,
   canIndex,
   canIndexCompany,
-  canIndexPost,
   canIndexTeamMember,
   canListCompanyPublicly,
-  canListNetworkPersonPublicly,
-  canListPostPublicly,
   canListTeamMemberPublicly,
-  canListTestimonialPublicly,
   canPublishCompanyDetail,
   canPublishCompanyField,
-  canPublishPostDetail,
   canPublishTeamDetail,
   canRenderEditorialText,
   canRenderEvidence,
@@ -39,11 +34,8 @@ import type {
   EditorialText,
   FieldEvidence,
   ImageAsset,
-  NetworkPerson,
-  Post,
   RichText,
   TeamMember,
-  Testimonial,
 } from "@/content/types";
 
 /* ------------------------------------------------------------- Fixtures */
@@ -104,6 +96,7 @@ function makeTeamMember(overrides: Partial<TeamMember> = {}): TeamMember {
     name: "Fixture Person",
     slug: "fixture-person",
     role: "Fixture role",
+    ownsInvestmentDecision: false,
     publicationStatus: "published",
     verificationStatus: "verified",
     fieldEvidence: { name: APPROVED, role: APPROVED, longBio: APPROVED },
@@ -114,38 +107,7 @@ function makeTeamMember(overrides: Partial<TeamMember> = {}): TeamMember {
   };
 }
 
-function makePost(overrides: Partial<Post> = {}): Post {
-  return {
-    id: "test-post",
-    publicationStatus: "published",
-    editorialApprovalStatus: "approved",
-    title: "A fixture post",
-    slug: "a-fixture-post",
-    type: "article",
-    target: "internal",
-    publishedAt: "2026-06-01",
-    excerpt: "Fixture excerpt.",
-    body: BODY,
-    authors: [],
-    companies: [],
-    featured: false,
-    ...overrides,
-  };
-}
 
-function makeTestimonial(overrides: Partial<Testimonial> = {}): Testimonial {
-  return {
-    id: "test-testimonial",
-    publicationStatus: "published",
-    consentStatus: "granted",
-    quote: "A fixture quote.",
-    personName: "Fixture Person",
-    featured: false,
-    sortOrder: 10,
-    fieldEvidence: { quote: APPROVED, personName: APPROVED },
-    ...overrides,
-  };
-}
 
 function makeImage(overrides: Partial<ImageAsset> = {}): ImageAsset {
   return {
@@ -394,107 +356,8 @@ describe("team member policy", () => {
 });
 
 /* ------------------------------------------------------------------ Post */
-
-describe("post policy", () => {
-  it("never gives an external post a detail route, in either mode", () => {
-    const external = makePost({
-      target: "external",
-      externalUrl: "https://example.org/an-article",
-      slug: undefined,
-      body: undefined,
-    });
-
-    expect(canListPostPublicly(external, PRODUCTION_POLICY)).toBe(true);
-    expect(canPublishPostDetail(external, PRODUCTION_POLICY)).toBe(false);
-    expect(canPublishPostDetail(external, PREVIEW_POLICY)).toBe(false);
-    expect(canIndexPost(external, PRODUCTION_POLICY)).toBe(false);
-  });
-
-  it("requires an external post to actually have a URL", () => {
-    expect(
-      canListPostPublicly(
-        makePost({ target: "external", externalUrl: undefined }),
-        PRODUCTION_POLICY,
-      ),
-    ).toBe(false);
-  });
-
-  it("requires publication, editorial approval, a date and real body content", () => {
-    expect(canListPostPublicly(makePost(), PRODUCTION_POLICY)).toBe(true);
-    expect(canListPostPublicly(makePost({ publicationStatus: "draft" }), PRODUCTION_POLICY)).toBe(
-      false,
-    );
-    expect(
-      canListPostPublicly(makePost({ editorialApprovalStatus: "unapproved" }), PRODUCTION_POLICY),
-    ).toBe(false);
-    expect(canListPostPublicly(makePost({ publishedAt: undefined }), PRODUCTION_POLICY)).toBe(
-      false,
-    );
-    expect(canListPostPublicly(makePost({ body: [] }), PRODUCTION_POLICY)).toBe(false);
-  });
-
-  it("never indexes a post in preview", () => {
-    expect(canIndexPost(makePost(), PREVIEW_POLICY)).toBe(false);
-  });
-});
-
 /* ------------------------------------------------------------ Testimonial */
-
-describe("testimonial policy", () => {
-  it("excludes a revoked testimonial in both modes", () => {
-    const revoked = makeTestimonial({ consentStatus: "revoked" });
-
-    expect(canListTestimonialPublicly(revoked, PRODUCTION_POLICY)).toBe(false);
-    // Consent withdrawal must take effect everywhere immediately, preview too.
-    expect(canListTestimonialPublicly(revoked, PREVIEW_POLICY)).toBe(false);
-  });
-
-  it("requires granted consent and approved quote/name evidence in production", () => {
-    expect(canListTestimonialPublicly(makeTestimonial(), PRODUCTION_POLICY)).toBe(true);
-    expect(
-      canListTestimonialPublicly(
-        makeTestimonial({ consentStatus: "requested" }),
-        PRODUCTION_POLICY,
-      ),
-    ).toBe(false);
-    expect(
-      canListTestimonialPublicly(
-        makeTestimonial({ fieldEvidence: { quote: OBSERVED, personName: APPROVED } }),
-        PRODUCTION_POLICY,
-      ),
-    ).toBe(false);
-  });
-});
-
 /* ---------------------------------------------------------- NetworkPerson */
-
-describe("network person policy", () => {
-  const person: NetworkPerson = {
-    id: "test-network-person",
-    name: "Fixture Operator",
-    slug: "fixture-operator",
-    publicationStatus: "published",
-    verificationStatus: "verified",
-    fieldEvidence: { name: APPROVED, roleLine: APPROVED },
-    group: "advisor",
-    roleLine: "Fixture role line",
-    verticals: [],
-    expertise: [],
-    featured: false,
-    sortOrder: 10,
-  };
-
-  it("requires an approved name and role line", () => {
-    expect(canListNetworkPersonPublicly(person, PRODUCTION_POLICY)).toBe(true);
-    expect(
-      canListNetworkPersonPublicly(
-        { ...person, fieldEvidence: { name: APPROVED, roleLine: OBSERVED } },
-        PRODUCTION_POLICY,
-      ),
-    ).toBe(false);
-  });
-});
-
 /* ------------------------------------------------- Generic entry points */
 
 describe("generic policy entry points", () => {
@@ -502,9 +365,6 @@ describe("generic policy entry points", () => {
     const company = makeCompany();
     expect(canIndex({ kind: "company", record: company }, PRODUCTION_POLICY)).toBe(
       canIndexCompany(company, PRODUCTION_POLICY),
-    );
-    expect(canIndex({ kind: "testimonial", record: makeTestimonial() }, PRODUCTION_POLICY)).toBe(
-      false,
     );
   });
 });

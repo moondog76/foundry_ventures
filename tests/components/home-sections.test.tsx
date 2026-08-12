@@ -11,13 +11,9 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { ContactCta } from "@/components/home/ContactCta";
-import { EditorialImagePair } from "@/components/home/EditorialImagePair";
 import { FeaturedPortfolio } from "@/components/home/FeaturedPortfolio";
 import { InvestmentCriteriaGrid } from "@/components/home/InvestmentCriteriaGrid";
-import { LatestInsights } from "@/components/home/LatestInsights";
 import { OfferingGrid } from "@/components/home/OfferingGrid";
-import { StatsGrid } from "@/components/home/StatsGrid";
-import { TestimonialsCarousel } from "@/components/home/TestimonialsCarousel";
 import { VisionSection } from "@/components/home/VisionSection";
 import { PREVIEW_POLICY, PRODUCTION_POLICY } from "@/content/policy";
 import type {
@@ -26,7 +22,6 @@ import type {
   FieldEvidence,
   HomePage,
   ImageAsset,
-  Testimonial,
 } from "@/content/types";
 
 const unapproved = (value: string): EditorialText => ({
@@ -56,15 +51,6 @@ const UNAVAILABLE_IMAGE: ImageAsset = {
   available: false,
 };
 
-const AVAILABLE_IMAGE: ImageAsset = {
-  id: "available",
-  src: "/fixtures/art.jpg",
-  width: 1600,
-  height: 1200,
-  rightsStatus: "approved",
-  available: true,
-};
-
 const COMPANY: CompanySummary = {
   id: "c1",
   slug: "testcorp-fixture",
@@ -86,32 +72,6 @@ const COMPANY: CompanySummary = {
   featured: true,
   sortOrder: 10,
 };
-
-describe("StatsGrid", () => {
-  it("renders nothing when no stat cleared the policy", () => {
-    const { container } = render(<StatsGrid stats={[]} heading="Foundry in numbers" />);
-    expect(container).toBeEmptyDOMElement();
-  });
-
-  it("renders the figures it was given", () => {
-    render(
-      <StatsGrid
-        stats={[
-          {
-            value: 8,
-            label: "Portfolio companies",
-            evidence: APPROVED_EVIDENCE,
-            sortOrder: 10,
-          },
-        ]}
-        heading="Foundry in numbers"
-      />,
-    );
-
-    expect(screen.getByRole("heading", { name: "Foundry in numbers" })).toBeInTheDocument();
-    expect(screen.getByText("Portfolio companies")).toBeInTheDocument();
-  });
-});
 
 describe("FeaturedPortfolio", () => {
   it("renders nothing when no company is publishable", () => {
@@ -165,105 +125,10 @@ describe("FeaturedPortfolio", () => {
     expect(screen.queryAllByRole("link", { name: /portfolio/i })).toHaveLength(0);
   });
 });
-
-describe("LatestInsights", () => {
-  it("renders nothing when there are no publishable posts", () => {
-    const { container } = render(
-      <LatestInsights
-        posts={[]}
-        policy={PRODUCTION_POLICY}
-        heading="News & Insights"
-        ctaLabel="See all insights"
-        ctaHref="/insights"
-      />,
-    );
-    expect(container).toBeEmptyDOMElement();
-  });
-
-  it("links an external post straight out", () => {
-    render(
-      <LatestInsights
-        posts={[
-          {
-            id: "p1",
-            title: "A fixture news item",
-            type: "portfolio-news",
-            href: "https://example.org/news",
-            isExternal: true,
-            excerpt: "Fixture excerpt.",
-            publishedAt: "2026-06-01",
-            heroImage: null,
-            authors: [],
-            companies: [],
-            readingTimeMinutes: null,
-          },
-        ]}
-        policy={PRODUCTION_POLICY}
-        heading="News & Insights"
-        ctaLabel={null}
-        ctaHref="/insights"
-      />,
-    );
-
-    const link = screen.getByRole("link", { name: /A fixture news item/ });
-    expect(link).toHaveAttribute("href", "https://example.org/news");
-    expect(link).toHaveAttribute("target", "_blank");
-    expect(link).toHaveAccessibleName(expect.stringContaining("opens in a new tab"));
-  });
-});
-
-describe("TestimonialsCarousel", () => {
-  const testimonial = (id: string): Testimonial => ({
-    id,
-    publicationStatus: "published",
-    consentStatus: "granted",
-    quote: `A fixture testimonial quote (${id}).`,
-    personName: "Fixture Founder",
-    featured: false,
-    sortOrder: 10,
-    fieldEvidence: { quote: APPROVED_EVIDENCE, personName: APPROVED_EVIDENCE },
-  });
-
-  it("renders nothing when there is nothing to quote", () => {
-    const { container } = render(
-      <TestimonialsCarousel testimonials={[]} policy={PRODUCTION_POLICY} heading="From founders" />,
-    );
-    expect(container).toBeEmptyDOMElement();
-  });
-
-  it("renders a single quote with no carousel controls at all", () => {
-    render(
-      <TestimonialsCarousel
-        testimonials={[testimonial("t1")]}
-        policy={PRODUCTION_POLICY}
-        heading="From founders"
-      />,
-    );
-
-    expect(screen.getByText("A fixture testimonial quote (t1).")).toBeInTheDocument();
-    // A carousel of one would be a lie about how much content exists.
-    expect(screen.queryByRole("button")).toBeNull();
-  });
-
-  it("renders controls only once there is more than one quote", () => {
-    render(
-      <TestimonialsCarousel
-        testimonials={[testimonial("t1"), testimonial("t2")]}
-        policy={PRODUCTION_POLICY}
-        heading="From founders"
-      />,
-    );
-
-    expect(screen.getByRole("button", { name: "Previous testimonial" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Next testimonial" })).toBeInTheDocument();
-    expect(screen.getByRole("group", { name: "From founders" })).toBeInTheDocument();
-  });
-});
-
 describe("InvestmentCriteriaGrid", () => {
   it("renders nothing when no criterion is owner-approved", () => {
     const { container } = render(
-      <InvestmentCriteriaGrid criteria={[]} ctaHref="/pitch" ctaLabel="Pitch us" />,
+      <InvestmentCriteriaGrid criteria={[]} />,
     );
     expect(container).toBeEmptyDOMElement();
   });
@@ -275,14 +140,11 @@ describe("InvestmentCriteriaGrid", () => {
           { label: "Stage", value: "Pre-seed", evidence: APPROVED_EVIDENCE, sortOrder: 10 },
           { label: "Geography", value: "Nordics", evidence: APPROVED_EVIDENCE, sortOrder: 20 },
         ]}
-        ctaHref="/pitch"
-        ctaLabel="Pitch us"
       />,
     );
 
     expect(screen.getByText("Stage")).toBeInTheDocument();
     expect(screen.getByText("Pre-seed")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Pitch us" })).toHaveAttribute("href", "/pitch");
   });
 });
 
@@ -355,28 +217,11 @@ describe("OfferingGrid", () => {
   });
 });
 
-describe("EditorialImagePair", () => {
-  it("renders nothing when no rights-cleared binary exists", () => {
-    const { container } = render(
-      <EditorialImagePair images={[UNAVAILABLE_IMAGE]} policy={PRODUCTION_POLICY} />,
-    );
-    expect(container).toBeEmptyDOMElement();
-  });
-
-  it("renders the artwork it is allowed to render", () => {
-    const { container } = render(
-      <EditorialImagePair images={[AVAILABLE_IMAGE]} policy={PRODUCTION_POLICY} />,
-    );
-    expect(container.querySelector("img")).not.toBeNull();
-  });
-});
-
 describe("ContactCta", () => {
   const contact: HomePage["contact"] = {
     heading: unapproved("A closing heading awaiting approval"),
     paragraphs: [unapproved("A closing paragraph awaiting approval")],
-    primaryCta: { label: unapproved("Pitch us"), href: "/pitch" },
-    secondaryCta: {
+    primaryCta: {
       label: unapproved("Email us"),
       contactPerson: { id: "m1", slug: "fixture-person", name: "Fixture Person" },
     },
@@ -390,7 +235,6 @@ describe("ContactCta", () => {
         people={[]}
         policy={PRODUCTION_POLICY}
         image={UNAVAILABLE_IMAGE}
-        primaryCtaFallbackLabel="Pitch"
       />,
     );
     expect(container).toBeEmptyDOMElement();
@@ -403,12 +247,10 @@ describe("ContactCta", () => {
         people={[]}
         policy={PRODUCTION_POLICY}
         image={UNAVAILABLE_IMAGE}
-        primaryCtaFallbackLabel="Pitch"
       />,
     );
 
     // The fallback comes from SiteSettings navigation, never invented here.
-    expect(screen.getByRole("link", { name: "Pitch" })).toHaveAttribute("href", "/pitch");
     expect(screen.getByRole("heading", { name: "Let's talk" })).toBeInTheDocument();
   });
 });

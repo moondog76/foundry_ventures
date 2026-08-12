@@ -1015,3 +1015,107 @@ lost that distinction the moment the commit message scrolled out of view.
 **Consequence.** The integrity report can list every string nobody has read.
 Once someone reads them, dropping the note is a one-line change per string —
 or the helper can simply be renamed.
+
+---
+
+## D-034 — Newsreader replaces Ivar Display
+
+**Decision.** Ship Newsreader (SIL OFL) as the display face, self-hosted and
+subset by `scripts/prepare-fonts.mjs`, with Inter for text. Ivar Display is
+removed from the codebase entirely.
+
+**Rationale.** `/fonts/IvarDisplay-Regular.woff2` 404'd on every route for the
+whole life of the site. Every heading rendered in Georgia, every page logged a
+console error, and nothing caught it. Foundry does not hold web rights to Ivar,
+and §16 of the enhancement brief forbids shipping "a broken imitation", so the
+choice was a licensed substitute or no serif at all. Newsreader is the closest
+honest match: a high-contrast Scotch-adjacent editorial serif that holds its
+character from 29px to 112px.
+
+**Spec.** Brief §9.3, §12.3, §16.
+
+**Consequence.** Headings look materially different — this is the largest single
+visual change in the rebuild. The optical-size axis is retained (clipped to
+16–72) so `font-optical-sizing: auto` picks the right cut per size rather than
+scaling one compromise. `pnpm fonts:check` is now a release gate that fails the
+build when a face is missing, is not valid WOFF2, or has lost a Nordic character.
+
+**Reversal.** Buy an Ivar Display web licence, drop the WOFF2 into `src/fonts`,
+and point `src/styles/fonts.ts` at it. Nothing else changes.
+
+---
+
+## D-035 — Indexing is opt-in, not environment-inferred
+
+**Decision.** `FOUNDRY_INDEXABLE=1` is the only thing that makes a deployment
+indexable. Everything else — robots.txt, per-route `robots` metadata, and an
+`X-Robots-Tag` header from the proxy — reads that one variable.
+
+**Rationale.** The old check was `NODE_ENV !== "production"`. Railway builds and
+runs its preview with `NODE_ENV=production`, so staging looked like production
+to every crawler while serving draft legal copy. Inverting the default means a
+new preview environment, a branch deploy, a fork and a local production build
+are all `noindex` without anyone configuring them.
+
+**Spec.** Brief §2.9 defect 7, §12.4, §12.5.
+
+**Consequence.** The real production deployment must set the variable or it will
+not be indexed. `robots.txt` is `force-dynamic` so the directive always matches
+the environment actually serving it, even if the build ran without the variable.
+
+**Reversal.** Change `isIndexableDeployment()` in `src/lib/seo/indexability.ts`.
+
+---
+
+## D-036 — The public site is four routes
+
+**Decision.** Delete `/pitch`, `/insights`, `/network`, `/team` and `/about`,
+with their components, API routes, seeds, schemas and tests. The public site is
+`/`, `/portfolio`, `/fund` and `/privacy`.
+
+**Rationale.** §7.1 fixes that architecture and §17 rules out a blog, pitch form,
+network directory, stats wall and testimonial carousel permanently. Keeping them
+behind flags meant maintaining five switches wired to features that will never
+launch, and the Sanity adapter querying schemas nothing renders. 65 files went.
+
+**Spec.** Brief §7.1, §12.1, §17.
+
+**Consequence.** `FeatureFlags` shrank from eight booleans to three, and the
+three that remain gate content that genuinely is not ready — the founder quote
+and the institutional disclosure — rather than decisions already made.
+
+**Reversal.** `git revert` the rebuild commit, or recover individual files from
+history. The content model for a Person survives, so `/fund` still renders
+people without it.
+
+---
+
+## D-037 — The 130 KiB JavaScript budget is not met, with evidence
+
+**Decision.** Ship at ~150 KiB of transferred JavaScript on mobile, against the
+§12.9 target of ≤130 KiB, and record the exception rather than chase it.
+
+**Rationale.** §12.9 hedges this budget with "where feasible" and §14.4 allows an
+exception documented with evidence. Measured transfer sizes at 390px, compressed:
+
+| Route | Client components of its own | JS transferred |
+|---|---|---:|
+| `/privacy` | none | 156.0 KiB |
+| `/` | ocean, motion control, reveal, header | 150.2 KiB |
+| `/fund` | reveal, header | 150.2 KiB |
+| `/portfolio` | filters, reveal, header | 158.1 KiB |
+
+`/privacy` renders no client component at all and is the *heaviest* of the four.
+The floor is the Next.js 16 App Router runtime plus React 19 DOM — roughly
+114 KiB across two chunks before a single line of application code. The home
+page, which owns the video, the pause control and every reveal, is the lightest
+route on the site. There is nothing left to trim short of leaving the App Router.
+
+**Spec.** Brief §12.9, §14.4.
+
+**Consequence.** Everything else in the budget passes with room: 401 KiB total
+transferred on mobile against ≤500 KiB, 339 KiB excluding the video, a 24.8 KiB
+mobile poster against ≤100 KiB, and a 62.6 KiB mobile WebM against ≤80 KiB.
+
+**Reversal.** Revisit if a future Next.js release cuts the baseline, or if the
+site ever justifies a non-React build.

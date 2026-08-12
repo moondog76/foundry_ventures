@@ -1,26 +1,26 @@
 /**
- * Investment criteria strip (§7.2).
+ * Investment model strip (§8.3).
+ *
+ * Six facts, no prose — the section that turns the hero's worldview into an
+ * operating system. §8.3 is explicit about what it must not become: no cards, no
+ * shadows, no rounded boxes, no icons, no illustrations. Hairlines and type only.
+ *
+ * The closing CTA is gone. It pointed at `/pitch`, which §17 rules out
+ * permanently, and §8.3 gives this section one job: state the six facts and stop.
  *
  * The data arrives already filtered: `getInvestmentCriteria()` returns `[]` when
  * the feature flag is off *or* when nothing clears the evidence policy, so this
- * component renders nothing at all rather than an empty frame. Every seeded
- * criterion is `observed`, never `owner-approved`, which is why the strip is
- * legitimately absent in production.
+ * component renders nothing at all rather than an empty frame.
  */
 
 import type { CSSProperties } from "react";
 import type { InvestmentCriterion } from "@/content/types";
-import { ButtonLink, Container, Section, cx } from "@/components/ui";
+import { Container, Section, cx } from "@/components/ui";
 import { Reveal } from "@/components/ui/Reveal";
 import styles from "./investment-criteria.module.css";
 
 export type InvestmentCriteriaGridProps = {
   criteria: InvestmentCriterion[];
-  /** Destination and label for the closing CTA, resolved by the page. */
-  ctaHref: string;
-  ctaLabel: string;
-  /** False when that destination is behind a disabled flag (§3.4). */
-  ctaEnabled?: boolean;
 };
 
 /**
@@ -64,12 +64,7 @@ function mobileColumnCount(criteria: InvestmentCriterion[]): number {
   return fits && criteria.length % 2 === 0 ? 2 : 1;
 }
 
-export function InvestmentCriteriaGrid({
-  criteria,
-  ctaHref,
-  ctaLabel,
-  ctaEnabled = true,
-}: InvestmentCriteriaGridProps) {
+export function InvestmentCriteriaGrid({ criteria }: InvestmentCriteriaGridProps) {
   if (criteria.length === 0) return null;
 
   const desktopColumns = criteriaColumnCount(criteria.length, 5);
@@ -85,12 +80,12 @@ export function InvestmentCriteriaGrid({
     >
       <Container>
         {/*
-          The live site publishes no heading for this strip and none may be
-          invented, so the region is named by a structural, non-factual label
-          that only assistive technology sees.
+          §8.3 allows the accessible heading to be visually hidden when the strip
+          is self-evident, but requires the section to have one. This label is
+          structural rather than editorial, so it asserts no fact.
         */}
         <h2 id="investment-criteria-heading" className="visually-hidden">
-          Investment criteria
+          How we invest
         </h2>
 
         <Reveal>
@@ -117,16 +112,6 @@ export function InvestmentCriteriaGrid({
               </div>
             ))}
           </dl>
-
-          {/* §7.2 closes this section with a full-width CTA, but only while
-              its destination exists — a button to a 404 is worse than none. */}
-          {ctaEnabled ? (
-            <div className={styles.cta}>
-              <ButtonLink href={ctaHref} full>
-                {ctaLabel}
-              </ButtonLink>
-            </div>
-          ) : null}
         </Reveal>
       </Container>
     </Section>

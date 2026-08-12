@@ -1,0 +1,27 @@
+/*
+ * Fund hero (§8.11.1).
+ *
+ * Deliberately not a second full-viewport ocean field: §8.8 reserves the return
+ * of the ocean for the homepage's closing contact block, and §10.1 allows one
+ * continuous motion source on the site. This is a flat deep field, so the page
+ * reads as the quiet layer underneath the brand rather than a second front door.
+ */
+
+.hero {
+  background: var(--color-deep-navy);
+}
+
+.heroHeading {
+  font-size: var(--text-h1);
+  line-height: var(--leading-display);
+  max-width: 18ch;
+  margin: 0;
+}
+
+.heroIntro {
+  font-size: var(--text-body-lg);
+  line-height: 1.45;
+  color: var(--text-muted-inverse);
+  max-width: 52ch;
+  margin: var(--space-md) 0 0;
+}

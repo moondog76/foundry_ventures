@@ -17,18 +17,15 @@
  */
 
 import type {
-  AboutPage,
   Company,
+  FundPage,
   HomePage,
-  NetworkPerson,
-  Post,
-  SiteSettings,
-  TeamMember,
-  Testimonial,
   RichText,
+  SiteSettings,
   TaxonomyRef,
+  TeamMember,
 } from "../types";
-import { SEED_ABOUT_PAGE } from "./about";
+import { SEED_FUND_PAGE } from "./fund";
 import { SEED_HOME_PAGE } from "./home";
 import { SEED_SITE_SETTINGS } from "./site-settings";
 
@@ -245,6 +242,7 @@ const teamMembers: TeamMember[] = [
     longBio: body,
     expertise: ["Go-to-market", "AI-native operating models"],
     email: "anders.nygren@foundryventures.ai",
+    ownsInvestmentDecision: true,
     phone: "+46 733 460006",
     active: true,
     sortOrder: 10,
@@ -265,129 +263,9 @@ const teamMembers: TeamMember[] = [
     },
     shortBio: "Fixture short bio without a long bio.",
     email: "julia.siljehag@foundryventures.ai",
+    ownsInvestmentDecision: false,
     active: true,
     sortOrder: 20,
-  },
-];
-
-const posts: Post[] = [
-  {
-    id: "fixture-post-internal",
-    publicationStatus: "published",
-    editorialApprovalStatus: "approved",
-    title: "A fixture article about shipping velocity",
-    slug: "fixture-article-shipping-velocity",
-    type: "article",
-    target: "internal",
-    publishedAt: "2026-06-01",
-    excerpt: "A synthetic article used to exercise the internal article template.",
-    body,
-    authors: [{ id: "team-anders-nygren", slug: "anders-nygren", name: "Anders Nygren" }],
-    companies: [{ id: "fixture-northbound", slug: "northbound", name: "Northbound" }],
-    featured: true,
-    sortOrder: 10,
-  },
-  {
-    id: "fixture-post-external",
-    publicationStatus: "published",
-    editorialApprovalStatus: "approved",
-    title: "Northbound raises a fixture round",
-    type: "portfolio-news",
-    target: "external",
-    externalUrl: "https://example.org/northbound-round",
-    publishedAt: "2026-05-02",
-    excerpt: "A synthetic external news item that must link straight out.",
-    authors: [],
-    companies: [{ id: "fixture-northbound", slug: "northbound", name: "Northbound" }],
-    featured: false,
-    sortOrder: 20,
-  },
-  {
-    id: "fixture-post-second-internal",
-    publicationStatus: "published",
-    editorialApprovalStatus: "approved",
-    title: "A second fixture article",
-    slug: "fixture-article-second",
-    type: "article",
-    target: "internal",
-    publishedAt: "2026-04-03",
-    excerpt: "Used to verify the related-content algorithm's shared-company branch.",
-    body,
-    authors: [{ id: "team-anders-nygren", slug: "anders-nygren", name: "Anders Nygren" }],
-    companies: [{ id: "fixture-northbound", slug: "northbound", name: "Northbound" }],
-    featured: false,
-    sortOrder: 30,
-  },
-  {
-    id: "fixture-post-draft",
-    publicationStatus: "draft",
-    editorialApprovalStatus: "unapproved",
-    title: "A draft that must never appear publicly",
-    slug: "fixture-draft",
-    type: "article",
-    target: "internal",
-    excerpt: "Draft fixture.",
-    body,
-    authors: [],
-    companies: [],
-    featured: false,
-  },
-];
-
-const testimonials: Testimonial[] = [
-  {
-    id: "fixture-testimonial-1",
-    publicationStatus: "published",
-    consentStatus: "granted",
-    quote: "A fixture testimonial quote about working with the team.",
-    personName: "Fixture Founder",
-    personTitle: "CEO, Northbound",
-    company: { id: "fixture-northbound", slug: "northbound", name: "Northbound" },
-    featured: true,
-    sortOrder: 10,
-    fieldEvidence: { quote: FIXTURE_APPROVAL, personName: FIXTURE_APPROVAL },
-  },
-  {
-    // A second consented quote so the carousel path is exercised end to end.
-    // With only one, §7.7 requires a static block and the controls disappear —
-    // both branches need coverage.
-    id: "fixture-testimonial-2",
-    publicationStatus: "published",
-    consentStatus: "granted",
-    quote: "A second fixture testimonial so the carousel has something to move between.",
-    personName: "Second Fixture Founder",
-    personTitle: "CTO, Harbourline",
-    company: { id: "fixture-harbourline", slug: "harbourline", name: "Harbourline" },
-    featured: true,
-    sortOrder: 15,
-    fieldEvidence: { quote: FIXTURE_APPROVAL, personName: FIXTURE_APPROVAL },
-  },
-  {
-    id: "fixture-testimonial-revoked",
-    publicationStatus: "published",
-    consentStatus: "revoked",
-    quote: "Consent revoked — must disappear everywhere immediately.",
-    personName: "Revoked Person",
-    featured: false,
-    sortOrder: 20,
-    fieldEvidence: { quote: FIXTURE_APPROVAL, personName: FIXTURE_APPROVAL },
-  },
-];
-
-const networkPeople: NetworkPerson[] = [
-  {
-    id: "fixture-network-1",
-    name: "Fixture Operator",
-    slug: "fixture-operator",
-    publicationStatus: "published",
-    verificationStatus: "verified",
-    fieldEvidence: { name: FIXTURE_APPROVAL, roleLine: FIXTURE_APPROVAL },
-    group: "operating-partner",
-    roleLine: "Operating partner, go-to-market",
-    verticals: [tax("vertical", "b2b-software", "B2B software")],
-    expertise: [tax("expertise", "go-to-market", "Go-to-market")],
-    featured: true,
-    sortOrder: 10,
   },
 ];
 
@@ -405,13 +283,10 @@ const siteSettings: SiteSettings = {
   })),
   featureFlags: {
     investmentCriteria: true,
-    team: true,
-    pitch: true,
-    insights: true,
-    about: true,
-    network: true,
-    stats: true,
-    testimonials: true,
+    // Both on, so the fixture build exercises the founder-quote block and the
+    // institutional disclosure that the real dataset legitimately hides.
+    founderQuote: true,
+    institutionalDetails: true,
   },
 };
 
@@ -448,40 +323,39 @@ function approveHome(page: HomePage): HomePage {
         .filter((c) => c.featured)
         .map((c) => ({ id: c.id, slug: c.slug, name: c.name })),
     },
-    optionalSections: {
-      statsHeading: t("Foundry in numbers"),
-      testimonialsHeading: t("From the founders we back"),
-      latestInsightsHeading: t("News & Insights"),
-      latestInsightsCtaLabel: t("See all insights"),
-    },
     contact: {
       ...page.contact,
       heading: t(page.contact.heading.value),
       paragraphs: page.contact.paragraphs.map((x) => t(x.value)),
       primaryCta: { ...page.contact.primaryCta, label: t(page.contact.primaryCta.label.value) },
-      secondaryCta: {
-        ...page.contact.secondaryCta,
-        label: t(page.contact.secondaryCta.label.value),
-      },
     },
     seo: { ...page.seo, approvalStatus: "approved" },
   };
 }
 
-function approveAbout(page: AboutPage): AboutPage {
+/** The fund page, with every string forced approved (§8.11). */
+function approveFund(page: FundPage): FundPage {
   const t = approvedText;
   return {
     ...page,
     publicationStatus: "published",
-    heading: t(page.heading.value),
-    intro: page.intro.map((x) => t(x.value)),
-    beliefs: page.beliefs.map((b) => ({ title: t(b.title.value), body: t(b.body.value) })),
-    howWeWork: page.howWeWork.map((i) => ({ ...i, body: t(i.body.value) })),
-    whatWeLookFor: page.whatWeLookFor.map((b) => ({
-      title: t(b.title.value),
-      body: t(b.body.value),
-    })),
-    process: page.process.map((s) => ({ ...s, title: t(s.title.value), body: t(s.body.value) })),
+    hero: { heading: t(page.hero.heading.value), intro: t(page.hero.intro.value) },
+    factsHeading: t(page.factsHeading.value),
+    model: {
+      heading: t(page.model.heading.value),
+      body: t(page.model.body.value),
+      steps: page.model.steps.map((step) => ({
+        ...step,
+        title: t(step.title.value),
+        body: t(step.body.value),
+      })),
+    },
+    people: { ...page.people, heading: t(page.people.heading.value) },
+    contact: {
+      ...page.contact,
+      heading: t(page.contact.heading.value),
+      body: t(page.contact.body.value),
+    },
     seo: { ...page.seo, approvalStatus: "approved" },
   };
 }
@@ -489,10 +363,7 @@ function approveAbout(page: AboutPage): AboutPage {
 export const FIXTURE_DATASET = {
   siteSettings,
   homePage: approveHome(SEED_HOME_PAGE),
-  aboutPage: approveAbout(SEED_ABOUT_PAGE),
+  fundPage: approveFund(SEED_FUND_PAGE),
   companies,
   teamMembers,
-  posts,
-  testimonials,
-  networkPeople,
 };

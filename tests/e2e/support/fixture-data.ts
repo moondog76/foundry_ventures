@@ -44,40 +44,14 @@ export const COMPANY_WITHOUT_DETAIL = {
 export const SEED_STAGE_COMPANIES = ["Harbourline", "Coldpress"] as const;
 export const SEED_STAGE_AND_FINTECH_COMPANIES = ["Coldpress"] as const;
 
-/** People published on `/team`, in sort order. */
-export const TEAM_WITH_DETAIL = { slug: "anders-nygren", name: "Anders Nygren" } as const;
-/** No approved long bio, so §10.2 forbids a profile route for this person. */
-export const TEAM_WITHOUT_DETAIL = { slug: "julia-siljehag", name: "Julia Siljehag" } as const;
-
-/** Internal articles: the archive links to routes this site owns. */
-export const INTERNAL_POST = {
-  slug: "fixture-article-shipping-velocity",
-  title: "A fixture article about shipping velocity",
-} as const;
-
-export const SECOND_INTERNAL_POST = {
-  slug: "fixture-article-second",
-  title: "A second fixture article",
-} as const;
-
-/** Published posts, newest first — the order `/insights` renders them in. */
-export const INTERNAL_POST_SLUGS_NEWEST_FIRST = [
-  INTERNAL_POST.slug,
-  SECOND_INTERNAL_POST.slug,
-] as const;
-
 /**
- * External portfolio news. §12.1 forbids a thin internal duplicate of somebody
- * else's article, so the card links straight out and no `/insights/…` route
- * exists for it.
+ * The complete public route set (§7.1).
+ *
+ * There are no flagged routes any more: every route the site has, it publishes.
+ * The list is kept as a single exported constant so a spec that walks "every
+ * public page" cannot silently drift from the sitemap.
  */
-export const EXTERNAL_POST = {
-  title: "Northbound raises a fixture round",
-  url: "https://example.org/northbound-round",
-} as const;
+export const PUBLIC_ROUTES = ["/", "/portfolio", "/fund", "/privacy"] as const;
 
-/** Feature-flagged routes (§3.4). The fixture dataset turns all three on. */
-export const FLAGGED_ROUTES = ["/team", "/pitch", "/insights", "/about", "/network"] as const;
-
-/** Navigation labels for those routes, from `SEED_SITE_SETTINGS.navigation`. */
-export const FLAGGED_NAV_LABELS = ["Team", "Insights", "About", "Network"] as const;
+/** Navigation labels, from `SEED_SITE_SETTINGS.navigation`. */
+export const NAV_LABELS = ["Portfolio", "Fund"] as const;

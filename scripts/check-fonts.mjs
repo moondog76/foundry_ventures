@@ -1,72 +1,194 @@
 #!/usr/bin/env node
 /**
- * Development warning for the missing Ivar Display master (§5.2, §30).
+ * Release gate for the self-hosted webfonts.
  *
- * Ivar Display is identity-bearing for Foundry: headings, large quotes and
- * editorial statements are all set in it. It is not in this repository, and the
- * copy served from the live Squarespace site is an *identification reference* —
- * it tells us which face the brand uses; it is not automatically a licensed,
- * redistributable asset. Downloading it into `public/fonts/` would ship an
- * unlicensed font, so the repository ships the Georgia fallback instead.
+ * The site previously shipped a hand-written `@font-face` pointing at
+ * `/fonts/IvarDisplay-Regular.woff2`. That file never existed. Every heading on
+ * every route rendered in Georgia, every page logged a console 404, and none of
+ * it was caught for the entire life of the site — because nothing checked.
  *
- * This is a warning, never a gate: `src/styles/fonts.css` already resolves
- * `--font-display` to a metric-adjusted Georgia face, so the site is correct and
- * complete without the file — only slightly off-brand. Blocking the dev server
- * over an asset the developer cannot legally obtain would be theatre, so this
- * script always exits 0. The thing that *does* block production is
- * `scripts/content-integrity.mjs`, and the licence itself is tracked as a launch
- * gap in `docs/content-gaps.md`.
+ * So this is a gate, not the warning it used to be. §12.3 of the enhancement
+ * brief requires an automated test for every self-hosted font asset; the check
+ * runs in `pnpm verify` and fails the build rather than printing advice.
  *
- * Wired to `predev`, so it prints once when someone starts the dev server.
+ * What it verifies, in order of how badly each would fail in production:
+ *
+ *  1. Every file `src/styles/fonts.ts` references exists on disk. A missing file
+ *     is a build error under `next/font/local`, but catching it here names the
+ *     font rather than surfacing a module-resolution stack trace.
+ *  2. Each file is real WOFF2 — the `wOF2` magic number. Guards against a
+ *     truncated download or an LFS pointer committed by mistake.
+ *  3. Each declares the Nordic repertoire the brief requires. A subset that
+ *     silently dropped Å or Ø would render tofu only on the pages that happen to
+ *     use them, which is exactly the kind of defect that reaches production.
  */
 
-import { existsSync, statSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
+import { brotliDecompressSync } from "node:zlib";
+import { readdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const FONT_FILE = path.join(REPO_ROOT, "public", "fonts", "IvarDisplay-Regular.woff2");
+const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
+const FONT_DIR = path.join(ROOT, "src", "fonts");
+const LOADER = path.join(ROOT, "src", "styles", "fonts.ts");
 
-/** A WOFF2 that is this small is a truncated or placeholder download, not a face. */
-const MIN_PLAUSIBLE_BYTES = 1024;
+/** The characters §12.3 names explicitly, plus the euro every ticket size needs. */
+const REQUIRED = "ÅÄÖØÆåäöøæ€";
 
-function main() {
-  if (existsSync(FONT_FILE)) {
-    const { size } = statSync(FONT_FILE);
-    if (size < MIN_PLAUSIBLE_BYTES) {
-      console.warn(
-        `\n  fonts: public/fonts/IvarDisplay-Regular.woff2 is only ${size} bytes — that is not a\n` +
-          "         complete WOFF2. Browsers will reject it and silently fall back to Georgia.\n",
-      );
-      return;
+/** Minimal WOFF2 table-directory walk — enough to read `cmap` coverage. */
+function decodeWoff2Coverage(buf) {
+  // WOFF2 brotli-compresses the whole table block, so coverage needs a real decode.
+  const numTables = buf.readUInt16BE(12);
+  let p = 48;
+  const tables = [];
+  for (let i = 0; i < numTables; i += 1) {
+    const flags = buf.readUInt8(p);
+    p += 1;
+    let tag = flags & 0x3f;
+    if (tag === 0x3f) {
+      tag = buf.toString("ascii", p, p + 4);
+      p += 4;
+    } else {
+      tag = KNOWN_TAGS[tag];
     }
-    console.log("  fonts: Ivar Display present — --font-display resolves to the licensed face.");
-    return;
+    const [origLength, read1] = readBase128(buf, p);
+    p = read1;
+    let transformLength = null;
+    const xform = (flags >> 6) & 0x03;
+    if ((tag === "glyf" || tag === "loca") && xform === 0) {
+      const [tl, read2] = readBase128(buf, p);
+      transformLength = tl;
+      p = read2;
+    } else if (tag !== "glyf" && tag !== "loca" && xform === 1) {
+      const [tl, read2] = readBase128(buf, p);
+      transformLength = tl;
+      p = read2;
+    }
+    tables.push({ tag, length: transformLength ?? origLength });
   }
-
-  console.warn(
-    [
-      "",
-      "  fonts: Ivar Display is not installed.",
-      "",
-      "         Expected: public/fonts/IvarDisplay-Regular.woff2",
-      "",
-      "         Headings currently render in the metric-adjusted Georgia fallback",
-      "         declared in src/styles/fonts.css. Layout and spacing are correct;",
-      "         only the typeface is off-brand. Inter is never a substitute.",
-      "",
-      "         The WOFF served from the live Squarespace site identifies the face",
-      "         but is not a redistributable asset. Obtain the licensed WOFF2 from",
-      "         the rights holder, drop it at the path above, and the @font-face",
-      "         rule activates with no other change.",
-      "",
-      "         Tracked in docs/content-gaps.md. This is a warning, not an error.",
-      "",
-    ].join("\n"),
-  );
+  const totalCompressed = buf.readUInt32BE(20);
+  const compressed = buf.subarray(p, p + totalCompressed);
+  const data = brotliDecompressSync(compressed);
+  let offset = 0;
+  for (const t of tables) {
+    if (t.tag === "cmap") return readCmap(data.subarray(offset, offset + t.length));
+    offset += t.length;
+  }
+  return null;
 }
 
-main();
+const KNOWN_TAGS = [
+  "cmap", "head", "hhea", "hmtx", "maxp", "name", "OS/2", "post", "cvt ", "fpgm",
+  "glyf", "loca", "prep", "CFF ", "VORG", "EBDT", "EBLC", "gasp", "hdmx", "kern",
+  "LTSH", "PCLT", "VDMX", "vhea", "vmtx", "BASE", "GDEF", "GPOS", "GSUB", "EBSC",
+  "JSTF", "MATH", "CBDT", "CBLC", "COLR", "CPAL", "SVG ", "sbix", "acnt", "avar",
+  "bdat", "bloc", "bsln", "cvar", "fdsc", "feat", "fmtx", "fvar", "gvar", "hsty",
+  "just", "lcar", "mort", "morx", "opbd", "prop", "trak", "Zapf", "Silf", "Glat",
+  "Gloc", "Feat", "Sill",
+];
 
-// Always successful: see the note at the top of this file.
-process.exit(0);
+function readBase128(buf, p) {
+  let value = 0;
+  for (let i = 0; i < 5; i += 1) {
+    const byte = buf.readUInt8(p);
+    p += 1;
+    value = value * 128 + (byte & 0x7f);
+    if ((byte & 0x80) === 0) return [value, p];
+  }
+  throw new Error("malformed base128 value");
+}
+
+function readCmap(tbl) {
+  const covered = new Set();
+  const n = tbl.readUInt16BE(2);
+  for (let i = 0; i < n; i += 1) {
+    const off = tbl.readUInt32BE(4 + i * 8 + 4);
+    const format = tbl.readUInt16BE(off);
+    if (format !== 4) continue;
+    const segX2 = tbl.readUInt16BE(off + 6);
+    const endBase = off + 14;
+    const startBase = endBase + segX2 + 2;
+    const deltaBase = startBase + segX2;
+    const rangeBase = deltaBase + segX2;
+    for (let s = 0; s < segX2 / 2; s += 1) {
+      const end = tbl.readUInt16BE(endBase + s * 2);
+      const start = tbl.readUInt16BE(startBase + s * 2);
+      const delta = tbl.readInt16BE(deltaBase + s * 2);
+      const rangeOff = tbl.readUInt16BE(rangeBase + s * 2);
+      if (start === 0xffff) continue;
+      for (let c = start; c <= end && c !== 0x10000; c += 1) {
+        let g;
+        if (rangeOff === 0) g = (c + delta) & 0xffff;
+        else {
+          const gi = rangeBase + s * 2 + rangeOff + (c - start) * 2;
+          if (gi + 1 >= tbl.length) continue;
+          g = tbl.readUInt16BE(gi);
+          if (g !== 0) g = (g + delta) & 0xffff;
+        }
+        if (g !== 0) covered.add(c);
+      }
+    }
+  }
+  return covered;
+}
+
+async function main() {
+  const problems = [];
+
+  if (!existsSync(FONT_DIR)) {
+    problems.push(`src/fonts does not exist. Run \`pnpm fonts:build\`.`);
+  } else {
+    const loader = readFileSync(LOADER, "utf8");
+    const referenced = [...loader.matchAll(/\.\.\/fonts\/([\w.-]+\.woff2)/g)].map((m) => m[1]);
+    if (referenced.length === 0) problems.push("fonts.ts references no font files at all.");
+
+    /*
+     * `newsreader-og.ttf` is referenced by `src/app/opengraph-image.tsx` rather
+     * than by the loader — Satori cannot read WOFF2 — so it is checked as a
+     * known extra instead of being reported as an orphan.
+     */
+    const OG_FACE = "newsreader-og.ttf";
+    const onDisk = new Set((await readdir(FONT_DIR)).filter((f) => f.endsWith(".woff2")));
+    if (!existsSync(path.join(FONT_DIR, OG_FACE))) {
+      problems.push(`${OG_FACE} is missing — the Open Graph card would render with no typeface.`);
+    }
+    for (const file of referenced) {
+      if (!onDisk.has(file)) {
+        problems.push(`${file} is referenced by fonts.ts but missing. Run \`pnpm fonts:build\`.`);
+        continue;
+      }
+      const buf = readFileSync(path.join(FONT_DIR, file));
+      if (buf.toString("ascii", 0, 4) !== "wOF2") {
+        problems.push(`${file} is not a WOFF2 file (bad magic number).`);
+        continue;
+      }
+      let covered;
+      try {
+        covered = decodeWoff2Coverage(buf);
+      } catch (error) {
+        problems.push(`${file} could not be parsed: ${error.message}`);
+        continue;
+      }
+      const missing = [...REQUIRED].filter((c) => !covered?.has(c.codePointAt(0)));
+      if (missing.length) {
+        problems.push(`${file} is missing required characters: ${missing.join(" ")}`);
+      }
+    }
+    for (const orphan of onDisk) {
+      if (!referenced.includes(orphan)) {
+        problems.push(`${orphan} is on disk but not referenced by fonts.ts — delete or wire it up.`);
+      }
+    }
+  }
+
+  if (problems.length) {
+    console.error("\n  Font check failed:\n");
+    for (const p of problems) console.error(`    - ${p}`);
+    console.error("");
+    process.exit(1);
+  }
+  console.log("  fonts: all self-hosted faces present, valid WOFF2, Nordic repertoire complete.");
+}
+
+await main();

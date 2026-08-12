@@ -57,8 +57,8 @@ export function PortfolioResults({
                 <ClearFiltersLink href={clearAllHref} className={uiStyles.button}>
                   Clear all filters
                 </ClearFiltersLink>
-                <ButtonLink href="/pitch" variant="secondary">
-                  Pitch us
+                <ButtonLink href="/fund" variant="secondary">
+                  How we invest
                 </ButtonLink>
               </>
             }
@@ -68,8 +68,8 @@ export function PortfolioResults({
             title="No portfolio companies are published yet"
             description="This archive only lists companies whose details have been confirmed for publication. Nothing is listed right now."
             actions={
-              <ButtonLink href="/pitch" variant="secondary">
-                Pitch us
+              <ButtonLink href="/fund" variant="secondary">
+                How we invest
               </ButtonLink>
             }
           />

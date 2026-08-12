@@ -11,6 +11,7 @@
  */
 
 import type { Metadata } from "next";
+import { isIndexableDeployment } from "./indexability";
 import type { PolicyContext } from "@/content/policy";
 import type { SeoFields, SiteSettings } from "@/content/types";
 
@@ -68,9 +69,17 @@ export function buildMetadata(input: MetadataInput): Metadata {
     ? input.seo.canonicalOverride
     : absoluteUrl(origin, path);
 
-  // Preview is never indexable, and a route may force noindex on top of that.
+  /*
+   * Three independent reasons to refuse indexing, any one of which is enough:
+   *   - the deployment is not the opt-in production one (§2.9 defect 7);
+   *   - the request is in preview policy mode;
+   *   - the route or its SEO record forces it.
+   */
   const noIndex =
-    policy.mode === "preview" || input.noIndex === true || input.seo?.noIndex === true;
+    !isIndexableDeployment() ||
+    policy.mode === "preview" ||
+    input.noIndex === true ||
+    input.seo?.noIndex === true;
 
   const ogImage = input.ogImagePath
     ? absoluteUrl(origin, input.ogImagePath)

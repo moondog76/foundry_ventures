@@ -12,6 +12,7 @@ import { resolvePolicyContext } from "@/content/context";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { organizationJsonLd, webSiteJsonLd } from "@/lib/seo/json-ld";
 import { brandAssetPath } from "@/lib/brand/manifest";
+import { fontVariables } from "@/styles/fonts";
 import { SkipLink } from "@/components/global/SkipLink";
 import { SiteHeader } from "@/components/global/SiteHeader";
 import { SiteFooter } from "@/components/global/SiteFooter";
@@ -50,7 +51,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const settings = await getSiteSettings(policy);
 
   return (
-    <html lang="en">
+    <html lang="en" className={fontVariables}>
       <body>
         <SkipLink />
         <DraftModeBanner />

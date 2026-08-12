@@ -186,14 +186,28 @@ export type TextLinkProps = {
   children: ReactNode;
   /** Renders the underline permanently, for the current route (§6.1). */
   active?: boolean;
+  /** Inverts the rule and text colour for placement on a dark surface. */
+  onDark?: boolean;
   className?: string;
 } & Omit<ComponentProps<"a">, "href" | "className" | "children">;
 
-export function TextLink({ href, children, active = false, className, ...rest }: TextLinkProps) {
+export function TextLink({
+  href,
+  children,
+  active = false,
+  onDark = false,
+  className,
+  ...rest
+}: TextLinkProps) {
   return (
     <Link
       href={href}
-      className={cx(styles.textLink, active && styles.textLinkActive, className)}
+      className={cx(
+        styles.textLink,
+        active && styles.textLinkActive,
+        onDark && styles.textLinkOnDark,
+        className,
+      )}
       aria-current={active ? "page" : undefined}
       {...rest}
     >

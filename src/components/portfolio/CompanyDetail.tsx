@@ -16,7 +16,6 @@
 
 import type { CompanyDetailView, Company, Founder, ImageAsset } from "@/content/types";
 import { canPublishCompanyField, canRenderImage, type PolicyContext } from "@/content/policy";
-import { teamMemberHasDetail } from "@/content";
 import { Breadcrumbs, type Crumb } from "@/components/global/Breadcrumbs";
 import { Container, Section } from "@/components/ui";
 import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
@@ -28,7 +27,6 @@ import { CompanyLogoFrame } from "./CompanyLogoFrame";
 import { CompanyMetadataGrid, type CompanyMetadataItem } from "./CompanyMetadataGrid";
 import { CompanyPager } from "./CompanyPager";
 import { FounderQuote } from "./FounderQuote";
-import { RelatedPosts } from "./RelatedPosts";
 import { WhyWeInvested } from "./WhyWeInvested";
 import { STATUS_LABELS } from "./labels";
 import logoStyles from "./company-logo-frame.module.css";
@@ -67,7 +65,7 @@ function pickHeroMedia(
 }
 
 export async function CompanyDetail({ view, policy, crumbs }: CompanyDetailProps) {
-  const { company, summary, dealLead, relatedPosts, previous, next } = view;
+  const { company, summary, dealLead, previous, next } = view;
 
   const foundersPublishable = canPublishCompanyField(company, "founders", policy);
   const heroMedia = pickHeroMedia(company, policy, foundersPublishable);
@@ -116,7 +114,6 @@ export async function CompanyDetail({ view, policy, crumbs }: CompanyDetailProps
 
   // The detail route only exists for a member whose own profile page exists;
   // otherwise the name renders as plain text (§10.2).
-  const dealLeadHasDetail = dealLead ? await teamMemberHasDetail(dealLead, policy) : false;
 
   const hasFounderQuote = Boolean(
     company.founderQuote?.quote.trim() && company.founderQuote.name.trim(),
@@ -197,9 +194,11 @@ export async function CompanyDetail({ view, policy, crumbs }: CompanyDetailProps
 
             <WhyWeInvested body={whyWeInvested} policy={policy} headingId="why-we-invested" />
 
+            {/* No `/team/[slug]` route exists any more (§7.1), so the deal
+                lead is never a link to a profile page. */}
             <CompanyDealLead
               member={dealLead}
-              hasDetailPage={dealLeadHasDetail}
+              hasDetailPage={false}
               policy={policy}
               headingId="deal-lead"
             />
@@ -212,14 +211,6 @@ export async function CompanyDetail({ view, policy, crumbs }: CompanyDetailProps
               careersUrl={company.careersUrl ?? null}
               labelId="company-links"
             />
-          </Container>
-        </Section>
-      ) : null}
-
-      {relatedPosts.length > 0 ? (
-        <Section spacing="tight" surface="off-white">
-          <Container>
-            <RelatedPosts posts={relatedPosts} headingId="related-insights" />
           </Container>
         </Section>
       ) : null}

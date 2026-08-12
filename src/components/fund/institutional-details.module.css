@@ -1,0 +1,41 @@
+/*
+ * Quiet by design (§5.1.6): institutional signals belong in secondary pages and
+ * footers, not in the founder-facing hero. Small type, muted colour, hairline
+ * separation — legible and contrast-compliant, never prominent.
+ */
+
+.list {
+  display: grid;
+  gap: var(--space-xs);
+  margin: 0;
+  padding-top: var(--space-sm);
+  border-top: var(--border-hairline) solid var(--line-default);
+}
+
+.row {
+  display: grid;
+  gap: var(--space-3xs);
+}
+
+.label {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.value {
+  font-size: var(--text-sm);
+  line-height: 1.45;
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .row {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+    gap: var(--space-md);
+    align-items: baseline;
+  }
+}

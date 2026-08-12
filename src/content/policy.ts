@@ -14,14 +14,11 @@
 import type {
   Company,
   CompanyFactField,
+  EditorialText,
   FieldEvidence,
   ImageAsset,
-  NetworkPerson,
-  Post,
   TeamMember,
   TeamMemberEvidenceField,
-  Testimonial,
-  EditorialText,
 } from "./types";
 
 export type PolicyMode = "production" | "preview";
@@ -218,73 +215,11 @@ export function canIndexTeamMember(
 
 /* -------------------------------------------------------------------- Post */
 
-export function canListPostPublicly(
-  post: Post,
-  context: PolicyContext = PRODUCTION_POLICY,
-): boolean {
-  if (context.mode === "preview") return true;
-  if (post.publicationStatus !== "published") return false;
-  if (post.editorialApprovalStatus !== "approved") return false;
-  if (!post.publishedAt) return false;
-  if (post.target === "external") return Boolean(post.externalUrl);
-  return Boolean(post.slug) && Boolean(post.body?.length);
-}
-
-/** External posts never get a thin internal duplicate route (§12.1). */
-export function canPublishPostDetail(
-  post: Post,
-  context: PolicyContext = PRODUCTION_POLICY,
-): boolean {
-  if (post.target !== "internal") return false;
-  if (!post.slug || !post.body?.length) return false;
-  if (context.mode === "preview") return true;
-  return canListPostPublicly(post, context);
-}
-
-export function canIndexPost(post: Post, context: PolicyContext = PRODUCTION_POLICY): boolean {
-  if (context.mode === "preview") return false;
-  if (post.seo?.noIndex) return false;
-  return canPublishPostDetail(post, context);
-}
-
-/* ------------------------------------------------------------- Testimonial */
-
-export function canListTestimonialPublicly(
-  testimonial: Testimonial,
-  context: PolicyContext = PRODUCTION_POLICY,
-): boolean {
-  // A revoked consent must drop out everywhere immediately, preview included.
-  if (testimonial.consentStatus === "revoked") return false;
-  if (context.mode === "preview") return true;
-  if (testimonial.publicationStatus !== "published") return false;
-  if (testimonial.consentStatus !== "granted") return false;
-  return (
-    isOwnerApproved(testimonial.fieldEvidence.quote) &&
-    isOwnerApproved(testimonial.fieldEvidence.personName)
-  );
-}
-
-/* ----------------------------------------------------------- NetworkPerson */
-
-export function canListNetworkPersonPublicly(
-  person: NetworkPerson,
-  context: PolicyContext = PRODUCTION_POLICY,
-): boolean {
-  if (context.mode === "preview") return true;
-  if (person.publicationStatus !== "published") return false;
-  return (
-    isOwnerApproved(person.fieldEvidence.name) && isOwnerApproved(person.fieldEvidence.roleLine)
-  );
-}
-
 /* --------------------------------------------------- Generic entry points */
 
 type PolicyRecord =
   | { kind: "company"; record: Company }
-  | { kind: "teamMember"; record: TeamMember }
-  | { kind: "post"; record: Post }
-  | { kind: "testimonial"; record: Testimonial }
-  | { kind: "networkPerson"; record: NetworkPerson };
+  | { kind: "teamMember"; record: TeamMember };
 
 export function canListPublicly(
   entry: PolicyRecord,
@@ -295,12 +230,6 @@ export function canListPublicly(
       return canListCompanyPublicly(entry.record, context);
     case "teamMember":
       return canListTeamMemberPublicly(entry.record, context);
-    case "post":
-      return canListPostPublicly(entry.record, context);
-    case "testimonial":
-      return canListTestimonialPublicly(entry.record, context);
-    case "networkPerson":
-      return canListNetworkPersonPublicly(entry.record, context);
   }
 }
 
@@ -313,8 +242,6 @@ export function canPublishDetail(
       return canPublishCompanyDetail(entry.record, context);
     case "teamMember":
       return canPublishTeamDetail(entry.record, context);
-    case "post":
-      return canPublishPostDetail(entry.record, context);
     default:
       return false;
   }
@@ -326,8 +253,6 @@ export function canIndex(entry: PolicyRecord, context: PolicyContext = PRODUCTIO
       return canIndexCompany(entry.record, context);
     case "teamMember":
       return canIndexTeamMember(entry.record, context);
-    case "post":
-      return canIndexPost(entry.record, context);
     default:
       return false;
   }

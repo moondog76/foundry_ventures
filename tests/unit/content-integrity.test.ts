@@ -21,12 +21,9 @@ import {
   COMPANY_DETAIL_REQUIRED_FIELDS,
   PRODUCTION_POLICY,
   canListCompanyPublicly,
-  canListPostPublicly,
   canListTeamMemberPublicly,
-  canListTestimonialPublicly,
   canPublishCompanyDetail,
   canPublishCompanyField,
-  canPublishPostDetail,
   canPublishTeamDetail,
   canPublishTeamField,
   isOwnerApproved,
@@ -54,15 +51,12 @@ describe("fixture isolation", () => {
     expect(process.env.FOUNDRY_CONTENT_FIXTURE).not.toBe("e2e");
     expect(isFixtureModeEnabled()).toBe(false);
 
-    const [companies, posts, teamMembers, testimonials, networkPeople] = await Promise.all([
+    const [companies, teamMembers] = await Promise.all([
       rawContent.companies(),
-      rawContent.posts(),
       rawContent.teamMembers(),
-      rawContent.testimonials(),
-      rawContent.networkPeople(),
     ]);
 
-    const ids = [...companies, ...posts, ...teamMembers, ...testimonials, ...networkPeople].map(
+    const ids = [...companies, ...teamMembers].map(
       (record) => record.id,
     );
 
@@ -102,8 +96,6 @@ describe("integrity report", () => {
     expect(summary.companies.withDetail).toBeLessThanOrEqual(summary.companies.listable);
     expect(summary.teamMembers.listable).toBeLessThanOrEqual(summary.teamMembers.total);
     expect(summary.teamMembers.withDetail).toBeLessThanOrEqual(summary.teamMembers.listable);
-    expect(summary.posts.listable).toBeLessThanOrEqual(summary.posts.total);
-    expect(summary.testimonials.listable).toBeLessThanOrEqual(summary.testimonials.total);
     expect(summary.investmentCriteria.approved).toBeLessThanOrEqual(
       summary.investmentCriteria.total,
     );
@@ -111,11 +103,9 @@ describe("integrity report", () => {
 
   it("agrees with a direct walk of the seed", async () => {
     const report = await buildIntegrityReport();
-    const [companies, teamMembers, posts, testimonials] = await Promise.all([
+    const [companies, teamMembers] = await Promise.all([
       rawContent.companies(),
       rawContent.teamMembers(),
-      rawContent.posts(),
-      rawContent.testimonials(),
     ]);
 
     expect(report.summary.companies.total).toBe(companies.length);
@@ -123,8 +113,6 @@ describe("integrity report", () => {
       companies.filter((c) => canListCompanyPublicly(c, PRODUCTION_POLICY)).length,
     );
     expect(report.summary.teamMembers.total).toBe(teamMembers.length);
-    expect(report.summary.posts.total).toBe(posts.length);
-    expect(report.summary.testimonials.total).toBe(testimonials.length);
   });
 
   it("names every record that is blocking publication", async () => {
@@ -235,30 +223,6 @@ describe("policy consistency (no record is publishable but unapproved)", () => {
       expect(isOwnerApproved(member.fieldEvidence.role)).toBe(true);
     }
   });
-
-  it("never gives an internal post a detail route it would not list", async () => {
-    const posts = await rawContent.posts();
-
-    for (const post of posts) {
-      if (!canPublishPostDetail(post, PRODUCTION_POLICY)) continue;
-      expect(canListPostPublicly(post, PRODUCTION_POLICY)).toBe(true);
-      expect(post.target).toBe("internal");
-      expect(post.editorialApprovalStatus).toBe("approved");
-      expect(post.publishedAt).toBeTruthy();
-    }
-  });
-
-  it("only lists a testimonial with granted consent and approved evidence", async () => {
-    const testimonials = await rawContent.testimonials();
-
-    for (const testimonial of testimonials) {
-      if (!canListTestimonialPublicly(testimonial, PRODUCTION_POLICY)) continue;
-      expect(testimonial.consentStatus).toBe("granted");
-      expect(isOwnerApproved(testimonial.fieldEvidence.quote)).toBe(true);
-      expect(isOwnerApproved(testimonial.fieldEvidence.personName)).toBe(true);
-    }
-  });
-
   it("only renders an investment criterion whose evidence is approved", async () => {
     const settings = await rawContent.siteSettings();
     const report = await buildIntegrityReport();

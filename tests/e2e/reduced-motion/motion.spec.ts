@@ -16,7 +16,7 @@
 
 import { expect, test, type Page } from "@playwright/test";
 
-const ROUTES = ["/", "/portfolio", "/team", "/pitch"] as const;
+const ROUTES = ["/", "/portfolio", "/fund", "/privacy"] as const;
 
 /**
  * Text-bearing elements whose own computed opacity is zero.

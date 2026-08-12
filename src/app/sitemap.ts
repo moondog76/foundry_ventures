@@ -32,14 +32,7 @@
  */
 
 import type { MetadataRoute } from "next";
-import {
-  getLegalPage,
-  getPublishableCompanySlugs,
-  getPublishablePostSlugs,
-  getPublishableTeamSlugs,
-  getSiteSettings,
-  rawContent,
-} from "@/content";
+import { getLegalPage, getPublishableCompanySlugs, getSiteSettings } from "@/content";
 import { publicPolicyContext } from "@/content/context";
 import { absoluteUrl } from "@/lib/seo/metadata";
 
@@ -66,35 +59,20 @@ function toChangeDate(value: string | undefined): string | undefined {
   return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString();
 }
 
-/**
- * slug → last real publication change, for posts only.
- *
- * This reads the unfiltered post list because a change date lives nowhere else,
- * but it is *only* a lookup: whether a slug appears in the sitemap at all is
- * decided exclusively by `getPublishablePostSlugs()` above. A draft's date can
- * never enter the document, because a draft's slug never reaches this map's
- * consumer.
- */
-async function postChangeDates(): Promise<Map<string, string>> {
-  const posts = await rawContent.posts();
-  const dates = new Map<string, string>();
-  for (const post of posts) {
-    if (!post.slug) continue;
-    // An edit after publication is the more accurate answer; the publication
-    // date is the fallback. A build is not a change and is never used.
-    const changed = toChangeDate(post.updatedAt) ?? toChangeDate(post.publishedAt);
-    if (changed) dates.set(post.slug, changed);
-  }
-  return dates;
-}
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const policy = publicPolicyContext();
   const settings = await getSiteSettings(policy);
-  const { canonicalOrigin, featureFlags } = settings;
+  const { canonicalOrigin } = settings;
 
-  // Routes that exist unconditionally. `/` is the canonical root — never `/home`.
-  const entries: SitemapEntry[] = [{ path: "/" }, { path: "/portfolio" }];
+  /*
+   * The public routes of §7.1. `/` is the canonical root — never `/home`.
+   *
+   * §12.5 asks for an explicit decision on `/privacy` rather than an automatic
+   * `noindex`: public legal transparency itself supports institutional trust.
+   * It is listed below, with an honest `lastModified` from the document's own
+   * revision date.
+   */
+  const entries: SitemapEntry[] = [{ path: "/" }, { path: "/portfolio" }, { path: "/fund" }];
 
   // The privacy notice is a real document with a real revision date, so it can
   // carry an honest `lastModified`. It is listed only when the record exists.
@@ -103,18 +81,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entries.push({ path: "/privacy", lastModified: toChangeDate(privacy.lastUpdated) });
   }
 
-  // A route behind a disabled flag 404s in production and is absent from
-  // navigation (§3.4); it must be absent here for exactly the same reason.
-  if (featureFlags.team) entries.push({ path: "/team" });
-  if (featureFlags.pitch) entries.push({ path: "/pitch" });
-  if (featureFlags.insights) entries.push({ path: "/insights" });
-  if (featureFlags.about) entries.push({ path: "/about" });
-
-  const [companySlugs, teamSlugs, postSlugs] = await Promise.all([
-    getPublishableCompanySlugs(policy),
-    getPublishableTeamSlugs(policy),
-    getPublishablePostSlugs(policy),
-  ]);
+  const companySlugs = await getPublishableCompanySlugs(policy);
 
   // Sorted so the generated XML is byte-stable between builds and a diff of the
   // sitemap shows real content changes rather than iteration order.
@@ -122,16 +89,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Company records carry no change timestamp — no `lastModified` is claimed.
     entries.push({ path: `/portfolio/${slug}` });
   }
-  for (const slug of [...teamSlugs].sort()) {
-    entries.push({ path: `/team/${slug}` });
-  }
 
-  if (postSlugs.length > 0) {
-    const changed = await postChangeDates();
-    for (const slug of [...postSlugs].sort()) {
-      entries.push({ path: `/insights/${slug}`, lastModified: changed.get(slug) });
-    }
-  }
 
   return entries.map(({ path, lastModified }) => ({
     // One origin for canonical tags, JSON-LD and this document (§21.1).

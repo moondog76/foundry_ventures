@@ -17,7 +17,7 @@ import type { SiteSettings } from "../types";
 import {
   CLAUDE_PROTOTYPE_SOURCE,
   FOUNDRY_HOME_SOURCE,
-  authoredOnInstruction,
+  fromEnhancementBrief,
   ownerApprovedFromLive,
   ownerConfirmed,
   unverified,
@@ -34,7 +34,7 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
   canonicalOrigin: CANONICAL_ORIGIN,
   defaultSeoTitle: "Foundry Ventures",
   defaultSeoDescription:
-    "We back AI teams in the Nordics with €100k or €200k, one to three times a month. Team-only conviction, plus capital and customer introductions.",
+    "Nordic AI pre-seed. We write €100k or €200k into one to three teams a month, and underwrite the team before the market.",
   defaultOgImage: DEFAULT_OG_IMAGE,
 
   // No verified general inbox exists — see §16.1. Contact routes through people.
@@ -69,21 +69,24 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
    * Target IA once every route is published (§6.1). Flagged items are filtered
    * out entirely rather than rendered as dead navigation.
    */
+  /*
+   * §7.2. Two destinations, no dropdowns, no separate founder/LP modes.
+   *
+   * Portfolio returns to the header, reversing the owner's 11 August instruction
+   * to remove it: §2.8 requires the header to reach Portfolio and Fund without
+   * depending on a hero CTA or the footer, and with `/fund` added there is now
+   * a real navigation set rather than a single orphaned link. Logged in
+   * `docs/content-gaps.md` §F3.
+   */
   navigation: [
-    { label: "Team", href: "/team", featureFlag: "team" },
-    { label: "Insights", href: "/insights", featureFlag: "insights" },
-    { label: "About", href: "/about", featureFlag: "about" },
-    { label: "Network", href: "/network", featureFlag: "network" },
-    { label: "Pitch", href: "/pitch", featureFlag: "pitch" },
+    { label: "Portfolio", href: "/portfolio" },
+    { label: "Fund", href: "/fund" },
   ],
 
   footerNavigation: [
     { label: "Home", href: "/" },
     { label: "Portfolio", href: "/portfolio" },
-    { label: "Team", href: "/team", featureFlag: "team" },
-    { label: "Insights", href: "/insights", featureFlag: "insights" },
-    { label: "About", href: "/about", featureFlag: "about" },
-    { label: "Pitch", href: "/pitch", featureFlag: "pitch" },
+    { label: "Fund", href: "/fund" },
   ],
 
   legalNavigation: [{ label: "Privacy", href: "/privacy" }],
@@ -102,7 +105,7 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
    */
   investmentCriteria: [
     {
-      label: "Ticket",
+      label: "First cheque",
       value: "€100k or €200k",
       evidence: ownerConfirmed("Ticket sizes stated by the content owner, 2026-08-11"),
       editorialNote:
@@ -110,31 +113,31 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
       sortOrder: 10,
     },
     {
-      label: "Cadence",
-      value: "1–3 per month",
+      label: "Pace",
+      value: "1–3 teams / month",
       evidence: ownerConfirmed("Investment cadence stated by the content owner, 2026-08-11"),
       editorialNote:
         "A public, checkable commitment: roughly 12–36 investments a year. Worth revisiting if the real rate settles elsewhere.",
       sortOrder: 20,
     },
     {
-      label: "We back",
-      value: "The team",
+      label: "Decision lens",
+      value: "Team first",
       evidence: ownerConfirmed("Team-only thesis stated by the content owner, 2026-08-11"),
       sortOrder: 30,
     },
     {
-      label: "Technology",
+      label: "Focus",
       value: "AI only",
       evidence: ownerConfirmed("AI-only mandate stated by the content owner, 2026-08-11"),
       sortOrder: 40,
     },
     {
-      label: "Industry",
-      value: "Agnostic",
-      evidence: ownerConfirmed(
-        "Industry-agnostic thesis restated by the content owner, 2026-08-11",
-      ),
+      label: "Stage",
+      value: "Pre-seed",
+      evidence: ownerConfirmed("Pre-seed stage confirmed by the content owner, 2026-08-11"),
+      editorialNote:
+        "Replaces the Industry/Agnostic row. §8.3 lists Stage among the six facts and industry-agnostic is implied by an AI-only mandate; stage is the fact a founder actually screens on.",
       sortOrder: 50,
     },
     {
@@ -145,20 +148,6 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
     },
   ],
 
-  /**
-   * §7.6. Derived metrics recompute from live content; nothing is trusted from
-   * a hand-entered number. No Luminar figures are copied.
-   */
-  stats: [
-    {
-      value: 0,
-      label: "Portfolio companies",
-      derivedKey: "activeCompanyCount",
-      sourceNote: "Derived from published portfolio records",
-      evidence: unverified("Requires an approved company list before it means anything"),
-      sortOrder: 10,
-    },
-  ],
 
   socialLinks: [
     {
@@ -168,8 +157,10 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
     },
   ],
 
-  brandStatement: authoredOnInstruction(
-    "Foundry backs AI teams in the Nordics. €100k or €200k, one to three times a month, decided on the team.",
+  // §8.9: one sentence in the footer — category, region and ticket. No
+  // repeated manifesto.
+  brandStatement: fromEnhancementBrief(
+    "Nordic AI pre-seed. First cheques of €100k or €200k, one to three teams a month.",
   ),
 
   /**
@@ -179,19 +170,13 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
    */
   featureFlags: {
     investmentCriteria: true,
-    // Off on owner instruction 2026-08-11: no team page, and Anders appears in
-    // the contact block instead. Flip to true when portraits and bios exist and
-    // the route, navigation and sitemap entries all come back.
-    team: false,
-    // Off on owner instruction 2026-08-11. The whole conversion path — route,
-    // form, API, banner and every CTA — is intact behind this one boolean;
-    // contact runs through Anders instead.
-    pitch: false,
-    insights: false,
-    about: false,
-    network: false,
-    stats: false,
-    testimonials: false,
+    // No founder quote is approved for publication. §8.7: if none meets the
+    // standard, omit the section — do not weaken the standard to fill it.
+    founderQuote: false,
+    // No counsel-approved legal entity, registered address or organisation
+    // number exists. §16 blocks the affected content rather than publishing
+    // draft language, which is the defect the audit found on /privacy.
+    institutionalDetails: false,
   },
 };
 

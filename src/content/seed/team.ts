@@ -33,7 +33,14 @@ export const SEED_TEAM_MEMBERS: TeamMember[] = [
       linkedinUrl: unverified("No personal LinkedIn URL published on the live site"),
     },
     email: "anders.nygren@foundryventures.ai",
+    /*
+     * §12.7: a personal telephone number is only public if deliberately
+     * approved for public use. This one is on the live site today, so it is
+     * migrated rather than introduced — but it is a mobile number, and the
+     * decision to keep publishing it is flagged in `docs/content-gaps.md` §C.
+     */
     phone: "+46 733 460006",
+    ownsInvestmentDecision: true,
     active: true,
     sortOrder: 10,
   },
@@ -56,6 +63,9 @@ export const SEED_TEAM_MEMBERS: TeamMember[] = [
       linkedinUrl: unverified("No personal LinkedIn URL published on the live site"),
     },
     email: "julia.siljehag@foundryventures.ai",
+    // Community, not investment. Kept out of the decision-maker block by
+    // record rather than by remembering to exclude her at each render site.
+    ownsInvestmentDecision: false,
     active: true,
     sortOrder: 20,
   },

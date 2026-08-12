@@ -7,13 +7,12 @@
  * here, using the real seeded site settings rather than an invented one.
  */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { getRawSiteSettings } from "@/content";
 import { PREVIEW_POLICY, PRODUCTION_POLICY } from "@/content/policy";
 import type { SeoFields, SiteSettings } from "@/content/types";
 import { absoluteUrl, buildMetadata, composeTitle } from "@/lib/seo/metadata";
 import {
-  articleJsonLd,
   breadcrumbJsonLd,
   organizationJsonLd,
   personJsonLd,
@@ -142,7 +141,16 @@ describe("buildMetadata", () => {
     expect(metadata.robots).toMatchObject({ index: false, follow: false });
   });
 
+  it("refuses to index unless the deployment opts in", () => {
+    // The default in every environment is noindex. §2.9 defect 7: a preview
+    // that inherits `NODE_ENV=production` must not inherit indexability.
+    vi.stubEnv("FOUNDRY_INDEXABLE", "");
+    const meta = buildMetadata({ settings, policy: PRODUCTION_POLICY, path: "/", ...FALLBACKS });
+    expect(meta.robots).toMatchObject({ index: false, follow: false });
+  });
+
   it("indexes a normal production route and honours a route-level noindex", () => {
+    vi.stubEnv("FOUNDRY_INDEXABLE", "1");
     const indexed = buildMetadata({
       settings,
       policy: PRODUCTION_POLICY,
@@ -304,6 +312,7 @@ describe("entity JSON-LD", () => {
       name: "Fixture Person",
       slug: "fixture-person",
       role: "Fixture role",
+      ownsInvestmentDecision: false,
       publicationStatus: "published",
       verificationStatus: "verified",
       fieldEvidence: {},
@@ -344,49 +353,5 @@ describe("entity JSON-LD", () => {
       "@type": "Organization",
       name: "Testcorp Fixture",
     });
-  });
-
-  it("emits an article with absolute author URLs and no empty image", () => {
-    const post = {
-      id: "p1",
-      publicationStatus: "published" as const,
-      editorialApprovalStatus: "approved" as const,
-      title: "A fixture article",
-      slug: "a-fixture-article",
-      type: "article" as const,
-      target: "internal" as const,
-      publishedAt: "2026-06-01",
-      excerpt: "Fixture excerpt.",
-      body: [{ type: "paragraph" as const, spans: [{ text: "Body." }] }],
-      authors: [],
-      companies: [],
-      featured: false,
-    };
-
-    const json = articleJsonLd(settings, {
-      post,
-      summary: {
-        id: post.id,
-        title: post.title,
-        type: post.type,
-        href: `/insights/${post.slug}`,
-        isExternal: false,
-        excerpt: post.excerpt,
-        publishedAt: post.publishedAt,
-        heroImage: null,
-        authors: [],
-        companies: [],
-        readingTimeMinutes: 1,
-      },
-      authors: [],
-      companies: [],
-      related: [],
-    });
-
-    expect(json.mainEntityOfPage).toBe(`${ORIGIN}/insights/a-fixture-article`);
-    expect(json).not.toHaveProperty("image");
-    // An empty author array is omitted rather than published as `author: []`.
-    expect(json).not.toHaveProperty("author");
-    expect(json.datePublished).toBe("2026-06-01");
   });
 });

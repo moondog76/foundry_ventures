@@ -1,13 +1,12 @@
 /**
  * Typography system.
  *
- * Spec §5.2: H1–H3, large pull quotes and large editorial statements use
- * Ivar Display Regular. H4–H6 get a deliberate treatment too — they must not
- * fall back to the legacy Squarespace Anton setting. Body, navigation, labels,
- * metadata, forms and buttons use Helvetica Neue 400/500.
+ * H1–H3, pull quotes and large editorial statements take the display serif
+ * (Newsreader). H4–H6 take the sans deliberately — they are labels, not
+ * editorial voice, and must never inherit the legacy Squarespace Anton setting.
+ * Body, navigation, labels, metadata and controls use the sans at 400/500.
  *
- * Font faces are declared in fonts.css and are only active when licensed files
- * are present in /public/fonts (§30: Georgia fallback with a dev warning).
+ * Both faces are self-hosted and loaded by `src/styles/fonts.ts`.
  */
 
 h1,
@@ -20,10 +19,18 @@ h3,
   font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-display);
   text-wrap: balance;
+  /*
+   * Newsreader ships its optical-size axis (16-72). `auto` lets the browser
+   * pick per rendered size, so a 112px h1 gets the high-contrast display cut
+   * and a 29px h3 gets a sturdier one. Without this every heading would render
+   * at one default optical size and the large ones would look coarse.
+   */
+  font-optical-sizing: auto;
 }
 
-/* Live-site heading rhythm is visually tighter than a naive 1.3 because the
-   Squarespace face carries a size-adjust. We express the effective value. */
+/* Leading is tuned against Newsreader's own proportions, not a generic ratio.
+   Its ascenders are tall relative to the x-height, so display sizes tolerate
+   sub-1.0 leading that would collide in a humanist face. */
 h1,
 .type-display-1 {
   font-size: var(--text-h1);
@@ -98,6 +105,7 @@ h6,
 /* Large editorial statements and pull quotes take the display face. */
 .type-quote {
   font-family: var(--font-display);
+  font-optical-sizing: auto;
   font-weight: var(--weight-regular);
   font-size: var(--text-h3);
   line-height: 1.2;

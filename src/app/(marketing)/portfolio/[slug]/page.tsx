@@ -14,7 +14,6 @@ import { resolvePolicyContext } from "@/content/context";
 import { canIndexCompany, canPublishCompanyField } from "@/content/policy";
 import { HIDDEN_ROUTE_METADATA, buildMetadata } from "@/lib/seo/metadata";
 import { breadcrumbJsonLd, portfolioCompanyJsonLd } from "@/lib/seo/json-ld";
-import { PitchBanner } from "@/components/global/PitchBanner";
 import { SeoJsonLd } from "@/components/global/SeoJsonLd";
 import type { Crumb } from "@/components/global/Breadcrumbs";
 import { CompanyDetail } from "@/components/portfolio/CompanyDetail";
@@ -105,8 +104,6 @@ export default async function CompanyPage({ params }: { params: Promise<RoutePar
           portfolioCompanyJsonLd(settings, { ...summary, externalHref: websiteUrl }),
         ]}
       />
-
-      <PitchBanner />
     </>
   );
 }

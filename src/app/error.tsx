@@ -22,7 +22,7 @@
  */
 
 import { useEffect } from "react";
-import { ButtonLink, Container, SectionEyebrow, TextLink, uiStyles } from "@/components/ui";
+import { ButtonLink, Container, SectionEyebrow, uiStyles } from "@/components/ui";
 import styles from "./error.module.css";
 
 export type RouteErrorProps = {
@@ -62,9 +62,7 @@ export default function RouteError({ error, reset }: RouteErrorProps) {
           </div>
 
           <p className={styles.followUp}>
-            If it keeps happening, you can reach us through the{" "}
-            <TextLink href="/pitch">pitch page</TextLink>, or use the contact details at the bottom
-            of this page.
+            If it keeps happening, use the contact details at the bottom of this page.
           </p>
 
           {error.digest ? (

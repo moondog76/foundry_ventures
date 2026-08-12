@@ -27,10 +27,6 @@ export type ContactCtaProps = {
   policy: PolicyContext;
   /** Background crop — the same deduplicated ocean asset the hero uses (§5.5). */
   image: ImageAsset;
-  /** Nav-derived label used when the authored CTA label is unapproved. */
-  primaryCtaFallbackLabel: string;
-  /** False when the CTA's destination is behind a disabled flag (§3.4). */
-  primaryCtaEnabled?: boolean;
 };
 
 export function ContactCta({
@@ -38,24 +34,20 @@ export function ContactCta({
   people,
   policy,
   image,
-  primaryCtaFallbackLabel,
-  primaryCtaEnabled = true,
 }: ContactCtaProps) {
   const heading = renderableText(contact.heading, policy);
   const paragraphs = renderableTexts(contact.paragraphs, policy);
-  const primaryLabel = renderableText(contact.primaryCta.label, policy) ?? primaryCtaFallbackLabel;
 
-  // Secondary CTA: the same TeamMember record the list below renders, resolved
-  // once. Without a publishable address there is no button — never a dead link.
-  const secondaryPerson = people.find(
-    (member) => member.id === contact.secondaryCta.contactPerson.id,
-  );
-  const secondaryEmail = secondaryPerson
-    ? mailtoHref(teamContactChannels(secondaryPerson, policy).email)
-    : null;
-  const secondaryLabel =
-    renderableText(contact.secondaryCta.label, policy) ??
-    (secondaryPerson ? `Email ${secondaryPerson.name}` : null);
+  /*
+   * One action (§9.7), addressed to the same TeamMember record the list below
+   * renders and resolved once. Without a publishable address there is no
+   * button — never a dead link.
+   */
+  const person = people.find((member) => member.id === contact.primaryCta.contactPerson.id);
+  const email = person ? mailtoHref(teamContactChannels(person, policy).email) : null;
+  const label =
+    renderableText(contact.primaryCta.label, policy) ??
+    (person ? `Email ${person.name}` : null);
 
   const hasCopy = Boolean(heading) || paragraphs.length > 0;
   const hasPeople = people.length > 0;
@@ -91,22 +83,13 @@ export function ContactCta({
                 {paragraph}
               </p>
             ))}
-            <div className={styles.actions}>
-              {primaryCtaEnabled ? (
-                <ButtonLink href={contact.primaryCta.href} onDark>
-                  {primaryLabel}
+            {email && label ? (
+              <div className={styles.actions}>
+                <ButtonLink href={email} onDark>
+                  {label}
                 </ButtonLink>
-              ) : null}
-              {secondaryEmail && secondaryLabel ? (
-                <ButtonLink
-                  href={secondaryEmail}
-                  variant={primaryCtaEnabled ? "secondary" : "primary"}
-                  onDark
-                >
-                  {secondaryLabel}
-                </ButtonLink>
-              ) : null}
-            </div>
+              </div>
+            ) : null}
           </Reveal>
 
           {hasPeople ? (

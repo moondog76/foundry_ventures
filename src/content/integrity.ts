@@ -10,14 +10,13 @@
  */
 
 import { rawContent } from "./index";
+import type { EditorialText, FundPage, HomePage, ImageAsset } from "./types";
 import {
   COMPANY_CORE_IDENTITY_FIELDS,
   COMPANY_DETAIL_REQUIRED_FIELDS,
   PRODUCTION_POLICY,
   canListCompanyPublicly,
-  canListPostPublicly,
   canListTeamMemberPublicly,
-  canListTestimonialPublicly,
   canPublishCompanyDetail,
   canPublishCompanyField,
   canPublishTeamDetail,
@@ -25,7 +24,6 @@ import {
   isOwnerApproved,
   type PolicyBlock,
 } from "./policy";
-import type { EditorialText, HomePage, ImageAsset } from "./types";
 
 export type IntegrityReport = {
   blocks: PolicyBlock[];
@@ -36,8 +34,6 @@ export type IntegrityReport = {
   summary: {
     companies: { total: number; listable: number; withDetail: number };
     teamMembers: { total: number; listable: number; withDetail: number };
-    posts: { total: number; listable: number };
-    testimonials: { total: number; listable: number };
     investmentCriteria: { total: number; approved: number };
   };
 };
@@ -73,20 +69,39 @@ function collectEditorialText(page: HomePage): Array<{ path: string; text: Edito
   add("contact.heading", page.contact.heading);
   page.contact.paragraphs.forEach((t, i) => add(`contact.paragraphs[${i}]`, t));
   add("contact.primaryCta.label", page.contact.primaryCta.label);
-  add("contact.secondaryCta.label", page.contact.secondaryCta.label);
 
+  return found;
+}
+
+/** The same walk as `collectEditorialText`, for the fund page (§8.11). */
+function collectFundEditorialText(page: FundPage): Array<{ path: string; text: EditorialText }> {
+  const found: Array<{ path: string; text: EditorialText }> = [];
+  const add = (path: string, text: EditorialText | undefined) => {
+    if (text) found.push({ path: `fund.${path}`, text });
+  };
+  add("hero.heading", page.hero.heading);
+  add("hero.intro", page.hero.intro);
+  add("factsHeading", page.factsHeading);
+  add("model.heading", page.model.heading);
+  add("model.body", page.model.body);
+  page.model.steps.forEach((step, i) => {
+    add(`model.steps[${i}].title`, step.title);
+    add(`model.steps[${i}].body`, step.body);
+  });
+  add("people.heading", page.people.heading);
+  add("contact.heading", page.contact.heading);
+  add("contact.body", page.contact.body);
   return found;
 }
 
 export async function buildIntegrityReport(): Promise<IntegrityReport> {
   const policy = PRODUCTION_POLICY;
-  const [settings, home, companies, teamMembers, posts, testimonials] = await Promise.all([
+  const [settings, home, fund, companies, teamMembers] = await Promise.all([
     rawContent.siteSettings(),
     rawContent.homePage(),
+    rawContent.fundPage(),
     rawContent.companies(),
     rawContent.teamMembers(),
-    rawContent.posts(),
-    rawContent.testimonials(),
   ]);
 
   const blocks: PolicyBlock[] = [];
@@ -184,9 +199,9 @@ export async function buildIntegrityReport(): Promise<IntegrityReport> {
     });
   }
 
-  /* ------------------------------------------------------------ Home copy */
+  /* ------------------------------------------- Home and fund page copy */
 
-  const unapprovedCopy = collectEditorialText(home)
+  const unapprovedCopy = [...collectEditorialText(home), ...collectFundEditorialText(fund)]
     .filter(({ text }) => text.approvalStatus !== "approved")
     .map(({ path, text }) => ({
       path,
@@ -204,7 +219,7 @@ export async function buildIntegrityReport(): Promise<IntegrityReport> {
   }
 
   notePlaceholder(home.hero.image);
-  home.offering.images.forEach(notePlaceholder);
+  home.offering.images?.forEach(notePlaceholder);
   notePlaceholder(settings.defaultOgImage);
 
   return {
@@ -221,14 +236,6 @@ export async function buildIntegrityReport(): Promise<IntegrityReport> {
         total: teamMembers.length,
         listable: teamMembers.filter((m) => canListTeamMemberPublicly(m, policy)).length,
         withDetail: teamMembers.filter((m) => canPublishTeamDetail(m, policy)).length,
-      },
-      posts: {
-        total: posts.length,
-        listable: posts.filter((p) => canListPostPublicly(p, policy)).length,
-      },
-      testimonials: {
-        total: testimonials.length,
-        listable: testimonials.filter((t) => canListTestimonialPublicly(t, policy)).length,
       },
       investmentCriteria: {
         total: settings.investmentCriteria.length,
@@ -250,10 +257,6 @@ export function formatIntegrityReport(report: IntegrityReport): string {
   );
   lines.push(
     `  team members       ${summary.teamMembers.listable}/${summary.teamMembers.total} listable, ${summary.teamMembers.withDetail} with a profile`,
-  );
-  lines.push(`  posts              ${summary.posts.listable}/${summary.posts.total} listable`);
-  lines.push(
-    `  testimonials       ${summary.testimonials.listable}/${summary.testimonials.total} listable`,
   );
   lines.push(
     `  criteria approved  ${summary.investmentCriteria.approved}/${summary.investmentCriteria.total}`,

@@ -1,30 +1,32 @@
 /**
  * Home page seed content.
  *
- * Rewritten on 2026-08-11 for the repositioning the owner set out: Foundry is
- * not a venture fund but a high-frequency, team-only investor in AI. Every
- * user-visible string below is `authoredOnInstruction` — written for that brief
- * and approved by it, but explicitly not reviewed line by line, which the
- * integrity report keeps saying until someone does.
+ * Rewritten 2026-08-12 against the website enhancement brief. The previous
+ * version ran to 783 main-content words; §6.7 budgets 350-450. The compression
+ * is the point rather than a side effect — the audit's finding was that the page
+ * restated one argument across the hero, criteria, thesis, offering, contact and
+ * footer instead of letting each section prove the one before it.
  *
- * What the copy asserts as fact, all of it stated by the owner:
- *   - cheques are €100k or €200k, nothing in between and nothing outside;
- *   - one to three investments a month;
- *   - AI only, teams only, industry agnostic;
- *   - the offer after the cheque is customer introductions, legal and
- *     operations support, and the portfolio community.
+ * Three copy directions here reverse copy the owner wrote or approved on
+ * 11 August. They are implemented because §6.5 is explicit about all three, and
+ * each is logged in `docs/content-gaps.md` §F3 with its one-line revert:
  *
- * What it deliberately does **not** claim: returns, fund size, portfolio
- * outcomes, response times, or any number nobody has given us.
+ *   1. "Foundry is not a venture fund" is deleted (§6.5) — read by the audit as
+ *      category confusion that undercuts a fund actively raising.
+ *   2. "Industrial angel" is removed from public copy (§6.5). It may survive as
+ *      internal shorthand; it is no longer the public category.
+ *   3. "We only invest in teams" becomes "We invest in teams first" (§6.4), so
+ *      the line cannot be read as "Foundry does not care about the market".
  *
- * The previous Appendix C copy (services-as-a-software, "the era of", the three
- * Vision paragraphs) described the old position and is superseded. It remains in
- * git history and in the buildspec's Appendix C if it is ever needed.
+ * What the copy still asserts as fact, all owner-stated: cheques are €100k or
+ * €200k; one to three investments a month; AI only; Nordics; team-first
+ * underwriting; introductions, operating support and the founder community after
+ * the cheque. It claims no returns, fund size, outcomes or response times.
  */
 
 import type { HomePage } from "../types";
-import { authoredOnInstruction, ownerWrote } from "./evidence";
-import { ARCHITECTURE_IMAGE, DEFAULT_OG_IMAGE, OCEAN_IMAGE, SILHOUETTE_IMAGE } from "./images";
+import { authoredOnInstruction, fromEnhancementBrief, ownerWrote } from "./evidence";
+import { DEFAULT_OG_IMAGE, OCEAN_IMAGE } from "./images";
 import { ANDERS_REF } from "./team";
 import { SEED_COMPANIES } from "./companies";
 
@@ -32,70 +34,57 @@ export const SEED_HOME_PAGE: HomePage = {
   publicationStatus: "published",
 
   hero: {
-    // The two rules, in the order they disqualify people. Anyone outside them
-    // saves a meeting, which is the point of putting them this high.
-    eyebrow: authoredOnInstruction("AI only · Teams only · Nordics"),
+    // Category and ticket, per §6.4. The previous eyebrow repeated the headline's
+    // "AI only / Teams only" directly above the headline itself; this one adds
+    // the qualifying fact instead of saying the same thing twice.
+    eyebrow: fromEnhancementBrief("Nordic AI pre-seed · €100k / €200k"),
+    heading: fromEnhancementBrief("We only invest in AI. We invest in teams first."),
     /*
-     * The position stated as two rules rather than a label. "Industrialised
-     * super angel" is the internal shorthand, but "super angel" already means a
-     * prolific individual investor, and a coined compound has to be explained
-     * every time it is used. Rules travel; labels get forgotten. The term itself
-     * appears once, as a definition, in the thesis below.
+     * One paragraph, 22 words. The audit found both of the old hero paragraphs
+     * were still going after the reader had understood the proposition.
+     *
+     * This is the lower-claim variant §6.4 offers. The higher-claim version —
+     * "help create the first customer momentum" — is only publishable if the
+     * portfolio can substantiate it, and that evidence has not been gathered.
      */
-    heading: authoredOnInstruction("We only invest in AI. We only invest in teams."),
     paragraphs: [
-      authoredOnInstruction(
-        "Foundry is not a venture fund. We write €100k or €200k into AI teams, one to three times a month, and we decide on the people in front of us — not on a market map, a moat, or a product that does not exist yet.",
-      ),
-      authoredOnInstruction(
-        "After the cheque we do the two things founders actually ask for: we introduce you to customers, and we take legal and operations off your desk. Around that sits a community of AI founders solving the same problems in the same month.",
+      fromEnhancementBrief(
+        "One to three teams a month. We underwrite a team’s rate of learning, then stay close through the earliest commercial questions.",
       ),
     ],
-    /*
-     * The primary CTA still points at `/pitch`, which is behind a disabled flag,
-     * so the page hides it and promotes the secondary. Keeping the destination
-     * here rather than repointing it means re-enabling the flag restores the
-     * pair intact instead of leaving two buttons to the same place.
-     */
-    primaryCta: { label: authoredOnInstruction("Talk to us"), href: "/pitch" },
-    secondaryCta: { label: authoredOnInstruction("See the portfolio"), href: "/portfolio" },
+    primaryCta: { label: fromEnhancementBrief("Meet the teams"), href: "/portfolio" },
+    secondaryCta: { label: fromEnhancementBrief("The fund"), href: "/fund" },
     image: OCEAN_IMAGE,
   },
 
   vision: {
     eyebrow: authoredOnInstruction("Thesis"),
-    /*
-     * This is the argument that makes "we ignore PMF and moats" read as a
-     * deliberate bet rather than an absence of diligence — which is the first
-     * thing a co-investor or an LP will test the position against.
-     */
+    // Retained verbatim: §6.5 marks this the best thesis line on the page.
     heading: authoredOnInstruction("In AI, the team is the only thing that compounds"),
+    /*
+     * One paragraph, 66 words, inside the 55-75 budget. The old version ran to
+     * three paragraphs and ended on "call it an industrial angel", which §6.5
+     * removes from public copy.
+     *
+     * The last two sentences carry the reframe §6.5 asks for. The old copy said
+     * Foundry does not size markets and does not ask for a competitive matrix,
+     * which reads as an absence of diligence. This says the same thing as a claim
+     * about what is knowable this early, which is the actual argument.
+     */
     paragraphs: [
-      authoredOnInstruction(
-        "Almost everything a venture investor is trained to price has become unreliable. Models change monthly. Product surfaces get rebuilt in a weekend. A moat described in a deck rarely survives the next release. What still compounds is a small group of people who ship faster than the field moves.",
-      ),
-      authoredOnInstruction(
-        "So we stopped pretending to price the rest. We do not size your market for you, we do not ask for a competitive matrix, and we are not looking for a defensibility story written before you have customers. We back the team, at a fixed cheque, and we do it often.",
-      ),
-      authoredOnInstruction(
-        "That is a different job from venture capital and it needs a different shape: a decision measured in conversations rather than months, a standing offer of capital and customer introductions, and a portfolio that behaves like a working group instead of a list of logos. If it needs a name, call it an industrial angel.",
+      fromEnhancementBrief(
+        "Models change monthly. Products get rebuilt in a weekend. Almost everything an investor is trained to price at this stage is provisional, and a defensibility story written before the first customer is a guess in a suit. What is legible early is how fast a team learns. That is what we underwrite, at a fixed cheque and a short decision path.",
       ),
     ],
   },
 
   offering: {
-    eyebrow: authoredOnInstruction("What you get"),
     /*
-     * Supplied verbatim by the content owner 2026-08-12, so these four are
-     * `ownerWrote` rather than `authoredOnInstruction` — Foundry's own words,
-     * not words written for Foundry.
-     *
-     * Two things to know about the drift this introduces, both live in
-     * `content-gaps.md`: 02 now promises talent and partners as well as
-     * customers, while the hero paragraph and the SEO description still say
-     * "customer introductions" only; and 03 dropped legal, which the hero
-     * paragraph still offers to take off a founder's desk.
+     * §6.5 replaces "What you get": it framed Foundry as a package of services.
+     * The four item bodies are the owner's own words, supplied 2026-08-12, and
+     * are kept as written — the audit's objection was to the heading, not these.
      */
+    eyebrow: fromEnhancementBrief("What changes after Foundry"),
     items: [
       {
         number: "01",
@@ -128,57 +117,47 @@ export const SEED_HOME_PAGE: HomePage = {
         ),
       },
     ],
-    images: [ARCHITECTURE_IMAGE, SILHOUETTE_IMAGE],
   },
 
   featuredPortfolio: {
     heading: authoredOnInstruction("The teams we back"),
-    companyIds: SEED_COMPANIES.slice(0, 9).map((c) => ({
-      id: c.id,
-      slug: c.slug,
-      name: c.name,
-    })),
     /*
-     * No trailing link under the tiles, on owner instruction 2026-08-11: the
-     * hero's own button and the footer already reach the archive, and a third
-     * link directly beneath nine cards that are themselves links added nothing.
-     * The destination stays so restoring it means supplying a label again.
+     * §8.4 wants six editorially selected companies — and says in the same
+     * section that Foundry, not Claude Code, must approve which six and in what
+     * order, and that until that decision exists the build preserves data order
+     * and renders all nine. That is what happens here: nine, in observed live
+     * order. The selection is logged in `docs/content-gaps.md` §C as the open
+     * content decision it is, rather than guessed from public signals.
      */
-    ctaLabel: undefined,
+    companyIds: SEED_COMPANIES.map((c) => ({ id: c.id, slug: c.slug, name: c.name })),
+    ctaLabel: fromEnhancementBrief("See all teams"),
     ctaHref: "/portfolio",
   },
 
-  optionalSections: {
-    statsHeading: authoredOnInstruction("Foundry in numbers"),
-    testimonialsHeading: authoredOnInstruction("From the teams we back"),
-    latestInsightsHeading: authoredOnInstruction("News & Insights"),
-    latestInsightsCtaLabel: authoredOnInstruction("See all insights"),
-  },
-
   contact: {
-    heading: authoredOnInstruction("Building an AI company?"),
+    heading: fromEnhancementBrief("Building a Nordic AI company?"),
     paragraphs: [
-      authoredOnInstruction(
-        "We decide on the team, so the fastest way to start is a conversation rather than a document. You do not need a deck.",
+      fromEnhancementBrief(
+        "Start with a conversation. A deck is optional. Tell us who you are building with and what you have learned faster than everyone else.",
       ),
-      authoredOnInstruction("Email Anders and tell us who you are building with."),
     ],
-    primaryCta: { label: authoredOnInstruction("Talk to us"), href: "/pitch" },
-    secondaryCta: { label: authoredOnInstruction("Email Anders"), contactPerson: ANDERS_REF },
+    // One action. No pitch route exists and none is coming (§17), so the direct
+    // human path is the only path — which the audit found already worked.
+    primaryCta: { label: fromEnhancementBrief("Email Anders"), contactPerson: ANDERS_REF },
     contactPeople: [ANDERS_REF],
   },
 
   seo: {
     title: "Foundry Ventures",
     description:
-      "We back AI teams in the Nordics with €100k or €200k, one to three times a month. Team-only conviction, plus capital and customer introductions.",
+      "Nordic AI pre-seed. We write €100k or €200k into one to three teams a month, and underwrite the team before the market.",
     ogImage: DEFAULT_OG_IMAGE,
     approvalStatus: "approved",
     sources: [
       {
-        label: "Content owner repositioning brief",
-        observedAt: "2026-08-11",
-        note: "AI only, teams only, €100k/€200k cheques, one to three investments a month",
+        label: "Foundry Ventures website enhancement brief",
+        observedAt: "2026-08-12",
+        note: "§6.4 hero direction, §6.5 copy actions, §6.7 word budget",
       },
     ],
   },

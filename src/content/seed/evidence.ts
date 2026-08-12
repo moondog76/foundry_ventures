@@ -205,6 +205,39 @@ export function ownerWrote(
   };
 }
 
+export const ENHANCEMENT_BRIEF_SOURCE: SourceReference = {
+  label: "Foundry Ventures website enhancement and rebuild project",
+  observedAt: "2026-08-12",
+  note: "Third-party audit and rebuild directive commissioned by the content owner",
+};
+
+/**
+ * Copy written to the 2026-08-12 enhancement brief.
+ *
+ * Distinct from `authoredOnInstruction` because the authority is different. That
+ * copy came from the owner's own repositioning; this comes from an audit the
+ * owner commissioned and told us to build to. Where the two conflict — and on
+ * three points they do, listed in `src/content/seed/home.ts` — this constructor
+ * marks which side of the conflict a string is on, so the reversal is visible in
+ * the record instead of only in a commit message.
+ */
+export function fromEnhancementBrief(
+  value: string,
+  options?: { normalizationNote?: string },
+): EditorialText {
+  return {
+    value,
+    origin: "proposed",
+    approvalStatus: "approved",
+    approvedBy: CONTENT_OWNER,
+    approvedAt: "2026-08-12",
+    observedAt: "2026-08-12",
+    authoringNote:
+      "Written to the 2026-08-12 website enhancement brief on the owner's instruction to build to that plan; approved by that instruction, not by line-by-line review",
+    ...(options?.normalizationNote ? { normalizationNote: options.normalizationNote } : {}),
+  };
+}
+
 /** New copy from the prototype or the buildspec — always needs approval (§25.1). */
 export function proposed(value: string): EditorialText {
   return {

@@ -13,15 +13,11 @@
 import { createClient, type SanityClient } from "@sanity/client";
 import type { ContentAdapter } from "./types";
 import type {
-  AboutPage,
   Company,
   HomePage,
   LegalPage,
-  NetworkPerson,
-  Post,
   SiteSettings,
   TeamMember,
-  Testimonial,
 } from "../types";
 
 export type SanityConfig = {
@@ -205,16 +201,14 @@ export function createSanityAdapter(config: SanityConfig): ContentAdapter {
       if (!result) throw new Error("Sanity: no homePage document found");
       return result;
     },
-    async getAboutPage() {
-      const result = await fetchOne<AboutPage>(SANITY_QUERIES.aboutPage);
-      if (!result) throw new Error("Sanity: no aboutPage document found");
-      return result;
+    async getFundPage() {
+      // No Sanity document type exists for the fund page yet; the seed is
+      // the source of truth until one is modelled.
+      const { SEED_FUND_PAGE } = await import('../seed/fund');
+      return SEED_FUND_PAGE;
     },
     getCompanies: () => fetchMany<Company>(SANITY_QUERIES.companies),
     getTeamMembers: () => fetchMany<TeamMember>(SANITY_QUERIES.teamMembers),
-    getPosts: () => fetchMany<Post>(SANITY_QUERIES.posts),
-    getTestimonials: () => fetchMany<Testimonial>(SANITY_QUERIES.testimonials),
-    getNetworkPeople: () => fetchMany<NetworkPerson>(SANITY_QUERIES.networkPeople),
     getLegalPages: () => fetchMany<LegalPage>(SANITY_QUERIES.legalPages),
   };
 }

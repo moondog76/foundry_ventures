@@ -1,46 +1,38 @@
 /**
- * Home page (§7, §19.2, §28.2).
+ * Home page.
  *
- * A server component start to finish: the only client code on this route is the
- * `Reveal` wrapper, the stat count-up and the testimonial carousel.
+ * Section order follows §8.2-§8.8: hero, investment model strip, selected
+ * portfolio proof, thesis, what changes after Foundry, founder proof and
+ * decision-maker, contact. Portfolio proof sits third rather than sixth, which
+ * is the structural change the audit asked for — §14.1 requires proof within the
+ * first two scrolls, and the old page put four sections of argument first.
  *
- * Section order is fixed by §7: hero, investment criteria, vision, offering,
- * featured portfolio, statistics, testimonials, latest insights, contact.
- * Every section decides for itself whether it has anything publishable and
- * returns `null` when it does not, so a disabled flag or unapproved copy removes
- * the block entirely instead of leaving an empty frame.
+ * A server component start to finish. The only client code on this route is the
+ * ocean playback control and the scroll `Reveal` wrapper, both of which are
+ * enhancements over content that is already in the server-rendered HTML (§12.1).
  *
- * With the shipped seed data in production policy that means most of this page
- * renders nothing at all — every home string is `unapproved` (§25.1). That is
- * the specified behaviour, not a failure. In preview (the default in dev) the
- * same code renders the full page.
- *
- * `PitchBanner` is deliberately absent: the home page closes with its own
- * `ContactCta` (§6.3).
+ * Every section still decides for itself whether it has anything publishable and
+ * returns `null` when it does not, so unapproved copy removes a block rather
+ * than leaving an empty frame.
  */
 
 import type { Metadata } from "next";
 import {
   getContactPeople,
+  getDecisionMakers,
   getFeaturedCompanies,
   getHomePage,
   getInvestmentCriteria,
-  getLatestPosts,
   getSiteSettings,
-  getStats,
-  getTestimonials,
-  isRoutePublished,
 } from "@/content";
 import { resolvePolicyContext } from "@/content/context";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { ContactCta } from "@/components/home/ContactCta";
+import { DecisionMakers } from "@/components/home/DecisionMakers";
 import { FeaturedPortfolio } from "@/components/home/FeaturedPortfolio";
 import { HomeHero } from "@/components/home/HomeHero";
 import { InvestmentCriteriaGrid } from "@/components/home/InvestmentCriteriaGrid";
-import { LatestInsights } from "@/components/home/LatestInsights";
 import { OfferingGrid } from "@/components/home/OfferingGrid";
-import { StatsGrid } from "@/components/home/StatsGrid";
-import { TestimonialsCarousel } from "@/components/home/TestimonialsCarousel";
 import { VisionSection } from "@/components/home/VisionSection";
 import { navLabel, renderableText } from "@/components/home/text";
 
@@ -75,54 +67,34 @@ export default async function HomePage() {
   const policy = await resolvePolicyContext();
   const [home, settings] = await Promise.all([getHomePage(), getSiteSettings(policy)]);
 
-  // A CTA must never point at a route behind a disabled flag (§3.4).
-  const pitchEnabled = await isRoutePublished(home.hero.primaryCta.href, policy);
-
   const featuredSlugs = home.featuredPortfolio.companyIds.map((company) => company.slug);
-  const [criteria, featuredCompanies, stats, testimonials, latestPosts, contactPeople] =
-    await Promise.all([
-      getInvestmentCriteria(policy),
-      getFeaturedCompanies(featuredSlugs, 9, policy),
-      getStats(policy),
-      getTestimonials(policy),
-      getLatestPosts(3, policy),
-      getContactPeople(policy),
-    ]);
+  const [criteria, featuredCompanies, decisionMakers, contactPeople] = await Promise.all([
+    getInvestmentCriteria(policy),
+    getFeaturedCompanies(featuredSlugs, FEATURED_LIMIT, policy),
+    getDecisionMakers(policy),
+    getContactPeople(policy),
+  ]);
 
-  // Navigation labels are structural site settings, already filtered by feature
-  // flag. They are the deterministic stand-in for a CTA label that has not been
-  // approved yet — no CTA is ever labelled with invented copy.
-  const pitchLabel = navLabel(settings.navigation, "/pitch", "Pitch");
+  // Navigation labels are structural site settings. They are the deterministic
+  // stand-in for a CTA label that has not been approved yet — no CTA is ever
+  // labelled with invented copy.
   const portfolioLabel = navLabel(settings.navigation, "/portfolio", "Portfolio");
-  const insightsLabel = navLabel(settings.navigation, "/insights", "Insights");
-
-  const pitchCta = home.hero.primaryCta;
-  const heroPitchLabel = renderableText(pitchCta.label, policy) ?? pitchLabel;
+  const fundLabel = navLabel(settings.navigation, "/fund", "Fund");
 
   return (
     <>
       <HomeHero
-        primaryCtaEnabled={pitchEnabled}
         hero={home.hero}
         policy={policy}
         // The brand name is rendered unconditionally by the header, footer and
         // logo title, so it is the one string guaranteed to be available for the
         // page's single h1 when the authored heading is still unapproved.
         fallbackHeading={settings.displayBrandName}
-        primaryCtaFallbackLabel={pitchLabel}
-        secondaryCtaFallbackLabel={portfolioLabel}
+        primaryCtaFallbackLabel={portfolioLabel}
+        secondaryCtaFallbackLabel={fundLabel}
       />
 
-      <InvestmentCriteriaGrid
-        ctaEnabled={pitchEnabled}
-        criteria={criteria}
-        ctaHref={pitchCta.href}
-        ctaLabel={heroPitchLabel}
-      />
-
-      <VisionSection vision={home.vision} policy={policy} />
-
-      <OfferingGrid offering={home.offering} policy={policy} />
+      <InvestmentCriteriaGrid criteria={criteria} />
 
       <FeaturedPortfolio
         companies={featuredCompanies}
@@ -138,37 +110,32 @@ export default async function HomePage() {
         ctaHref={home.featuredPortfolio.ctaHref}
       />
 
-      <StatsGrid
-        stats={stats}
-        heading={renderableText(home.optionalSections?.statsHeading, policy)}
-      />
+      <VisionSection vision={home.vision} policy={policy} />
 
-      <TestimonialsCarousel
-        testimonials={testimonials}
-        policy={policy}
-        heading={renderableText(home.optionalSections?.testimonialsHeading, policy)}
-      />
+      <OfferingGrid offering={home.offering} policy={policy} />
 
-      <LatestInsights
-        posts={latestPosts}
+      <DecisionMakers
+        people={decisionMakers}
         policy={policy}
-        heading={renderableText(home.optionalSections?.latestInsightsHeading, policy)}
-        ctaLabel={
-          renderableText(home.optionalSections?.latestInsightsCtaLabel, policy) ?? insightsLabel
-        }
-        ctaHref="/insights"
+        link={{ href: "/fund", label: "How the fund works" }}
       />
 
       <ContactCta
-        primaryCtaEnabled={pitchEnabled}
         contact={home.contact}
         people={contactPeople}
         policy={policy}
-        // The live site serves the same ocean bytes in both places; the rebuild
-        // deduplicates to the single asset the hero already loaded (§5.5).
+        // §8.8: return to the deep-blue field, reusing the poster the hero has
+        // already loaded rather than running a second independent video.
         image={home.hero.image}
-        primaryCtaFallbackLabel={pitchLabel}
       />
     </>
   );
 }
+
+/**
+ * §8.4 asks for six. Foundry has not yet chosen which six, and the same section
+ * forbids inferring the selection — so the page renders the full published set
+ * in data order until that decision exists. Raising this to six is the only
+ * change needed once it does.
+ */
+const FEATURED_LIMIT = 9;

@@ -16,8 +16,8 @@ import { notFound } from "next/navigation";
 import { getLegalPage, getSiteSettings } from "@/content";
 import { resolvePolicyContext } from "@/content/context";
 import { HIDDEN_ROUTE_METADATA, buildMetadata } from "@/lib/seo/metadata";
-import { LegalDocument } from "@/components/about/LegalDocument";
-import { deriveRichTextDescription } from "@/components/insights/text";
+import { LegalDocument } from "@/components/legal/LegalDocument";
+import { deriveRichTextDescription } from "@/components/legal/text";
 
 const PRIVACY_SLUG = "privacy";
 const PRIVACY_PATH = "/privacy";

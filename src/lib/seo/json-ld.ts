@@ -7,7 +7,7 @@
  * No invented legal or investment properties.
  */
 
-import type { CompanySummary, PostDetailView, SiteSettings, TeamMember } from "@/content/types";
+import type { CompanySummary, SiteSettings, TeamMember } from "@/content/types";
 import { absoluteUrl } from "./metadata";
 
 export type JsonLdObject = Record<string, unknown>;
@@ -85,33 +85,6 @@ export function breadcrumbJsonLd(
       item: absoluteUrl(settings.canonicalOrigin, item.path),
     })),
   };
-}
-
-export function articleJsonLd(settings: SiteSettings, view: PostDetailView): JsonLdObject {
-  const { post, summary, authors } = view;
-  return compact({
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: post.title,
-    description: post.excerpt,
-    datePublished: post.publishedAt,
-    dateModified: post.updatedAt ?? post.publishedAt,
-    inLanguage: "en",
-    mainEntityOfPage: absoluteUrl(settings.canonicalOrigin, `/insights/${post.slug}`),
-    image: summary.heroImage
-      ? absoluteUrl(settings.canonicalOrigin, summary.heroImage.src)
-      : undefined,
-    author: authors.map((author) => ({
-      "@type": "Person",
-      name: author.name,
-      url: absoluteUrl(settings.canonicalOrigin, `/team/${author.slug}`),
-    })),
-    publisher: {
-      "@type": "Organization",
-      name: settings.seoBrandName,
-      url: settings.canonicalOrigin,
-    },
-  });
 }
 
 export function personJsonLd(settings: SiteSettings, member: TeamMember): JsonLdObject {

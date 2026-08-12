@@ -22,9 +22,20 @@
 import type { MetadataRoute } from "next";
 import { getSiteSettings } from "@/content";
 import { policyModeFromEnv, publicPolicyContext } from "@/content/context";
+import { isIndexableDeployment } from "@/lib/seo/indexability";
 import { absoluteUrl } from "@/lib/seo/metadata";
 
-export const revalidate = 3600;
+/*
+ * Evaluated per request, not at build time.
+ *
+ * `robots.txt` is a tiny document, so the caching is worth nothing next to the
+ * failure it prevents: a build that ran without `FOUNDRY_INDEXABLE` would
+ * otherwise bake `Disallow: /` into production, or — far worse in the other
+ * direction — a build that ran with it would bake `Allow` into a preview.
+ * Reading the variable at request time means the crawler directive always
+ * matches the environment actually serving it.
+ */
+export const dynamic = "force-dynamic";
 
 const DISALLOWED_PREFIXES = ["/api/", "/api/draft/", "/preview", "/studio"];
 
@@ -34,9 +45,16 @@ const DISALLOWED_PREFIXES = ["/api/", "/api/draft/", "/preview", "/studio"];
  * cookie must not decide what it says.
  */
 function isPreviewDeployment(): boolean {
+  /*
+   * Indexing is opt-in (see `@/lib/seo/indexability`). `NODE_ENV` is not a
+   * usable signal here: Railway runs its preview with `NODE_ENV=production`,
+   * which is precisely how an unfinished staging environment ended up serving
+   * `index, follow` alongside draft legal copy (§2.9 defect 7).
+   */
+  if (!isIndexableDeployment()) return true;
   const override = policyModeFromEnv();
   if (override) return override.mode === "preview";
-  return process.env.NODE_ENV !== "production";
+  return false;
 }
 
 export default async function robots(): Promise<MetadataRoute.Robots> {

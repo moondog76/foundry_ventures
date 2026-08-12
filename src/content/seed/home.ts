@@ -1,104 +1,113 @@
 /**
  * Home page seed content.
  *
- * Every string below is either:
- *   `migrated-verbatim` — Appendix C, word for word from the 2026-08-10 live
- *                          snapshot, including its current-state spelling
- *                          ("worlds", "AI native", "early stage"), OR
- *   `proposed`          — new eyebrow / CTA / section copy from the Claude
- *                          prototype or the buildspec.
+ * Rewritten on 2026-08-11 for the repositioning the owner set out: Foundry is
+ * not a venture fund but a high-frequency, team-only investor in AI. Every
+ * user-visible string below is `authoredOnInstruction` — written for that brief
+ * and approved by it, but explicitly not reviewed line by line, which the
+ * integrity report keeps saying until someone does.
  *
- * Both start `unapproved` (§25.1). The copy-issue list in §25.2 is an editorial
- * diff for approval, not something this file silently applies.
+ * What the copy asserts as fact, all of it stated by the owner:
+ *   - cheques are €100k or €200k, nothing in between and nothing outside;
+ *   - one to three investments a month;
+ *   - AI only, teams only, industry agnostic;
+ *   - the offer after the cheque is customer introductions, legal and
+ *     operations support, and the portfolio community.
+ *
+ * What it deliberately does **not** claim: returns, fund size, portfolio
+ * outcomes, response times, or any number nobody has given us.
+ *
+ * The previous Appendix C copy (services-as-a-software, "the era of", the three
+ * Vision paragraphs) described the old position and is superseded. It remains in
+ * git history and in the buildspec's Appendix C if it is ever needed.
  */
 
 import type { HomePage } from "../types";
-import { migratedVerbatim, proposed } from "./evidence";
+import { authoredOnInstruction } from "./evidence";
 import { ARCHITECTURE_IMAGE, DEFAULT_OG_IMAGE, OCEAN_IMAGE, SILHOUETTE_IMAGE } from "./images";
 import { ANDERS_REF } from "./team";
 import { SEED_COMPANIES } from "./companies";
-
-const HOME_URL = "https://www.foundryventures.ai/";
 
 export const SEED_HOME_PAGE: HomePage = {
   publicationStatus: "published",
 
   hero: {
-    // Not live copy — proposed in the buildspec (§7.1) and explicitly unapproved.
-    eyebrow: proposed("Pre-seed · Nordics"),
-    heading: migratedVerbatim(
-      "Partnering with visionary AI founders pioneering the era of services-as-a-software",
-      { sourceUrl: HOME_URL },
-    ),
+    // The two rules, in the order they disqualify people. Anyone outside them
+    // saves a meeting, which is the point of putting them this high.
+    eyebrow: authoredOnInstruction("AI only · Teams only · Nordics"),
+    /*
+     * The position stated as two rules rather than a label. "Industrialised
+     * super angel" is the internal shorthand, but "super angel" already means a
+     * prolific individual investor, and a coined compound has to be explained
+     * every time it is used. Rules travel; labels get forgotten. The term itself
+     * appears once, as a definition, in the thesis below.
+     */
+    heading: authoredOnInstruction("We only invest in AI. We only invest in teams."),
     paragraphs: [
-      migratedVerbatim(
-        "There has never been a better time to build. To build AI native products that solve hard problems. To build companies with an AI based operating model. We look for early stage founders with a relentless focus on shipping velocity and a bold go-to-market approach.",
-        { sourceUrl: HOME_URL },
+      authoredOnInstruction(
+        "Foundry is not a venture fund. We write €100k or €200k into AI teams, one to three times a month, and we decide on the people in front of us — not on a market map, a moat, or a product that does not exist yet.",
       ),
-      migratedVerbatim(
-        "Foundry offers an efficient investment process and a curated community for cross company learning. We are industry agnostic, embedded in the Nordics and focused on the pre-seed stage. Sometimes we lose sleep over the amazing future of software.",
-        {
-          sourceUrl: HOME_URL,
-          normalizationNote:
-            'The live source has two spaces between "for" and "cross"; collapsed to one as whitespace cleanup only. Wording is unchanged.',
-        },
+      authoredOnInstruction(
+        "After the cheque we do the two things founders actually ask for: we introduce you to customers, and we take legal and operations off your desk. Around that sits a community of AI founders solving the same problems in the same month.",
       ),
     ],
-    primaryCta: { label: proposed("Submit your pitch"), href: "/pitch" },
-    secondaryCta: { label: proposed("Explore our portfolio"), href: "/portfolio" },
+    /*
+     * The primary CTA still points at `/pitch`, which is behind a disabled flag,
+     * so the page hides it and promotes the secondary. Keeping the destination
+     * here rather than repointing it means re-enabling the flag restores the
+     * pair intact instead of leaving two buttons to the same place.
+     */
+    primaryCta: { label: authoredOnInstruction("Talk to us"), href: "/pitch" },
+    secondaryCta: { label: authoredOnInstruction("See the portfolio"), href: "/portfolio" },
     image: OCEAN_IMAGE,
   },
 
   vision: {
-    eyebrow: migratedVerbatim("Vision", { sourceUrl: HOME_URL }),
-    heading: migratedVerbatim("AI is more transformational than just another technology shift", {
-      sourceUrl: HOME_URL,
-    }),
+    eyebrow: authoredOnInstruction("Thesis"),
+    /*
+     * This is the argument that makes "we ignore PMF and moats" read as a
+     * deliberate bet rather than an absence of diligence — which is the first
+     * thing a co-investor or an LP will test the position against.
+     */
+    heading: authoredOnInstruction("In AI, the team is the only thing that compounds"),
     paragraphs: [
-      migratedVerbatim(
-        "Many of the worlds challenges will be addressed by the convergence of artificial intelligence and human ingenuity, creating unprecedented opportunities across industries. We see AI as a powerful enabler, transforming the way we work and solve problems.",
-        { sourceUrl: HOME_URL },
+      authoredOnInstruction(
+        "Almost everything a venture investor is trained to price has become unreliable. Models change monthly. Product surfaces get rebuilt in a weekend. A moat described in a deck rarely survives the next release. What still compounds is a small group of people who ship faster than the field moves.",
       ),
-      migratedVerbatim(
-        "At Foundry, we focus on this exponential impact of AI. This means investing early in visionary founders building tomorrow’s services-as-a-software technology.",
-        { sourceUrl: HOME_URL },
+      authoredOnInstruction(
+        "So we stopped pretending to price the rest. We do not size your market for you, we do not ask for a competitive matrix, and we are not looking for a defensibility story written before you have customers. We back the team, at a fixed cheque, and we do it often.",
       ),
-      migratedVerbatim(
-        "We believe that we can build better together, which is why we provide relentless support focused on a few areas. Shipping velocity, go-to-market and AI-native operating models. And funding. Our mission is to stand behind the bold ones, the ones building products that elevate industries and redefine what’s possible.",
-        { sourceUrl: HOME_URL },
+      authoredOnInstruction(
+        "That is a different job from venture capital and it needs a different shape: a decision measured in conversations rather than months, a standing offer of capital and customer introductions, and a portfolio that behaves like a working group instead of a list of logos. If it needs a name, call it an industrial angel.",
       ),
     ],
   },
 
   offering: {
-    eyebrow: migratedVerbatim("Offering", { sourceUrl: HOME_URL }),
+    eyebrow: authoredOnInstruction("What you get"),
     items: [
       {
         number: "01",
-        body: migratedVerbatim(
-          "A carefully selected AI native tech stack optimized for an efficient operating model",
-          { sourceUrl: HOME_URL },
+        body: authoredOnInstruction(
+          "Capital. €100k or €200k, decided on the team, one to three times a month.",
         ),
       },
       {
         number: "02",
-        body: migratedVerbatim(
-          "Well-managed community with dedicated channels and events designed for rapid cross-learning",
-          { sourceUrl: HOME_URL },
+        body: authoredOnInstruction(
+          "Customer introductions. The first thing founders ask for, and the thing we spend most of our time on.",
         ),
       },
       {
         number: "03",
-        body: migratedVerbatim(
-          "Expert support in developing growth engines for a solid go-to-market strategy",
-          { sourceUrl: HOME_URL },
+        body: authoredOnInstruction(
+          "Legal and operations support, so the work that does not build the product stops landing on the founders.",
         ),
       },
       {
         number: "04",
-        body: migratedVerbatim(
-          "Comprehensive knowledge base and credits system for an efficient capital allocation",
-          { sourceUrl: HOME_URL },
+        body: authoredOnInstruction(
+          "A working community of AI founders hitting the same problems in the same month, with dedicated channels and events.",
         ),
       },
     ],
@@ -106,49 +115,47 @@ export const SEED_HOME_PAGE: HomePage = {
   },
 
   featuredPortfolio: {
-    // Prototype-derived heading — usable only after editorial approval (§7.5).
-    heading: proposed("The bold ones we stand behind"),
-    companyIds: SEED_COMPANIES.slice(0, 8).map((c) => ({
+    heading: authoredOnInstruction("The teams we back"),
+    companyIds: SEED_COMPANIES.slice(0, 9).map((c) => ({
       id: c.id,
       slug: c.slug,
       name: c.name,
     })),
-    ctaLabel: proposed("See full portfolio"),
+    ctaLabel: authoredOnInstruction("See the full portfolio"),
     ctaHref: "/portfolio",
   },
 
   optionalSections: {
-    statsHeading: proposed("Foundry in numbers"),
-    testimonialsHeading: proposed("From the founders we back"),
-    latestInsightsHeading: proposed("News & Insights"),
-    latestInsightsCtaLabel: proposed("See all insights"),
+    statsHeading: authoredOnInstruction("Foundry in numbers"),
+    testimonialsHeading: authoredOnInstruction("From the teams we back"),
+    latestInsightsHeading: authoredOnInstruction("News & Insights"),
+    latestInsightsCtaLabel: authoredOnInstruction("See all insights"),
   },
 
   contact: {
-    heading: migratedVerbatim("Are you building for the future?", { sourceUrl: HOME_URL }),
+    heading: authoredOnInstruction("Building an AI company?"),
     paragraphs: [
-      migratedVerbatim("Planning to build, already on your way or maybe just about to launch?", {
-        sourceUrl: HOME_URL,
-      }),
-      migratedVerbatim("Reach out, we would love to get to know you.", { sourceUrl: HOME_URL }),
+      authoredOnInstruction(
+        "We decide on the team, so the fastest way to start is a conversation rather than a document. You do not need a deck.",
+      ),
+      authoredOnInstruction("Email Anders and tell us who you are building with."),
     ],
-    primaryCta: { label: proposed("Submit your pitch"), href: "/pitch" },
-    secondaryCta: { label: proposed("Email Anders"), contactPerson: ANDERS_REF },
+    primaryCta: { label: authoredOnInstruction("Talk to us"), href: "/pitch" },
+    secondaryCta: { label: authoredOnInstruction("Email Anders"), contactPerson: ANDERS_REF },
     contactPeople: [ANDERS_REF],
   },
 
   seo: {
-    // Current-state metadata from Appendix C.3, trailing whitespace trimmed.
-    title: "Foundry ventures",
+    title: "Foundry Ventures",
     description:
-      "Early-Stage Investor | Focused on AI-Driven SaaS 2.0 | Partnering with Visionary Founders to Build Tomorrow's Critical Tech",
+      "We back AI teams in the Nordics with €100k or €200k, one to three times a month. Team-only conviction, plus capital and customer introductions.",
     ogImage: DEFAULT_OG_IMAGE,
     approvalStatus: "approved",
     sources: [
       {
-        label: "Foundry Ventures home <title> and meta description",
-        url: HOME_URL,
-        observedAt: "2026-08-10",
+        label: "Content owner repositioning brief",
+        observedAt: "2026-08-11",
+        note: "AI only, teams only, €100k/€200k cheques, one to three investments a month",
       },
     ],
   },

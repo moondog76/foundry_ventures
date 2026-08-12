@@ -17,6 +17,19 @@ home copy (hero, vision, offering, contact); Anders' and Julia's names, roles an
 email addresses; Anders' phone number; four investment criteria (Stage, Industry,
 Technology focus, Geography).
 
+**The 2026-08-11 repositioning.** The owner rewrote the position — AI only,
+teams only, €100k or €200k, one to three investments a month — and asked for the
+site copy to be rewritten without their review, explicitly wanting an outside
+perspective. Every home and About string is now `authoredOnInstruction`:
+approved by that instruction, but not read line by line. `pnpm test` lists them.
+
+Two claims on that page are publicly checkable and will age:
+
+| Claim                              | Watch for                                                                                                                                    |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| "One to three investments a month" | ~12–36 a year. The portfolio currently lists nine companies, so a visitor can do the arithmetic. Revisit if the real rate settles elsewhere. |
+| "€100k or €200k"                   | Stated as two fixed sizes, not a range. Any deal outside them contradicts the site.                                                          |
+
 **Read these before launch.** The nine company descriptions were summarised from
 each company's own website on 2026-08-11. The claims are theirs, but the wording
 is not — every one carries an evidence note saying Foundry has not read it line

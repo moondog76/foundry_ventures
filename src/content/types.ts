@@ -97,6 +97,13 @@ export type EditorialText = {
    * never changes `origin` or `approvalStatus` (§16.1.1).
    */
   normalizationNote?: string;
+  /**
+   * Why this string is approved without having been read line by line. Present
+   * only on copy the owner commissioned but explicitly chose not to review, so
+   * the distinction between "Foundry wrote this" and "Foundry asked for this"
+   * survives in the record rather than living in a commit message.
+   */
+  authoringNote?: string;
 };
 
 /* -------------------------------------------------------------- Rich text */

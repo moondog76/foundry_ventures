@@ -1,59 +1,49 @@
 /**
  * About / Thesis seed (P1, feature-flagged off).
  *
- * §13: this page must systematise Foundry's *existing* voice rather than copy
- * Luminar's values. Every belief below is drawn from live Foundry copy —
- * "AI is more transformational than just another technology shift", shipping
- * velocity, bold go-to-market, AI-native operating models, build better
- * together, efficient capital allocation.
- *
- * Headings quoting the live site are `migrated-verbatim`; all connective and
- * structural copy is `proposed` and unapproved.
+ * Rewritten alongside the home page for the 2026-08-11 repositioning so that
+ * enabling this route later cannot contradict the position the rest of the site
+ * states. Same provenance as the home copy: written on the owner's instruction,
+ * approved by it, not reviewed line by line.
  */
 
 import type { AboutPage } from "../types";
-import { migratedVerbatim, proposed } from "./evidence";
+import { authoredOnInstruction } from "./evidence";
 import { DEFAULT_OG_IMAGE } from "./images";
-
-const HOME_URL = "https://www.foundryventures.ai/";
 
 export const SEED_ABOUT_PAGE: AboutPage = {
   publicationStatus: "draft",
 
-  heading: proposed("How we think, and how we work"),
+  heading: authoredOnInstruction("A different job from venture capital"),
   intro: [
-    migratedVerbatim(
-      "We believe that we can build better together, which is why we provide relentless support focused on a few areas. Shipping velocity, go-to-market and AI-native operating models. And funding. Our mission is to stand behind the bold ones, the ones building products that elevate industries and redefine what’s possible.",
-      { sourceUrl: HOME_URL },
+    authoredOnInstruction(
+      "Foundry writes €100k or €200k into AI teams, one to three times a month. We decide on the people, we move at the speed of a conversation, and after the cheque we spend our time on capital and customer introductions.",
     ),
   ],
 
   beliefs: [
     {
-      title: migratedVerbatim("AI is more transformational than just another technology shift", {
-        sourceUrl: HOME_URL,
-      }),
-      body: migratedVerbatim(
-        "Many of the worlds challenges will be addressed by the convergence of artificial intelligence and human ingenuity, creating unprecedented opportunities across industries. We see AI as a powerful enabler, transforming the way we work and solve problems.",
-        { sourceUrl: HOME_URL },
+      title: authoredOnInstruction("The team is the only thing that compounds"),
+      body: authoredOnInstruction(
+        "Models change monthly and product surfaces get rebuilt in a weekend. A small group of people who ship faster than the field moves is the one asset that survives that.",
       ),
     },
     {
-      title: proposed("Shipping velocity compounds"),
-      body: proposed(
-        "We look for founders with a relentless focus on shipping velocity — teams that turn a week of learning into a week of shipped product.",
+      title: authoredOnInstruction("Most early diligence prices the wrong thing"),
+      body: authoredOnInstruction(
+        "Market sizing, competitive matrices and defensibility stories written before there are customers describe a world that will have changed by the next release. We do not ask for them.",
       ),
     },
     {
-      title: proposed("Go-to-market is a product decision"),
-      body: proposed(
-        "A bold go-to-market approach is not a phase that follows the build. We back teams that treat distribution as part of the product from the first release.",
+      title: authoredOnInstruction("A fixed cheque removes a negotiation"),
+      body: authoredOnInstruction(
+        "€100k or €200k, published in advance. Founders know what is on offer before the first meeting, and nobody spends a month arriving at a number.",
       ),
     },
     {
-      title: proposed("AI-native operating models change the unit economics"),
-      body: proposed(
-        "Companies built with an AI-based operating model run leaner and decide faster. That is where efficient capital allocation starts.",
+      title: authoredOnInstruction("Frequency is a strategy, not an accident"),
+      body: authoredOnInstruction(
+        "One to three investments a month keeps us in the flow of what is actually being built, and gives every team a cohort hitting the same problems at the same time.",
       ),
     },
   ],
@@ -61,77 +51,74 @@ export const SEED_ABOUT_PAGE: AboutPage = {
   howWeWork: [
     {
       number: "01",
-      body: migratedVerbatim(
-        "A carefully selected AI native tech stack optimized for an efficient operating model",
-        { sourceUrl: HOME_URL },
+      body: authoredOnInstruction(
+        "Capital. €100k or €200k, decided on the team, one to three times a month.",
       ),
     },
     {
       number: "02",
-      body: migratedVerbatim(
-        "Well-managed community with dedicated channels and events designed for rapid cross-learning",
-        { sourceUrl: HOME_URL },
+      body: authoredOnInstruction(
+        "Customer introductions. The first thing founders ask for, and where most of our time goes.",
       ),
     },
     {
       number: "03",
-      body: migratedVerbatim(
-        "Expert support in developing growth engines for a solid go-to-market strategy",
-        { sourceUrl: HOME_URL },
+      body: authoredOnInstruction(
+        "Legal and operations support, so the work that does not build the product stops landing on the founders.",
       ),
     },
     {
       number: "04",
-      body: migratedVerbatim(
-        "Comprehensive knowledge base and credits system for an efficient capital allocation",
-        { sourceUrl: HOME_URL },
+      body: authoredOnInstruction(
+        "A working community of AI founders, with dedicated channels and events.",
       ),
     },
   ],
 
   whatWeLookFor: [
     {
-      title: proposed("Founders who ship"),
-      body: proposed("Evidence of speed: something real in front of users, early and often."),
+      title: authoredOnInstruction("People who ship"),
+      body: authoredOnInstruction(
+        "Something real in front of users, early and often. It is the only evidence that survives contact with a moving field.",
+      ),
     },
     {
-      title: proposed("A bold go-to-market thesis"),
-      body: proposed("A clear, specific view of who buys first and why they switch."),
+      title: authoredOnInstruction("A team that has already chosen each other"),
+      body: authoredOnInstruction(
+        "We are backing the group, so how you decide together matters more than any slide about the market.",
+      ),
     },
     {
-      title: proposed("An AI-native operating model"),
-      body: proposed("AI in how the company runs, not only in what it sells."),
+      title: authoredOnInstruction("AI at the centre, industry wherever"),
+      body: authoredOnInstruction(
+        "The technology is the one thing we are strict about. The sector is entirely yours to choose.",
+      ),
     },
   ],
 
   process: [
     {
       step: "01",
-      title: proposed("Submit your pitch"),
-      body: proposed("One form, no warm intro required. We read everything that comes in."),
+      title: authoredOnInstruction("A conversation"),
+      body: authoredOnInstruction("No deck required. We want to meet the people building it."),
     },
     {
       step: "02",
-      title: proposed("First conversation"),
-      body: proposed("A direct conversation with a partner about the problem and the plan."),
+      title: authoredOnInstruction("Time with the team"),
+      body: authoredOnInstruction("Together, and separately. This is the diligence."),
     },
     {
       step: "03",
-      title: proposed("Deep dive"),
-      body: proposed("Product, market and team, together with the people who would work with you."),
-    },
-    {
-      step: "04",
-      title: proposed("Decision"),
-      body: proposed("A clear yes or no, with the reasoning behind it."),
+      title: authoredOnInstruction("A decision"),
+      body: authoredOnInstruction("A clear yes or no, with the reasoning behind it."),
     },
   ],
 
   seo: {
     title: "About Foundry Ventures",
     description:
-      "How Foundry Ventures thinks about AI-native companies, and how we work with pre-seed founders in the Nordics.",
+      "Why Foundry backs AI teams rather than markets, and what a €100k or €200k cheque comes with.",
     ogImage: DEFAULT_OG_IMAGE,
-    approvalStatus: "unapproved",
+    approvalStatus: "approved",
   },
 };

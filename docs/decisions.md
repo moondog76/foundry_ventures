@@ -948,3 +948,70 @@ The hook also stops work while its element is off-screen, and treats a missing
 **Consequence.** Motion strength for the stills lives in `ParallaxImage.tsx`; the
 hero's in `AmbientOcean.tsx`. Both clamp to their own overscan, so either can be
 raised without re-deriving the geometry.
+
+## D-032 — The site is repositioned around two rules, not a coined label
+
+**Date.** 2026-08-11
+
+**Decision.** All home and About copy is rewritten for the owner's new position:
+AI only, teams only, €100k or €200k, one to three investments a month, with
+capital and customer introductions as the offer. The investment criteria now
+carry the owner's real numbers. The phrase "industrialised super angel" appears
+nowhere; "industrial angel" appears once, as a definition at the end of the
+thesis.
+
+**Rationale.** Three judgements worth recording, because the owner asked for an
+outside perspective and explicitly did not want to review the result.
+
+1. **Rules over label.** "Super angel" is an established term for a prolific
+   _individual_ investor (the 2010-era Conway/Maples/Clavier cohort), so
+   borrowing it invites the wrong comparison, and "super" reads as
+   self-congratulation. A coined compound also has to be explained every time it
+   is used. The four rules are self-explanatory, disqualify the wrong founders
+   in one line, and survive being repeated by someone else — which a neologism
+   does not. The label is kept as a definition rather than a banner.
+
+2. **The thesis has to earn "we ignore PMF and moats".** Stated bare, that reads
+   as an absence of diligence, which is exactly how a co-investor or an LP will
+   first hear it. The thesis section therefore argues _why_ the usual signals
+   have become unreliable — models change monthly, product surfaces are rebuilt
+   in a weekend — so the omission reads as a deliberate bet on the one asset
+   that still compounds.
+
+3. **Fixed cheques published in advance are the strongest asset here.** Most
+   investors hide the number. Publishing "€100k or €200k" removes a negotiation
+   and saves both sides meetings, so it leads the criteria rather than sitting
+   at the bottom.
+
+**Spec.** §7.1, §7.2, §7.3, §7.4, §25.1.
+
+**Consequence.** The Appendix C copy — services-as-a-software, the three Vision
+paragraphs — described the previous position and is superseded. It stays in git
+history and in the buildspec's Appendix C.
+
+Two published claims are now publicly checkable and will age: the monthly
+cadence, and the two fixed ticket sizes. Both are recorded in
+`docs/content-gaps.md` as things to revisit rather than set and forget.
+
+**Reversal.** `git revert` this commit restores the migrated live copy and
+re-blocks the ticket row.
+
+## D-033 — `authoredOnInstruction` distinguishes commissioned copy from reviewed copy
+
+**Date.** 2026-08-11
+
+**Decision.** A new `EditorialText` provenance, carrying an `authoringNote`, for
+copy written on the owner's instruction and approved by that instruction rather
+than by review.
+
+**Rationale.** The owner said "I don't want to review it; I trust you fully."
+That is a genuine approval and the copy should publish — but it is not the same
+act as reading and signing off each sentence, and the difference matters for
+anything that later needs defending. Collapsing both into `approved` would have
+lost that distinction the moment the commit message scrolled out of view.
+
+**Spec.** §16.1.1, §25.1.
+
+**Consequence.** The integrity report can list every string nobody has read.
+Once someone reads them, dropping the note is a one-line change per string —
+or the helper can simply be renamed.

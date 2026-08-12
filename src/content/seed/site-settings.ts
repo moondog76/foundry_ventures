@@ -17,9 +17,9 @@ import type { SiteSettings } from "../types";
 import {
   CLAUDE_PROTOTYPE_SOURCE,
   FOUNDRY_HOME_SOURCE,
+  authoredOnInstruction,
   ownerApprovedFromLive,
   ownerConfirmed,
-  proposed,
   unverified,
 } from "./evidence";
 import { DEFAULT_OG_IMAGE } from "./images";
@@ -34,7 +34,7 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
   canonicalOrigin: CANONICAL_ORIGIN,
   defaultSeoTitle: "Foundry Ventures",
   defaultSeoDescription:
-    "Early-Stage Investor | Focused on AI-Driven SaaS 2.0 | Partnering with Visionary Founders to Build Tomorrow's Critical Tech",
+    "We back AI teams in the Nordics with €100k or €200k, one to three times a month. Team-only conviction, plus capital and customer introductions.",
   defaultOgImage: DEFAULT_OG_IMAGE,
 
   // No verified general inbox exists — see §16.1. Contact routes through people.
@@ -89,44 +89,52 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
   legalNavigation: [{ label: "Privacy", href: "/privacy" }],
 
   /**
-   * §7.2. Ticket range and sweet spot come only from the Claude prototype and
-   * are NOT live-verified, so they stay `unverified` and never render — the grid
-   * redistributes around them rather than leaving empty cells. The four rows the
-   * live site does state were owner-approved on 2026-08-11 and publish.
-   * `Industry: Agnostic` and `Technology focus` stay separate rows; they are
-   * deliberately not collapsed into an ambiguous "Sector: Generalist".
+   * §7.2, rewritten for the 2026-08-11 repositioning.
+   *
+   * Every row is now a fact the content owner stated directly, which is what
+   * finally unblocks the ticket size: the prototype's €50k–€300k range and
+   * €200k sweet spot were never live-verified and never published. These are two
+   * fixed cheque sizes, not a range.
+   *
+   * `Cadence` is the row to watch. "1–3 per month" is a public commitment anyone
+   * can check against the portfolio, and it is the kind of claim that quietly
+   * stops being true.
    */
   investmentCriteria: [
     {
-      label: "Ticket range",
-      value: "€50k–€300k",
-      evidence: unverified("Claude prototype only — never observed on the live site"),
-      editorialNote: "Blocked until a content owner confirms the real ticket range.",
+      label: "Ticket",
+      value: "€100k or €200k",
+      evidence: ownerConfirmed("Ticket sizes stated by the content owner, 2026-08-11"),
+      editorialNote:
+        "Two fixed sizes, not a range. The prototype's €50k–€300k range and €200k sweet spot were never live-verified and are superseded by this.",
       sortOrder: 10,
     },
     {
-      label: "Sweet spot",
-      value: "€200k",
-      evidence: unverified("Claude prototype only — never observed on the live site"),
-      editorialNote: "Blocked until a content owner confirms the real sweet spot.",
+      label: "Cadence",
+      value: "1–3 per month",
+      evidence: ownerConfirmed("Investment cadence stated by the content owner, 2026-08-11"),
+      editorialNote:
+        "A public, checkable commitment: roughly 12–36 investments a year. Worth revisiting if the real rate settles elsewhere.",
       sortOrder: 20,
     },
     {
-      label: "Stage",
-      value: "Pre-seed",
-      evidence: ownerApprovedFromLive(FOUNDRY_HOME_SOURCE),
+      label: "We back",
+      value: "The team",
+      evidence: ownerConfirmed("Team-only thesis stated by the content owner, 2026-08-11"),
       sortOrder: 30,
+    },
+    {
+      label: "Technology",
+      value: "AI only",
+      evidence: ownerConfirmed("AI-only mandate stated by the content owner, 2026-08-11"),
+      sortOrder: 40,
     },
     {
       label: "Industry",
       value: "Agnostic",
-      evidence: ownerApprovedFromLive(FOUNDRY_HOME_SOURCE),
-      sortOrder: 40,
-    },
-    {
-      label: "Technology focus",
-      value: "AI / services-as-a-software",
-      evidence: ownerApprovedFromLive(FOUNDRY_HOME_SOURCE),
+      evidence: ownerConfirmed(
+        "Industry-agnostic thesis restated by the content owner, 2026-08-11",
+      ),
       sortOrder: 50,
     },
     {
@@ -160,7 +168,9 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
     },
   ],
 
-  brandStatement: proposed("Foundry backs Nordic pre-seed founders building AI-native companies."),
+  brandStatement: authoredOnInstruction(
+    "Foundry backs AI teams in the Nordics. €100k or €200k, one to three times a month, decided on the team.",
+  ),
 
   /**
    * §30 safe defaults. Every content-dependent surface stays off until real,

@@ -157,6 +157,30 @@ export function migratedVerbatim(
   };
 }
 
+/**
+ * Copy written for Foundry on the owner's instruction, and approved by that
+ * instruction rather than by review.
+ *
+ * On 2026-08-11 the owner set out a new position — AI only, teams only, fixed
+ * cheques, monthly cadence — and asked for the site copy to be rewritten to
+ * match without their review, explicitly wanting an outside perspective. That is
+ * a real approval, so this copy publishes; but it is not the same act as reading
+ * and signing off each sentence, and `authoringNote` keeps that visible in the
+ * integrity report for as long as it is true.
+ */
+export function authoredOnInstruction(value: string): EditorialText {
+  return {
+    value,
+    origin: "proposed",
+    approvalStatus: "approved",
+    approvedBy: CONTENT_OWNER,
+    approvedAt: OWNER_APPROVED_AT,
+    observedAt: OWNER_APPROVED_AT,
+    authoringNote:
+      "Written for the 2026-08-11 repositioning on the owner's instruction; approved by that instruction, not by line-by-line review",
+  };
+}
+
 /** New copy from the prototype or the buildspec — always needs approval (§25.1). */
 export function proposed(value: string): EditorialText {
   return {

@@ -82,7 +82,7 @@ export default async function HomePage() {
   const [criteria, featuredCompanies, stats, testimonials, latestPosts, contactPeople] =
     await Promise.all([
       getInvestmentCriteria(policy),
-      getFeaturedCompanies(featuredSlugs, 8, policy),
+      getFeaturedCompanies(featuredSlugs, 9, policy),
       getStats(policy),
       getTestimonials(policy),
       getLatestPosts(3, policy),

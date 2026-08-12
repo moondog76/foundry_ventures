@@ -880,3 +880,71 @@ weight as Grand's, which is what the owner asked for.
 **Spec.** §5.5, §8.4.
 
 **Consequence.** A third fit option both logo frames understand.
+
+## D-029 — Breakpoint rules are bounded to their own ranges
+
+**Date.** 2026-08-11
+
+**Decision.** The investment-criteria grid's mobile and tablet rules are wrapped
+in `max-width` bounds instead of cascading upward.
+
+**Rationale.** A divider was missing between "Industry" and "Technology focus"
+and the cause was specificity, not a typo. The strip rules carry four compound
+selectors, so `.list[data-tablet-columns="2"] .item:nth-child(2n + 1)` (0,4,0)
+outranked the desktop `.item` re-assert (0,1,0) and kept winning at desktop
+widths regardless of source order. With a 4-column desktop grid fed by a
+2-column tablet count, that stripped the rule from cells 1 _and 3_.
+
+Raising the desktop selector's specificity would have worked and would have left
+the same trap for the next person. Non-overlapping ranges cannot collide at all.
+
+**Spec.** §7.2, §19.2.
+
+**Consequence.** Verified at 1440, 1024, 900, 600 and 390px: 4-column rows read
+`0,1,1,1`, 2-column rows `0,1,0,1`, single columns carry no rules.
+
+## D-030 — The header logotype never changes size
+
+**Date.** 2026-08-11
+
+**Decision.** Header compaction is gone. The mark is one size at each
+breakpoint, the header keeps one height, and only the surface flips on scroll.
+`--header-height-compact` is deleted.
+
+**Rationale.** [D-025](#d-025) synchronised the size change with the colour
+change, which fixed the mid-transition mismatch but kept two things changing at
+once. The owner's verdict on seeing it was that any resize "looks a bit
+amateurish" — and they are right that a logotype is an identity mark, not a
+responsive element. Cross-fading the colour alone is the cleaner effect.
+
+**Spec.** §5.1, §6.1.
+
+**Consequence.** `--header-height` is now genuinely constant, which makes the
+`scroll-margin-top` contract simpler than it was.
+
+## D-031 — One parallax implementation for video and stills
+
+**Date.** 2026-08-11
+
+**Decision.** The motion logic moved out of `AmbientOcean` into
+`useAmbientParallax`, now shared with `ParallaxImage`. The offering's
+architecture and silhouette stills drift with the pointer and scroll on the same
+rules as the hero, at roughly a third of its strength.
+
+**Rationale.** The owner asked for the same treatment on the two editorial
+images. Copying the effect would have left two implementations to keep in step —
+and the parts that matter are exactly the parts that get forgotten in a copy: the
+overscan clamp, the reduced-motion refusal, the fine-pointer check.
+
+Three things are specific to each caller and stay there: the video's play/pause
+follows the same switch as the motion, the stills are gentler because a hero's
+strength on a 40vw frame reads as a wobble, and each declares its own overscan.
+
+The hook also stops work while its element is off-screen, and treats a missing
+`IntersectionObserver` as "always visible" rather than failing.
+
+**Spec.** §7.1, §7.4, §20.4, §22.1.
+
+**Consequence.** Motion strength for the stills lives in `ParallaxImage.tsx`; the
+hero's in `AmbientOcean.tsx`. Both clamp to their own overscan, so either can be
+raised without re-deriving the geometry.

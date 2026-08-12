@@ -1,4 +1,5 @@
-/* Header (§6.1, §19.1). Prototype desktop reference padding: 16px 48px. */
+/* Header (§6.1, §19.1). Prototype desktop reference padding: 16px 48px.
+   The surface flips from transparent to solid on scroll; nothing resizes. */
 
 .header {
   position: fixed;
@@ -35,11 +36,6 @@
   min-height: var(--header-height);
   padding-inline: max(var(--gutter), env(safe-area-inset-left), env(safe-area-inset-right));
   padding-block: var(--space-2xs);
-  transition: min-height var(--duration-compact) var(--ease-standard);
-}
-
-.header[data-compact="true"] .inner {
-  min-height: var(--header-height-compact);
 }
 
 /* ------------------------------------------------------------------ Logo */
@@ -65,17 +61,21 @@
   .logoLink {
     --logo-height: 74px;
   }
-
-  .header[data-compact="true"] .logoLink {
-    --logo-height: 44px;
-  }
 }
 
+/*
+ * One size, always.
+ *
+ * The header used to shrink the mark on scroll, which meant the logotype
+ * changed size at the same moment it changed colour — the owner called that out
+ * on 2026-08-11 and they were right: two simultaneous changes read as a glitch
+ * rather than a transition. Only the surface changes now, so the mark is pinned
+ * and the header keeps one height.
+ */
 .logoLink img,
 .logoLink [data-brand-asset-missing] {
   height: var(--logo-height);
   width: auto;
-  transition: height var(--duration-compact) var(--ease-standard);
 }
 
 /* Both variants occupy the same grid cell so swapping cannot shift layout. */

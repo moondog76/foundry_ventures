@@ -114,7 +114,6 @@
 
   /* -------------------------------------------------------------- Chrome */
   --header-height: 64px;
-  --header-height-compact: 60px;
   --radius-none: 0;
   --radius-sm: 2px;
   --border-hairline: 1px;
@@ -142,14 +141,12 @@
     --gutter: 3vw;
     --grid-columns: 24;
     --header-height: 96px;
-    --header-height-compact: 76px;
   }
 }
 
 @media (min-width: 1200px) {
   :root {
     --header-height: 110px;
-    --header-height-compact: 76px;
   }
 }
 

@@ -40,18 +40,32 @@
   overflow-wrap: break-word;
 }
 
-/* Mobile: a single column has no vertical rules at all. */
-.list[data-mobile-columns="2"] .item {
-  border-inline-start: var(--border-hairline) solid var(--line-default);
-  padding-inline-start: var(--space-md);
+/*
+ * Each breakpoint's rules are bounded to its own range.
+ *
+ * They used to cascade, which was a real bug: the strip rules carry four
+ * compound selectors, so `[data-tablet-columns="2"] .item:nth-child(2n + 1)`
+ * (0,4,0) outranked the desktop `.item` re-assert (0,1,0) and kept winning at
+ * desktop widths regardless of source order. With a 4-column desktop grid fed
+ * by a 2-column tablet count, that stripped the rule from cells 1 *and 3* — so
+ * the divider between "Industry" and "Technology focus" silently vanished.
+ * Specificity beats order, so the only robust fix is for the ranges not to
+ * overlap at all.
+ */
+@media (max-width: 767.98px) {
+  /* One column has no vertical rules at all; two needs them between the pairs. */
+  .list[data-mobile-columns="2"] .item {
+    border-inline-start: var(--border-hairline) solid var(--line-default);
+    padding-inline-start: var(--space-md);
+  }
+
+  .list[data-mobile-columns="2"] .item:nth-child(2n + 1) {
+    border-inline-start: 0;
+    padding-inline-start: 0;
+  }
 }
 
-.list[data-mobile-columns="2"] .item:nth-child(2n + 1) {
-  border-inline-start: 0;
-  padding-inline-start: 0;
-}
-
-@media (min-width: 768px) {
+@media (min-width: 768px) and (max-width: 991.98px) {
   /* Re-assert the column rule for every cell, then strip it from the first cell
      of each row. The count comes from the data attribute because nth-child()
      cannot consume the custom property. */

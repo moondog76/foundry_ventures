@@ -6,12 +6,16 @@
  * prototype's plain two-column grid: the overlap is what gives the block its
  * editorial weight, and it is expressed with grid placement rather than absolute
  * positioning so nothing can escape the container or clip at small widths.
+ *
+ * Both images drift with the pointer and the scroll, on the same motion rules as
+ * the hero's ocean loop. The movement happens *inside* each frame, so the
+ * overlap the composition depends on never shifts.
  */
 
 import type { ImageAsset } from "@/content/types";
 import { canRenderImage, type PolicyContext } from "@/content/policy";
-import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
 import { Reveal } from "@/components/ui/Reveal";
+import { ParallaxImage } from "./ParallaxImage";
 import styles from "./editorial-image-pair.module.css";
 
 export type EditorialImagePairProps = {
@@ -31,23 +35,21 @@ export function EditorialImagePair({ images, policy }: EditorialImagePairProps) 
   return (
     <div className={styles.pair} data-count={renderable.length}>
       <Reveal className={styles.primary}>
-        <ResponsiveImage
+        <ParallaxImage
           image={primary}
           policy={policy}
-          alt=""
           sizes="(min-width: 992px) 46vw, (min-width: 768px) 60vw, 100vw"
-          frameClassName={styles.primaryFrame}
+          className={styles.primaryFrame}
         />
       </Reveal>
 
       {secondary ? (
         <Reveal className={styles.secondary} delay={120}>
-          <ResponsiveImage
+          <ParallaxImage
             image={secondary}
             policy={policy}
-            alt=""
             sizes="(min-width: 992px) 38vw, (min-width: 768px) 50vw, 72vw"
-            frameClassName={styles.secondaryFrame}
+            className={styles.secondaryFrame}
           />
         </Reveal>
       ) : null}

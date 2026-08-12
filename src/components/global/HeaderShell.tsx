@@ -5,10 +5,10 @@
  *
  * - Fixed by default, matching the live site.
  * - Transparent with the white logotype while sitting over the home hero;
- *   solid, compact and light on every other surface and after scroll.
- * - The surface transition (~300ms) and the compaction (~140ms) are separate so
- *   neither causes a layout shift; the header's own height is published as
- *   `--header-height` for `scroll-margin-top` consumers (§6.2).
+ *   solid and light on every other surface and after scroll.
+ * - Only the *surface* changes on scroll. The mark and the header keep one size
+ *   throughout, so `--header-height` stays a constant that `scroll-margin-top`
+ *   consumers can rely on (§6.2).
  * - Below 992px the navigation collapses into a real dialog (§18.2).
  */
 
@@ -100,7 +100,6 @@ export function HeaderShell({
       <header
         className={styles.header}
         data-transparent={transparent ? "true" : "false"}
-        data-compact={scrolled ? "true" : "false"}
         data-surface={transparent ? "dark" : "light"}
       >
         <div className={styles.inner}>
@@ -112,9 +111,8 @@ export function HeaderShell({
           >
             {/*
              * Both colour variants sit in the same grid cell and cross-fade, so
-             * the swap cannot flash. They share one CSS-driven height, which
-             * transitions on the same timing as the compaction — otherwise the
-             * mark snaps between two sizes while the colour is still fading.
+             * the swap cannot flash. They share one fixed height: the mark never
+             * resizes, only the colour changes.
              */}
             <span className={styles.logoOnDark} aria-hidden={!transparent}>
               {logoOnDark}

@@ -184,6 +184,29 @@ Two records in `src/content/seed/team.ts`, both `publicationStatus: "review"`.
 
 ---
 
+## F2. Copy drift introduced 2026-08-12
+
+The owner supplied four new "What you get" items. They are the strongest-provenance
+copy on the site (`ownerWrote`), but they no longer agree with the hero paragraph
+and the SEO description, which were written on 2026-08-11:
+
+| Where | Says | Conflicts with |
+|---|---|---|
+| Hero paragraph 2 | "we introduce you to customers" | Item 02, which now also promises **talent and partners** |
+| Hero paragraph 2 | "we take **legal** and operations off your desk" | Item 03, which is now operations only — legal is gone |
+| SEO description | "capital and customer introductions" | Item 02, as above |
+
+Neither is a factual error, and nothing renders wrongly. But the hero and the
+offering list are read within about ten seconds of each other, so the narrower
+hero undersells 02 while over-promising legal. Resolve by either widening the
+hero to "customers, talent and partners" and dropping legal, or narrowing the
+offering back. One decision, three strings.
+
+Two strings were corrected rather than taken verbatim; both carry a
+`normalizationNote` naming the change:
+- 03 was supplied as "do´s and donuts" → read as a typo for "don’ts". **Revert if the pun was intended.**
+- 04 "AI native" → "AI-native", per the §25.2 house style.
+
 ## F. Editorial copy awaiting approval
 
 Every string in `src/content/seed/home.ts` and `src/content/seed/about.ts` is

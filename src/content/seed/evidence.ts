@@ -181,6 +181,30 @@ export function authoredOnInstruction(value: string): EditorialText {
   };
 }
 
+/**
+ * Copy the content owner wrote themselves and supplied verbatim.
+ *
+ * This is the strongest provenance on the site and deliberately distinct from
+ * `authoredOnInstruction`: that copy was written *for* Foundry and approved by
+ * an instruction, this copy *is* Foundry's own words. Where a supplied string
+ * needed a typographic or spelling correction, `normalizationNote` records
+ * exactly what was changed, so "verbatim" never quietly stops being true.
+ */
+export function ownerWrote(
+  value: string,
+  options?: { normalizationNote?: string },
+): EditorialText {
+  return {
+    value,
+    origin: "proposed",
+    approvalStatus: "approved",
+    approvedBy: CONTENT_OWNER,
+    approvedAt: OWNER_APPROVED_AT,
+    observedAt: OWNER_APPROVED_AT,
+    ...(options?.normalizationNote ? { normalizationNote: options.normalizationNote } : {}),
+  };
+}
+
 /** New copy from the prototype or the buildspec — always needs approval (§25.1). */
 export function proposed(value: string): EditorialText {
   return {

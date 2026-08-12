@@ -23,7 +23,7 @@
  */
 
 import type { HomePage } from "../types";
-import { authoredOnInstruction } from "./evidence";
+import { authoredOnInstruction, ownerWrote } from "./evidence";
 import { ARCHITECTURE_IMAGE, DEFAULT_OG_IMAGE, OCEAN_IMAGE, SILHOUETTE_IMAGE } from "./images";
 import { ANDERS_REF } from "./team";
 import { SEED_COMPANIES } from "./companies";
@@ -85,29 +85,46 @@ export const SEED_HOME_PAGE: HomePage = {
 
   offering: {
     eyebrow: authoredOnInstruction("What you get"),
+    /*
+     * Supplied verbatim by the content owner 2026-08-12, so these four are
+     * `ownerWrote` rather than `authoredOnInstruction` — Foundry's own words,
+     * not words written for Foundry.
+     *
+     * Two things to know about the drift this introduces, both live in
+     * `content-gaps.md`: 02 now promises talent and partners as well as
+     * customers, while the hero paragraph and the SEO description still say
+     * "customer introductions" only; and 03 dropped legal, which the hero
+     * paragraph still offers to take off a founder's desk.
+     */
     items: [
       {
         number: "01",
-        body: authoredOnInstruction(
-          "Capital. €100k or €200k, decided on the team, one to three times a month.",
-        ),
+        body: ownerWrote("Capital. €100k or €200k, depending on the team and need for speed."),
       },
       {
         number: "02",
-        body: authoredOnInstruction(
-          "Customer introductions. The first thing founders ask for, and the thing we spend most of our time on.",
+        body: ownerWrote(
+          "Introductions. The first thing founders ask for, and the thing we spend most of our time on. Customers, talent, partners.",
         ),
       },
       {
         number: "03",
-        body: authoredOnInstruction(
-          "Operations support best practices so you can build, ship and scale.",
+        body: ownerWrote(
+          "Operations. Best practices, do’s and don’ts and more, so you can build, ship and scale.",
+          {
+            normalizationNote:
+              "Supplied as “do´s and donuts”. Read as a typo for “don’ts” and corrected, and the acute accent set as a typographic apostrophe. Revert if the pun was intended.",
+          },
         ),
       },
       {
         number: "04",
-        body: authoredOnInstruction(
-          "A working community of AI founders hitting the same problems in the same month, with dedicated channels and events.",
+        body: ownerWrote(
+          "Community. Nothing is more valuable than getting and giving support with true peers, AI-native builders.",
+          {
+            normalizationNote:
+              "Double space closed; “AI native” hyphenated to “AI-native” per the §25.2 house style.",
+          },
         ),
       },
     ],

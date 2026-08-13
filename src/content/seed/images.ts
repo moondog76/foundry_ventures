@@ -70,6 +70,34 @@ function suppliedEditorialImage(
 }
 
 /**
+ * Portraits of the public team.
+ *
+ * Square by construction — `scripts/prepare-supplied-assets.mjs` centre-crops
+ * whatever is supplied, so one aspect ratio holds however the next photograph
+ * arrives. Rights are Foundry's: these are commissioned portraits of their own
+ * people, which is the one image category §9.8 asks for by name.
+ */
+function suppliedPortrait(id: string, file: string, size: number, alt: string): ImageAsset {
+  return {
+    id,
+    src: `/images/team/${file}`,
+    width: size,
+    height: size,
+    rightsStatus: "approved",
+    rightsOwner: "Foundry Ventures",
+    available: true,
+    alt,
+  };
+}
+
+export const ANDERS_PORTRAIT: ImageAsset = suppliedPortrait(
+  "anders-nygren",
+  "anders-nygren.png",
+  968,
+  "Anders Nygren",
+);
+
+/**
  * The live site serves the same ocean bytes under two asset IDs; the rebuild
  * deduplicates to a single asset (§5.5, §28.2).
  *

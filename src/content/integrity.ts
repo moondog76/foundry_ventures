@@ -88,7 +88,6 @@ function collectFundEditorialText(page: FundPage): Array<{ path: string; text: E
     add(`model.steps[${i}].title`, step.title);
     add(`model.steps[${i}].body`, step.body);
   });
-  add("people.heading", page.people.heading);
   add("contact.heading", page.contact.heading);
   add("contact.body", page.contact.body);
   return found;

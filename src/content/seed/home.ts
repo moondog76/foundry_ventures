@@ -37,7 +37,7 @@ export const SEED_HOME_PAGE: HomePage = {
     // Category and ticket, per §6.4. The previous eyebrow repeated the headline's
     // "AI only / Teams only" directly above the headline itself; this one adds
     // the qualifying fact instead of saying the same thing twice.
-    eyebrow: fromEnhancementBrief("Nordic AI pre-seed · €100k / €200k"),
+    eyebrow: fromEnhancementBrief("Early-stage AI · Nordics · €100k / €200k"),
     heading: fromEnhancementBrief("We only invest in AI. We invest in teams first."),
     /*
      * One paragraph, 22 words. The audit found both of the old hero paragraphs
@@ -159,7 +159,7 @@ export const SEED_HOME_PAGE: HomePage = {
   seo: {
     title: "Foundry Ventures",
     description:
-      "Nordic AI pre-seed. We write €100k or €200k into one to three teams a month, and underwrite the team before the market.",
+      "Early-stage AI investing in the Nordics. We write €100k or €200k into one to three teams a month, and underwrite the team before the market.",
     ogImage: DEFAULT_OG_IMAGE,
     approvalStatus: "approved",
     sources: [

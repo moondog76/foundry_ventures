@@ -114,7 +114,7 @@ export default async function OpenGraphImage(): Promise<ImageResponse> {
    * thumbnail. This is the same claim the site's own eyebrow makes, so it needs
    * no separate approval.
    */
-  const description = "Nordic AI pre-seed. Teams first.";
+  const description = "Early-stage AI investing. Teams first.";
   const logo = inlineLogo();
   const face = displayFace();
 

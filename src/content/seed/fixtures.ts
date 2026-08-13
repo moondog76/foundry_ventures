@@ -26,6 +26,7 @@ import type {
   TeamMember,
 } from "../types";
 import { SEED_FUND_PAGE } from "./fund";
+import { ANDERS_PORTRAIT } from "./images";
 import { SEED_HOME_PAGE } from "./home";
 import { SEED_SITE_SETTINGS } from "./site-settings";
 
@@ -237,7 +238,15 @@ const teamMembers: TeamMember[] = [
       shortBio: FIXTURE_APPROVAL,
       longBio: FIXTURE_APPROVAL,
       expertise: FIXTURE_APPROVAL,
+      portrait: FIXTURE_APPROVAL,
     },
+    /*
+     * The real portrait, not a synthetic one. The fixture dataset exists to
+     * exercise the fully-approved path, and a portrait is the one field on this
+     * record whose rendering has a layout consequence — the contact section
+     * switches to two columns when it is present.
+     */
+    portrait: ANDERS_PORTRAIT,
     shortBio: "Fixture short bio for the team index.",
     longBio: body,
     expertise: ["Go-to-market", "AI-native operating models"],
@@ -350,7 +359,6 @@ function approveFund(page: FundPage): FundPage {
         body: t(step.body.value),
       })),
     },
-    people: { ...page.people, heading: t(page.people.heading.value) },
     contact: {
       ...page.contact,
       heading: t(page.contact.heading.value),

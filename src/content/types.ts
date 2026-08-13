@@ -274,10 +274,12 @@ export type TeamMember = {
   /**
    * Whether this person materially owns investment decisions (§8.7).
    *
-   * This is what the decision-maker block and `/fund` render from — not
-   * "everyone on the team". §8.7 forbids implying a team larger than reality,
-   * and separating the two means adding an operations hire later cannot
-   * silently promote them into the investment story.
+   * Nothing renders this today — the "Who decides" block was removed on owner
+   * instruction 2026-08-13. The field stays because it records something true
+   * about each person rather than something a page happens to show, and it is
+   * what any future decision-maker section must filter on: §8.7 forbids
+   * implying a team larger than reality, so "everyone active" is never the
+   * right list to publish.
    */
   ownsInvestmentDecision: boolean;
   active: boolean;
@@ -516,11 +518,6 @@ export type FundPage = {
      * these describe sequence, never duration.
      */
     steps: Array<{ number: string; title: EditorialText; body: EditorialText }>;
-  };
-  people: {
-    heading: EditorialText;
-    /** Rendered from `TeamMember` records where `ownsInvestmentDecision`. */
-    memberIds: TeamMemberRef[];
   };
   contact: {
     heading: EditorialText;

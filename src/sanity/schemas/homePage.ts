@@ -93,7 +93,7 @@ export const homePageSchema: SanityDocumentSchema = {
         editorialTextField(
           "eyebrow",
           "Eyebrow",
-          'The small line above the headline, e.g. "Pre-seed · Nordics". Optional — leave it out rather than filling it with a slogan.',
+          'The small line above the headline, e.g. "Early stage · Nordics". Optional — leave it out rather than filling it with a slogan.',
         ),
         editorialTextField(
           "heading",

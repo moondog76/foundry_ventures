@@ -19,7 +19,6 @@
 import type { Metadata } from "next";
 import {
   getContactPeople,
-  getDecisionMakers,
   getFeaturedCompanies,
   getHomePage,
   getInvestmentCriteria,
@@ -28,7 +27,6 @@ import {
 import { resolvePolicyContext } from "@/content/context";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { ContactCta } from "@/components/home/ContactCta";
-import { DecisionMakers } from "@/components/home/DecisionMakers";
 import { FeaturedPortfolio } from "@/components/home/FeaturedPortfolio";
 import { HomeHero } from "@/components/home/HomeHero";
 import { InvestmentCriteriaGrid } from "@/components/home/InvestmentCriteriaGrid";
@@ -75,10 +73,9 @@ export default async function HomePage() {
    * editing this file to make it appear.
    */
   const featuredSlugs = home.featuredPortfolio.companyIds.map((company) => company.slug);
-  const [criteria, featuredCompanies, decisionMakers, contactPeople] = await Promise.all([
+  const [criteria, featuredCompanies, contactPeople] = await Promise.all([
     getInvestmentCriteria(policy),
     getFeaturedCompanies(featuredSlugs, featuredSlugs.length, policy),
-    getDecisionMakers(policy),
     getContactPeople(policy),
   ]);
 
@@ -120,12 +117,6 @@ export default async function HomePage() {
       <VisionSection vision={home.vision} policy={policy} />
 
       <OfferingGrid offering={home.offering} policy={policy} />
-
-      <DecisionMakers
-        people={decisionMakers}
-        policy={policy}
-        link={{ href: "/fund", label: "How the fund works" }}
-      />
 
       <ContactCta
         contact={home.contact}

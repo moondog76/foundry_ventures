@@ -343,19 +343,6 @@ export const getTeamMembers = cache(async (context?: PolicyContext): Promise<Tea
 });
 
 /** Contact people for the footer and CTA — resolved from Team, never duplicated. */
-/**
- * The people who materially own investment decisions (§8.7).
- *
- * Read from each record's own `ownsInvestmentDecision` flag rather than from
- * "everyone active", so hiring into operations or community cannot silently
- * enlarge the investment story the site tells.
- */
-export async function getDecisionMakers(context?: PolicyContext): Promise<TeamMember[]> {
-  const policy = await ctx(context);
-  const members = await getTeamMembers(policy);
-  return members.filter((member) => member.ownsInvestmentDecision);
-}
-
 export async function getContactPeople(context?: PolicyContext): Promise<TeamMember[]> {
   const policy = await ctx(context);
   const settings = await getSiteSettings(policy);

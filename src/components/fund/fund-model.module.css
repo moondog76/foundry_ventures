@@ -32,18 +32,32 @@
   gap: var(--space-lg);
 }
 
+/*
+ * Deliberately the same treatment as the four-item "What changes after Foundry"
+ * grid on the home page: hairline rule, large display numeral in Foundry blue,
+ * body at reading size. The two sections do the same job — a short numbered
+ * sequence of statements — and giving them two different looks made the fund
+ * page read as a lesser page rather than a quieter one.
+ *
+ * If one is retuned, retune both: `offering-grid.module.css` is the pair.
+ */
 .step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-width: 0;
+  padding-top: var(--space-md);
   border-top: var(--border-hairline) solid var(--line-default);
-  padding-top: var(--space-sm);
 }
 
 .number {
   display: block;
-  font-family: var(--font-sans);
-  font-size: var(--text-xs);
-  font-weight: var(--weight-medium);
-  letter-spacing: var(--tracking-label);
-  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-size: var(--text-h4);
+  line-height: 1;
+  letter-spacing: var(--tracking-display);
+  color: var(--accent);
 }
 
 .stepTitle {
@@ -52,14 +66,13 @@
   font-weight: var(--weight-medium);
   line-height: 1.3;
   letter-spacing: 0.01em;
-  margin: var(--space-2xs) 0 0;
+  margin: 0;
 }
 
 .stepBody {
-  font-size: var(--text-sm);
+  font-size: var(--text-body);
   line-height: var(--leading-body);
-  color: var(--text-muted);
-  margin: var(--space-2xs) 0 0;
+  margin: 0;
   max-width: 42ch;
 }
 
@@ -71,7 +84,9 @@
   }
 
   .steps {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    /* `auto-fit` rather than a fixed 3, so a fourth step would fall in beside
+       these instead of needing this rule changed. */
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
     gap: var(--space-xl);
   }
 }

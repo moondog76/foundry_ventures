@@ -82,17 +82,27 @@ test.describe("the LP journey (§14.1)", () => {
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 
     // The six operating facts, from the same source as the home page strip.
-    for (const value of ["€100k or €200k", "1–3 teams / month", "Pre-seed", "Nordics"]) {
+    for (const value of ["€100k or €200k", "1–3 teams / month", "Early stage", "Nordics"]) {
       await expect(page.getByText(value, { exact: false }).first()).toBeVisible();
     }
 
-    // Why the model is repeatable, and who decides.
+    // Why the model is repeatable.
     await expect(page.getByRole("heading", { name: /Why the model/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Who decides" })).toBeVisible();
 
-    // A real person, reachable without a form.
-    const mailto = page.locator('a[href^="mailto:"]').first();
-    await expect(mailto).toBeVisible();
+    /*
+     * A real, named, visible person reachable without a form.
+     *
+     * The dedicated "Who decides" block was removed on owner instruction
+     * 2026-08-13, so this leg of §14.1's journey now rests entirely on the
+     * contact section. That makes it *more* worth asserting, not less: if the
+     * portrait or the name were dropped, the page would still look finished
+     * while the audit's largest finding quietly came back.
+     */
+    const contact = page.getByRole("region", { name: /Talk to us/i });
+    await expect(contact.getByText("Anders Nygren")).toBeVisible();
+    await expect(contact.getByText("Partner")).toBeVisible();
+    await expect(contact.locator("img")).toBeVisible();
+    await expect(contact.locator('a[href^="mailto:"]').first()).toBeVisible();
   });
 
   test("publishes no institutional details it cannot substantiate (§16)", async ({ page }) => {

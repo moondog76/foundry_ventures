@@ -34,7 +34,7 @@ export const SEED_FUND_PAGE: FundPage = {
   publicationStatus: "published",
 
   hero: {
-    heading: fromEnhancementBrief("A focused system for Nordic AI pre-seed."),
+    heading: fromEnhancementBrief("A focused system for early-stage AI in the Nordics."),
     // 41 words, inside the 45-word ceiling.
     intro: fromEnhancementBrief(
       "Foundry writes first cheques into AI teams in the Nordics. One decision lens, two cheque sizes, and a pace set by the founders rather than by a quarterly cycle. The same six facts govern every investment.",
@@ -53,7 +53,7 @@ export const SEED_FUND_PAGE: FundPage = {
      * question an LP cannot currently answer.
      */
     body: fromEnhancementBrief(
-      "Conventional pre-seed underwriting prices a market, a product and a defensibility story. In AI, all three are re-drawn faster than a diligence process completes, so precision there is false precision. Underwriting the team instead is not a softer test — it is a narrower one, and a narrow test can be run consistently. Fixed cheques remove the negotiation. A short decision path removes the calendar. What remains is the judgement, applied the same way every time.",
+      "Conventional early-stage underwriting prices a market, a product and a defensibility story. In AI, all three are re-drawn faster than a diligence process completes, so precision there is false precision. Underwriting the team instead is not a softer test — it is a narrower one, and a narrow test can be run consistently. Fixed cheques remove the negotiation. A short decision path removes the calendar. What remains is the judgement, applied the same way every time.",
     ),
     steps: [
       {
@@ -80,23 +80,15 @@ export const SEED_FUND_PAGE: FundPage = {
     ],
   },
 
-  people: {
-    heading: fromEnhancementBrief("Who decides"),
-    /*
-     * Renders from `TeamMember` records where `ownsInvestmentDecision` is true.
-     * That is one person today, and §8.7 is explicit: own that intimacy rather
-     * than padding the page. Julia is not listed — she manages the community,
-     * not investment decisions, and §17 forbids padding a team directory to look
-     * larger.
-     *
-     * The portrait and the 45-70 word biography §8.7 requires do not exist yet.
-     * Both are recorded as required inputs in `docs/content-gaps.md` §C; until
-     * they arrive the block renders name, role and direct contact, which are all
-     * owner-approved, and omits the rest rather than inventing it.
-     */
-    memberIds: [ANDERS_REF],
-  },
 
+  /*
+   * There is no "Who decides" block. It was removed on owner instruction
+   * 2026-08-13, which reverses §8.7 — the audit called the absent public team
+   * the single largest audience gap and scored LP confidence 5.8/10 largely on
+   * it. The contact section below carries Anders's portrait, name, role and
+   * direct address instead, so the page still shows a real person; what it no
+   * longer does is present him as the investment decision-maker.
+   */
   contact: {
     heading: fromEnhancementBrief("Talk to us"),
     body: fromEnhancementBrief(
@@ -108,7 +100,7 @@ export const SEED_FUND_PAGE: FundPage = {
   seo: {
     title: "The fund",
     description:
-      "How Foundry invests: Nordic AI pre-seed, €100k or €200k first cheques, one to three teams a month, and a team-first decision lens.",
+      "How Foundry invests: early-stage AI in the Nordics, €100k or €200k first cheques, one to three teams a month, and a team-first decision lens.",
     ogImage: DEFAULT_OG_IMAGE,
     approvalStatus: "approved",
     sources: [

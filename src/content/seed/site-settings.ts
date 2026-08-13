@@ -34,7 +34,7 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
   canonicalOrigin: CANONICAL_ORIGIN,
   defaultSeoTitle: "Foundry Ventures",
   defaultSeoDescription:
-    "Nordic AI pre-seed. We write €100k or €200k into one to three teams a month, and underwrite the team before the market.",
+    "Early-stage AI investing in the Nordics. We write €100k or €200k into one to three teams a month, and underwrite the team before the market.",
   defaultOgImage: DEFAULT_OG_IMAGE,
 
   // No verified general inbox exists — see §16.1. Contact routes through people.
@@ -134,8 +134,8 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
     },
     {
       label: "Stage",
-      value: "Pre-seed",
-      evidence: ownerConfirmed("Pre-seed stage confirmed by the content owner, 2026-08-11"),
+      value: "Early stage",
+      evidence: ownerConfirmed("Stage wording set by the content owner, 2026-08-13"),
       editorialNote:
         "Replaces the Industry/Agnostic row. §8.3 lists Stage among the six facts and industry-agnostic is implied by an AI-only mandate; stage is the fact a founder actually screens on.",
       sortOrder: 50,
@@ -160,7 +160,7 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
   // §8.9: one sentence in the footer — category, region and ticket. No
   // repeated manifesto.
   brandStatement: fromEnhancementBrief(
-    "Nordic AI pre-seed. First cheques of €100k or €200k, one to three teams a month.",
+    "Early-stage AI investing in the Nordics. First cheques of €100k or €200k, one to three teams a month.",
   ),
 
   /**

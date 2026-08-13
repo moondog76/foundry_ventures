@@ -32,7 +32,7 @@ export const investmentCriterionSchema: SanityObjectSchema = {
       title: "Value",
       type: "string",
       description:
-        'The answer, e.g. "Pre-seed" or "Nordics". Write the exact figure or term Foundry is willing to stand behind — this row is read as a commitment, not as an illustration.',
+        'The answer, e.g. "Early stage" or "Nordics". Write the exact figure or term Foundry is willing to stand behind — this row is read as a commitment, not as an illustration.',
       validationRule: { required: true, min: 1, max: 80 },
     },
     {

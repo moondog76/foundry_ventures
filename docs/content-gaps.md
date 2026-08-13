@@ -201,6 +201,37 @@ The delivered `.svg` was not a vector — a 788×127 SVG shell wrapping one base
 PNG. `scripts/prepare-supplied-assets.mjs` extracts the PNG losslessly so
 `next/image` can resample it; the original is in `assets-supplied/`.
 
+## F4. Changes of 2026-08-13 (second batch)
+
+**"Pre-seed" is now "early stage."** Every public surface: the hero eyebrow, the
+Stage row in the model strip, the fund page heading and argument, both meta
+descriptions, the footer statement and the Open Graph card. Hyphenated
+(`early-stage`) where it modifies a noun and open (`early stage`) where it stands
+alone, which is the same rule the site already applies to `AI-native`.
+
+Worth knowing: "early stage" is broader than "pre-seed". It reads as pre-seed
+*and* seed, which is either a useful widening or a loss of the sharpest
+qualification on the page, depending on what you intend. The €100k/€200k cheque
+still does most of the filtering.
+
+**The "Who decides" block is gone**, from both the home page and `/fund`. This
+reverses §8.7, which called the absent public team the single largest audience
+gap and scored LP confidence 5.8/10 largely on it. Anders now appears in "Talk
+to us" with a portrait, name, role and direct address, so the page still shows a
+real person — what it no longer does is present anyone as the investment
+decision-maker. The `ownsInvestmentDecision` field survives on the person record
+for whenever a decision-maker section returns.
+
+**Anders's portrait is live** on the fund page's contact section, centre-cropped
+square by the asset pipeline. It is the only photograph of a real person on the
+site and the first image that meets §9.8's "real decision-makers" category
+rather than being atmosphere.
+
+**The fund page's three steps** now use the same treatment as the four-item
+"What changes after Foundry" grid — hairline rule, display numeral in Foundry
+blue, body at reading size. The two sections do the same job, and two different
+looks made the fund page read as a lesser page rather than a quieter one.
+
 ## F3. Where the enhancement brief reverses your own instructions
 
 The 2026-08-12 rebuild was built to the website enhancement brief, on the

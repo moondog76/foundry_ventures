@@ -198,6 +198,15 @@ function cropToContent(image, alphaThreshold = 16) {
   return { width: cropWidth, height: cropHeight, channels: 4, pixels: out };
 }
 
+/** Rectangular crop. Row-wise `copy`, so no pixel is resampled. */
+function cropRect({ width, pixels }, { x, y, width: w, height: h }) {
+  const out = Buffer.alloc(w * h * 4);
+  for (let row = 0; row < h; row += 1) {
+    pixels.copy(out, row * w * 4, ((y + row) * width + x) * 4, ((y + row) * width + x + w) * 4);
+  }
+  return { width: w, height: h, channels: 4, pixels: out };
+}
+
 /** Lossless 90° clockwise rotation — a pure pixel remap, no resampling. */
 function rotate90Clockwise({ width, height, channels, pixels }) {
   const out = Buffer.alloc(pixels.length);
@@ -408,6 +417,42 @@ function buildPortfolioLogos() {
   }
 }
 
+/**
+ * Portraits of the public team.
+ *
+ * Delivered as a 972×968 PNG at 820 KiB — near-square but not exactly, and
+ * far heavier than a photograph needs to be. The square crop is taken here
+ * rather than left to CSS so every portrait shares one aspect ratio regardless
+ * of what is supplied, and the re-encode is what makes it affordable to put a
+ * real face on the page at all.
+ */
+const PORTRAITS = [{ slug: "anders-nygren", file: "anders-nygren.png" }];
+
+function buildPortraits() {
+  const out = path.join(root, "public/images/team");
+  mkdirSync(out, { recursive: true });
+
+  for (const { slug, file } of PORTRAITS) {
+    const source = path.join(SUPPLIED, file);
+    if (!existsSync(source)) {
+      log(`${slug}: ${file} not supplied — skipped`);
+      continue;
+    }
+    const image = decodePng(readFileSync(source));
+    // Centre square crop, then the shorter edge caps the output size.
+    const side = Math.min(image.width, image.height);
+    const square = cropRect(image, {
+      x: Math.round((image.width - side) / 2),
+      y: Math.round((image.height - side) / 2),
+      width: side,
+      height: side,
+    });
+    const target = path.join(out, `${slug}.png`);
+    writeFileSync(target, encodePng(square));
+    log(`${slug}: square-cropped to ${square.width}×${square.height}`);
+  }
+}
+
 function buildEditorialImages() {
   const out = path.join(root, "public/images/editorial");
   mkdirSync(out, { recursive: true });
@@ -429,6 +474,7 @@ requirePdftocairo();
 console.log("Preparing supplied assets\n");
 buildFoundryBrand();
 buildPortfolioLogos();
+buildPortraits();
 buildEditorialImages();
 
 console.log("\nGenerated assets:");

@@ -16,7 +16,6 @@
 
 import type { Metadata } from "next";
 import {
-  getDecisionMakers,
   getFundPage,
   getInvestmentCriteria,
   getSiteSettings,
@@ -25,7 +24,6 @@ import { resolvePolicyContext } from "@/content/context";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { Container, Section } from "@/components/ui";
 import { InvestmentCriteriaGrid } from "@/components/home/InvestmentCriteriaGrid";
-import { DecisionMakers } from "@/components/home/DecisionMakers";
 import { FundModel } from "@/components/fund/FundModel";
 import { InstitutionalDetails } from "@/components/fund/InstitutionalDetails";
 import { FundContact } from "@/components/fund/FundContact";
@@ -48,11 +46,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function FundRoute() {
   const policy = await resolvePolicyContext();
-  const [fund, settings, criteria, decisionMakers] = await Promise.all([
+  const [fund, settings, criteria] = await Promise.all([
     getFundPage(),
     getSiteSettings(policy),
     getInvestmentCriteria(policy),
-    getDecisionMakers(policy),
   ]);
 
   const heading = renderableText(fund.hero.heading, policy);
@@ -72,12 +69,6 @@ export default async function FundRoute() {
       <InvestmentCriteriaGrid criteria={criteria} />
 
       <FundModel model={fund.model} policy={policy} />
-
-      <DecisionMakers
-        people={decisionMakers}
-        policy={policy}
-        link={{ href: "/portfolio", label: "See the teams we back" }}
-      />
 
       <FundContact contact={fund.contact} policy={policy} />
 

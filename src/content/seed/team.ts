@@ -11,7 +11,8 @@
  */
 
 import type { TeamMember } from "../types";
-import { FOUNDRY_HOME_SOURCE, ownerApprovedFromLive, unverified } from "./evidence";
+import { FOUNDRY_HOME_SOURCE, ownerApprovedFromLive, ownerConfirmed, unverified } from "./evidence";
+import { ANDERS_PORTRAIT } from "./images";
 
 export const SEED_TEAM_MEMBERS: TeamMember[] = [
   {
@@ -26,12 +27,13 @@ export const SEED_TEAM_MEMBERS: TeamMember[] = [
       role: ownerApprovedFromLive(FOUNDRY_HOME_SOURCE),
       email: ownerApprovedFromLive(FOUNDRY_HOME_SOURCE),
       phone: ownerApprovedFromLive(FOUNDRY_HOME_SOURCE),
-      portrait: unverified("No portrait published on the live site"),
+      portrait: ownerConfirmed("Portrait supplied by the content owner, 2026-08-13"),
       shortBio: unverified("No bio published on the live site"),
       longBio: unverified("No bio published on the live site"),
       expertise: unverified("Not published on the live site"),
       linkedinUrl: unverified("No personal LinkedIn URL published on the live site"),
     },
+    portrait: ANDERS_PORTRAIT,
     email: "anders.nygren@foundryventures.ai",
     /*
      * §12.7: a personal telephone number is only public if deliberately

@@ -4,8 +4,22 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  /* Copy sits in the lower half, the way the live hero reads. */
-  justify-content: flex-end;
+  /*
+   * The copy sits below centre, not on the floor.
+   *
+   * `flex-end` gave the whole of the remaining height to the gap above the
+   * headline. On a 1440-tall window that was 872px of empty field over the
+   * eyebrow against 120px beneath the paragraph — the block read as having
+   * fallen to the bottom of the screen rather than being placed. §8.2 asks for
+   * the lower half and says explicitly "not pinned to the very bottom".
+   *
+   * `center` shares the slack instead, and the asymmetric padding below does
+   * the rest: the box is taller at the top than the bottom, so the block still
+   * settles below the midline at every height. It also degrades correctly —
+   * as the viewport shortens the two gaps converge rather than the top one
+   * collapsing first.
+   */
+  justify-content: center;
   /* svh, never vh: collapsing mobile browser chrome must not resize the hero
      under the user's finger (§19.1). */
   /*
@@ -23,6 +37,10 @@
   background-color: var(--color-deep-navy);
   /* The header is fixed and floats transparently over this section (§6.1). */
   padding-top: calc(var(--header-height) + var(--space-xl));
+  /*
+   * Deliberately smaller than the padding above, which is what biases the
+   * centred block downwards. Keep the two asymmetric if either is retuned.
+   */
   padding-bottom: var(--section-y);
 }
 

@@ -82,7 +82,7 @@ test.describe("the LP journey (§14.1)", () => {
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 
     // The six operating facts, from the same source as the home page strip.
-    for (const value of ["€100k or €200k", "1–3 teams / month", "Early stage", "Nordics"]) {
+    for (const value of ["€100k or €200k", "Monthly", "Early stage", "Nordics"]) {
       await expect(page.getByText(value, { exact: false }).first()).toBeVisible();
     }
 

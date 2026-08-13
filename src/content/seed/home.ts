@@ -40,17 +40,20 @@ export const SEED_HOME_PAGE: HomePage = {
     eyebrow: fromEnhancementBrief("Early-stage AI · Nordics · €100k / €200k"),
     heading: fromEnhancementBrief("We only invest in AI. We invest in teams first."),
     /*
-     * One paragraph, 22 words. The audit found both of the old hero paragraphs
-     * were still going after the reader had understood the proposition.
+     * The owner's own words, supplied 2026-08-13, replacing the §6.4 support
+     * line. Twelve words against a 28-32 word ceiling — the audit's complaint
+     * was that the old paragraphs kept going after the point had landed, and
+     * this one stops early enough that the ceiling stops mattering.
      *
-     * This is the lower-claim variant §6.4 offers. The higher-claim version —
-     * "help create the first customer momentum" — is only publishable if the
-     * portfolio can substantiate it, and that evidence has not been gathered.
+     * It also drops the cadence claim from the hero. "One to three teams a
+     * month" now appears nowhere a visitor reads — see the note in
+     * `docs/content-gaps.md` §F6 for the four places it survives in metadata.
      */
     paragraphs: [
-      fromEnhancementBrief(
-        "One to three teams a month. We underwrite a team’s rate of learning, then stay close through the earliest commercial questions.",
-      ),
+      ownerWrote("We underwrite a team. The ambition, the agency and the rate of learning.", {
+        normalizationNote:
+          "Supplied without the comma after “ambition”. Added, because the three nouns are a list and without it the line reads as a single broken phrase. Nothing else changed.",
+      }),
     ],
     primaryCta: { label: fromEnhancementBrief("Meet the teams"), href: "/portfolio" },
     secondaryCta: { label: fromEnhancementBrief("The fund"), href: "/fund" },

@@ -113,11 +113,11 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
       sortOrder: 10,
     },
     {
-      label: "Pace",
-      value: "1–3 teams / month",
-      evidence: ownerConfirmed("Investment cadence stated by the content owner, 2026-08-11"),
+      label: "Investment pace",
+      value: "Monthly",
+      evidence: ownerConfirmed("Investment pace restated by the content owner, 2026-08-13"),
       editorialNote:
-        "A public, checkable commitment: roughly 12–36 investments a year. Worth revisiting if the real rate settles elsewhere.",
+        "Was “1–3 teams / month” until 2026-08-13. “Monthly” says Foundry invests every month without committing to a count, which removes the arithmetic a reader could previously run against the portfolio — and removes the sharpest operating fact on the strip. Both are deliberate.",
       sortOrder: 20,
     },
     {

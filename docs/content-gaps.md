@@ -201,6 +201,35 @@ The delivered `.svg` was not a vector — a 788×127 SVG shell wrapping one base
 PNG. `scripts/prepare-supplied-assets.mjs` extracts the PNG losslessly so
 `next/image` can resample it; the original is in `assets-supplied/`.
 
+## F6. The cadence claim is now softer in two places and specific in four
+
+On 2026-08-13 the owner replaced two strings:
+
+- criteria row `Pace` / `1–3 teams / month` → **`Investment pace` / `Monthly`**
+- hero support line → **"We underwrite a team. The ambition, the agency and the
+  rate of learning."**, which drops the cadence from the hero entirely.
+
+"One to three teams a month" now appears **nowhere a visitor reads on the home
+page**, but it survives in four strings that were not part of the instruction:
+
+| Where | Visible? |
+|---|---|
+| `site-settings.brandStatement` | **Yes — the footer, on every page** |
+| `site-settings.defaultSeoDescription` | Search results and link previews |
+| `home.seo.description` | Search results and link previews |
+| `fund.seo.description` | Search results and link previews |
+
+These are not contradictions — "one to three a month" *is* monthly — but they are
+more specific than the page now is, and the footer sits a few hundred pixels
+below a strip that has deliberately stopped committing to a number. Aligning
+them is one decision across four strings; leaving them is a legitimate choice if
+the precise figure is wanted in search results. Not changed unasked either way.
+
+Also of note: the strip's `Investment pace / Monthly` no longer supports the
+arithmetic a reader could previously run — twelve to thirty-six a year against
+ten published companies. That was flagged as a checkable public commitment when
+it went in, and softening it removes the exposure along with the specificity.
+
 ## F5. The site is one page for now (2026-08-13)
 
 `/portfolio` and `/fund` are hidden on owner instruction. **Hidden, not deleted** —

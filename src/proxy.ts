@@ -21,6 +21,11 @@ import { NextResponse, type NextRequest } from "next/server";
 
 export const CANONICAL_ORIGIN = "https://www.foundryventures.ai";
 export const CANONICAL_HOST = "www.foundryventures.ai";
+/**
+ * The bare domain. Not referenced by the host check any more — `host !==
+ * CANONICAL_HOST` already covers it — but exported because it names the thing
+ * GoDaddy 301s to `www`, and tests assert against it.
+ */
 export const APEX_HOST = "foundryventures.ai";
 
 /** Demo pages from the previous Squarespace site with no semantic successor. */
@@ -74,11 +79,40 @@ export function proxy(request: NextRequest): NextResponse {
   // 1. Gone wins outright — never redirect a dead page to a live host first.
   if (GONE_PATHS.has(path)) return goneResponse();
 
+  /*
+   * Which hosts get canonicalised — an allowlist, not "anything that is not
+   * canonical".
+   *
+   * The difference is what broke the deploy on 2026-08-13. The old rule
+   * redirected every non-canonical host, and Railway's healthcheck probes the
+   * container directly on `127.0.0.1`. That is a non-canonical host, so every
+   * probe got a 308, the replica never became healthy, and the release rolled
+   * back — a full deployment outage caused by a flag meant to tidy up URLs.
+   *
+   * The obvious repair — "skip when `x-forwarded-proto` is missing" — does not
+   * work either, and its failure is worth recording because it looks correct
+   * and unit-tests green: **Next.js synthesises `x-forwarded-proto` on every
+   * request**, including a bare local one. The header is never absent at
+   * runtime. A hand-built `NextRequest` in a test has no such header, so the
+   * test passes while production still redirects.
+   *
+   * So the rule is stated positively. These are the two public hostnames that
+   * genuinely should move to the canonical one; every other host — loopback,
+   * `*.railway.internal`, a bare IP, a future preview domain — is left alone.
+   * Being wrong in this direction costs a duplicate URL. Being wrong in the
+   * other direction costs the whole deployment.
+   */
+  const isRedirectableHost = (host: string): boolean =>
+    host === APEX_HOST || host.endsWith(".up.railway.app");
+
   const enforceHost = process.env.FOUNDRY_ENFORCE_CANONICAL_HOST === "1";
-  const forwardedProto = request.headers.get("x-forwarded-proto") ?? url.protocol.replace(":", "");
   const host = (request.headers.get("host") ?? url.host).toLowerCase().split(":")[0];
-  const needsHostFix =
-    enforceHost && (forwardedProto !== "https" || host === APEX_HOST || host !== CANONICAL_HOST);
+  /*
+   * No protocol upgrade here. The platform edge already answers plain HTTP with
+   * a redirect to HTTPS before the request reaches this code, so duplicating it
+   * would add a second hop and another way to trap the healthcheck.
+   */
+  const needsHostFix = enforceHost && isRedirectableHost(host);
 
   // 2. Legacy path redirects resolve straight to the canonical absolute URL.
   const legacyTarget = LEGACY_REDIRECTS[path];

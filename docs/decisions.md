@@ -1163,3 +1163,41 @@ reliably reaches.
 
 **Consequence.** Both budgets are enforced at seed load, so an over-long
 descriptor fails the build rather than being counted by hand in review.
+
+---
+
+## D-040 — Canonicalise a host allowlist, never "everything non-canonical"
+
+**Decision.** `FOUNDRY_ENFORCE_CANONICAL_HOST=1` redirects only hosts on an
+explicit list — the bare apex and `*.up.railway.app`. Every other host passes
+through untouched, and the proxy no longer performs a protocol upgrade.
+
+**Rationale.** The previous rule redirected any host that was not
+`www.foundryventures.ai`. Railway's healthcheck probes the container directly on
+`127.0.0.1` over plain HTTP, which matched that rule, so every probe answered
+308, the replica never became healthy, and the deploy rolled back. Turning the
+flag on took the whole release pipeline down while the site itself was fine.
+
+The first repair was worse, and is the reason this decision is written down:
+"skip the redirect when `x-forwarded-proto` is absent" reads correctly and
+passes a unit test — but **Next.js synthesises `x-forwarded-proto` on every
+request**, including a bare loopback one. It is never absent at runtime. A
+hand-built `NextRequest` has no such header, so the fiction existed only in the
+test. The fix was verified green against a running `next start` before it was
+believed.
+
+Stating the rule positively also fails in the cheaper direction. Missing a host
+that should be canonicalised costs a duplicate URL; catching one that should not
+be costs the deployment.
+
+**Spec.** Brief §12.6, §12.7.
+
+**Consequence.** The protocol upgrade is gone — the platform edge already
+answers plain HTTP with a redirect to HTTPS before the request reaches this
+code, so duplicating it added a hop and another way to trap the healthcheck. A
+future preview or staging hostname is left alone by default and must be added to
+the list deliberately.
+
+**Reversal.** `isRedirectableHost` in `src/proxy.ts`. Nine tests in
+`tests/unit/proxy.test.ts` cover it, all built from the header shape a real
+server actually receives.

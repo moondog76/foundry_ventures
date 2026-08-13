@@ -79,14 +79,14 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
    * `docs/content-gaps.md` §F3.
    */
   navigation: [
-    { label: "Portfolio", href: "/portfolio" },
-    { label: "Fund", href: "/fund" },
+    { label: "Portfolio", href: "/portfolio", featureFlag: "portfolio" },
+    { label: "Fund", href: "/fund", featureFlag: "fund" },
   ],
 
   footerNavigation: [
     { label: "Home", href: "/" },
-    { label: "Portfolio", href: "/portfolio" },
-    { label: "Fund", href: "/fund" },
+    { label: "Portfolio", href: "/portfolio", featureFlag: "portfolio" },
+    { label: "Fund", href: "/fund", featureFlag: "fund" },
   ],
 
   legalNavigation: [{ label: "Privacy", href: "/privacy" }],
@@ -169,6 +169,15 @@ export const SEED_SITE_SETTINGS: SiteSettings = {
    * from navigation and sitemap, and generates no metadata (§3.4).
    */
   featureFlags: {
+    /*
+     * Off on owner instruction 2026-08-13: Foundry is showing a single page for
+     * now. Both routes still resolve — a link already shared keeps working — but
+     * nothing on the site points at them and neither is indexable. Flip either
+     * back to `true` and its navigation entry, sitemap entry and on-page links
+     * all return together.
+     */
+    portfolio: false,
+    fund: false,
     investmentCriteria: true,
     // No founder quote is approved for publication. §8.7: if none meets the
     // standard, omit the section — do not weaken the standard to fill it.

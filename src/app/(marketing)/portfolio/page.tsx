@@ -13,7 +13,7 @@
  */
 
 import type { Metadata } from "next";
-import { getCompanies, getCompanyFacets, getHomePage, getSiteSettings } from "@/content";
+import { getCompanies, getCompanyFacets, getHomePage, getSiteSettings, isRoutePublished } from "@/content";
 import { resolvePolicyContext } from "@/content/context";
 import type { FacetGroup } from "@/content/types";
 import { parseFilters } from "@/lib/filters/engine";
@@ -42,6 +42,10 @@ export async function generateMetadata(): Promise<Metadata> {
     path: PORTFOLIO_PATH,
     fallbackTitle: PORTFOLIO_TITLE,
     fallbackDescription: settings.defaultSeoDescription,
+    // Hidden means "not advertised": absent from navigation and the sitemap,
+    // and not listed by a crawler that reaches it some other way. The route
+    // still resolves, so no shared link breaks (§3.4).
+    noIndex: !(await isRoutePublished("/portfolio", policy)),
   });
 }
 

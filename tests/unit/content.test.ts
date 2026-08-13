@@ -25,6 +25,8 @@ import {
   getCompanies,
   getCompanyFacets,
   getFeaturedCompanies,
+  getSiteSettings,
+  isRoutePublished,
   rawContent,
   richTextToPlainText,
   toCompanySummary,
@@ -45,6 +47,53 @@ const OBSERVED: FieldEvidence = {
 // about which dataset it is running against.
 beforeEach(() => __setAdapterForTests(null));
 afterEach(() => __setAdapterForTests(null));
+
+/* -------------------------------------------------------- Hidden routes */
+
+describe("hidden routes (real seed)", () => {
+  /*
+   * `/portfolio` and `/fund` are hidden on owner instruction while Foundry
+   * shows a single page. "Hidden" has a precise meaning here and each half of
+   * it is asserted, because the two halves fail in opposite directions:
+   * under-hiding advertises a page Foundry is not ready to show, and
+   * over-hiding breaks every link already shared.
+   *
+   * The end-to-end suite cannot cover this — it runs the fixture dataset, which
+   * deliberately enables both flags so the full four-route site is exercised.
+   */
+  it("keeps both routes out of the header and footer navigation", async () => {
+    const settings = await getSiteSettings(PRODUCTION_POLICY);
+    const hrefs = [...settings.navigation, ...settings.footerNavigation].map((i) => i.href);
+    expect(hrefs).not.toContain("/portfolio");
+    expect(hrefs).not.toContain("/fund");
+    // The home page is still reachable from the footer, so the site is not
+    // navigationless — it is single-page.
+    expect(settings.footerNavigation.map((i) => i.href)).toContain("/");
+  });
+
+  it("reports both as unpublished in production, so nothing links to them", async () => {
+    expect(await isRoutePublished("/portfolio", PRODUCTION_POLICY)).toBe(false);
+    expect(await isRoutePublished("/fund", PRODUCTION_POLICY)).toBe(false);
+    // Company detail routes sit under the hidden archive and follow it.
+    expect(await isRoutePublished("/portfolio/empley", PRODUCTION_POLICY)).toBe(false);
+    // Everything else is unaffected.
+    expect(await isRoutePublished("/", PRODUCTION_POLICY)).toBe(true);
+    expect(await isRoutePublished("/privacy", PRODUCTION_POLICY)).toBe(true);
+  });
+
+  it("still serves them in preview, so an editor can review what is hidden", async () => {
+    expect(await isRoutePublished("/portfolio", PREVIEW_POLICY)).toBe(true);
+    expect(await isRoutePublished("/fund", PREVIEW_POLICY)).toBe(true);
+  });
+
+  it("still publishes the companies themselves, because only the route is hidden", async () => {
+    // The records stay published: hiding the archive is a navigation decision,
+    // not a retraction of the content. Re-enabling the flag must not also
+    // require re-approving ten companies.
+    const companies = await getCompanies(undefined, PRODUCTION_POLICY);
+    expect(companies.length).toBeGreaterThan(0);
+  });
+});
 
 /* ------------------------------------------------------------- Companies */
 

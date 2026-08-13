@@ -90,6 +90,32 @@
   border-top: var(--border-hairline) solid var(--line-inverse);
 }
 
+/*
+ * The one photograph on the home page, closing the site on a face rather than
+ * on a form. Square because the asset is square by construction — the prep
+ * script centre-crops whatever is supplied — so stating the ratio means a
+ * non-square replacement is letterboxed rather than distorted.
+ *
+ * Sits above the name with its own margin rather than relying on the flex
+ * `gap`, which is tuned for the tight name/role/channel stack below it.
+ */
+.portrait {
+  width: 12rem;
+  max-width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  margin-bottom: var(--space-sm);
+  /* A visible ground while the image decodes, on a field this dark. */
+  background: rgb(255 255 255 / 0.08);
+}
+
+.portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .personName {
   font-family: var(--font-sans);
   font-size: var(--text-h6);

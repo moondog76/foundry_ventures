@@ -23,6 +23,7 @@ import {
   getHomePage,
   getInvestmentCriteria,
   getSiteSettings,
+  isRoutePublished,
 } from "@/content";
 import { resolvePolicyContext } from "@/content/context";
 import { buildMetadata } from "@/lib/seo/metadata";
@@ -85,11 +86,23 @@ export default async function HomePage() {
   const portfolioLabel = navLabel(settings.navigation, "/portfolio", "Portfolio");
   const fundLabel = navLabel(settings.navigation, "/fund", "Fund");
 
+  /*
+   * A hidden route must not be linked *to*, or the home page would advertise a
+   * page the navigation deliberately omits. §3.4 — a CTA is authored content
+   * with its own href, so it needs the same check the navigation gets.
+   */
+  const [portfolioShown, fundShown] = await Promise.all([
+    isRoutePublished("/portfolio", policy),
+    isRoutePublished("/fund", policy),
+  ]);
+
   return (
     <>
       <HomeHero
         hero={home.hero}
         policy={policy}
+        showPrimaryCta={portfolioShown}
+        showSecondaryCta={fundShown}
         // The brand name is rendered unconditionally by the header, footer and
         // logo title, so it is the one string guaranteed to be available for the
         // page's single h1 when the authored heading is still unapproved.
@@ -106,8 +119,10 @@ export default async function HomePage() {
         heading={renderableText(home.featuredPortfolio.heading, policy)}
         intro={renderableText(home.featuredPortfolio.intro, policy)}
         // No fallback: an absent label means the section deliberately has no link.
+        // Absent label means no link at all — and a hidden archive is the same
+        // thing from the reader's side, so both resolve to `undefined`.
         ctaLabel={
-          home.featuredPortfolio.ctaLabel
+          portfolioShown && home.featuredPortfolio.ctaLabel
             ? (renderableText(home.featuredPortfolio.ctaLabel, policy) ?? portfolioLabel)
             : undefined
         }

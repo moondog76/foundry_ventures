@@ -201,6 +201,39 @@ The delivered `.svg` was not a vector — a 788×127 SVG shell wrapping one base
 PNG. `scripts/prepare-supplied-assets.mjs` extracts the PNG losslessly so
 `next/image` can resample it; the original is in `assets-supplied/`.
 
+## F5. The site is one page for now (2026-08-13)
+
+`/portfolio` and `/fund` are hidden on owner instruction. **Hidden, not deleted** —
+the distinction is deliberate and each half is enforced:
+
+| Still true | No longer true |
+|---|---|
+| Both routes return 200, so any link already shared keeps working | They appear in the header or footer navigation |
+| Both render fully in preview mode, so they can be reviewed | They appear in the sitemap |
+| All ten companies stay published records | Anything on the site links to them |
+| Re-enabling is one boolean each | They are indexable — both now emit `noindex` |
+
+Two flags, not one: `featureFlags.portfolio` and `featureFlags.fund`. The pages
+become ready at different times — the portfolio needs the six-company selection
+(§C), the fund page needs counsel-approved entity details (§D) — so one is very
+likely to return before the other. Flip either to `true` in
+`seed/site-settings.ts` and its navigation entry, sitemap entry and on-page links
+all come back together.
+
+Knock-on effects, so none of them is a surprise later:
+
+- The hero has no buttons. Both destinations were hidden, and inventing a third
+  CTA would mean writing copy nobody approved. The page's only action is "Email
+  Anders" at the foot, which is the right shape for a single page.
+- The footer's navigation column is gone rather than showing "Home" alone.
+- The mobile menu trigger is gone; there is nothing for it to open.
+- The featured portfolio section stays on the home page — it is home-page
+  content — but its "See all teams" link does not.
+
+Coverage: the end-to-end suite runs the fixture dataset, which deliberately
+keeps both routes **enabled** so the full four-route site is still exercised. The
+hidden behaviour is covered by unit tests against the real seed instead.
+
 ## F4. Changes of 2026-08-13 (second batch)
 
 **"Pre-seed" is now "early stage."** Every public surface: the hero eyebrow, the

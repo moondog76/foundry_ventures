@@ -62,7 +62,7 @@ function toChangeDate(value: string | undefined): string | undefined {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const policy = publicPolicyContext();
   const settings = await getSiteSettings(policy);
-  const { canonicalOrigin } = settings;
+  const { canonicalOrigin, featureFlags } = settings;
 
   /*
    * The public routes of §7.1. `/` is the canonical root — never `/home`.
@@ -72,7 +72,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
    * It is listed below, with an honest `lastModified` from the document's own
    * revision date.
    */
-  const entries: SitemapEntry[] = [{ path: "/" }, { path: "/portfolio" }, { path: "/fund" }];
+  const entries: SitemapEntry[] = [{ path: "/" }];
+  // A hidden route is absent here for the same reason it is absent from the
+  // navigation: the sitemap is where a site says what it wants found.
+  if (featureFlags.portfolio) entries.push({ path: "/portfolio" });
+  if (featureFlags.fund) entries.push({ path: "/fund" });
 
   // The privacy notice is a real document with a real revision date, so it can
   // carry an honest `lastModified`. It is listed only when the record exists.
@@ -81,7 +85,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entries.push({ path: "/privacy", lastModified: toChangeDate(privacy.lastUpdated) });
   }
 
-  const companySlugs = await getPublishableCompanySlugs(policy);
+  // Company detail routes live under `/portfolio`, so hiding the archive hides
+  // them too — listing a child of a page nobody can navigate to is worse than
+  // listing neither.
+  const companySlugs = featureFlags.portfolio ? await getPublishableCompanySlugs(policy) : [];
 
   // Sorted so the generated XML is byte-stable between builds and a diff of the
   // sitemap shows real content changes rather than iteration order.

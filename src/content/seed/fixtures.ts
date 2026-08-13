@@ -291,6 +291,10 @@ const siteSettings: SiteSettings = {
     evidence: FIXTURE_APPROVAL,
   })),
   featureFlags: {
+    // Both on, so the fixture build still exercises the full four-route site
+    // and its navigation while the real dataset shows a single page.
+    portfolio: true,
+    fund: true,
     investmentCriteria: true,
     // Both on, so the fixture build exercises the founder-quote block and the
     // institutional disclosure that the real dataset legitimately hides.

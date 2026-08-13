@@ -107,11 +107,21 @@ export async function getFeatureFlags(): Promise<SiteSettings["featureFlags"]> {
  * section off leaves buttons pointing at a 404.
  */
 const FLAGGED_ROUTES: ReadonlyArray<[string, FeatureFlagKey]> = [
-  // Every public route in §7.1 launches unflagged. The list stays because the
-  // mechanism is still correct — it is simply empty until a flagged route
-  // exists again, and an empty list is a clearer statement than deleting it.
+  ["/portfolio", "portfolio"],
+  ["/fund", "fund"],
 ];
 
+/**
+ * Whether a route is currently *presented* — in navigation, in the sitemap, and
+ * as a destination for on-page links.
+ *
+ * Deliberately not the same question as whether it resolves. A hidden route
+ * still returns 200, because "hide it for now" and "break every link anyone has
+ * already shared" are different instructions and only one of them was given.
+ * What hiding does remove is discoverability: no nav entry, no sitemap entry, no
+ * link from another page, and `noindex` so a crawler that finds it anyway does
+ * not list it.
+ */
 export async function isRoutePublished(href: string, context?: PolicyContext): Promise<boolean> {
   const policy = await ctx(context);
   if (policy.mode === "preview") return true;

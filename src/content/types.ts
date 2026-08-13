@@ -177,6 +177,21 @@ export type Address = {
  * decision, which is exactly what a flag should express.
  */
 export type FeatureFlags = {
+  /**
+   * Whether `/portfolio` and `/fund` are presented as part of the site.
+   *
+   * Off means hidden, not deleted: the routes still resolve, so a link already
+   * shared keeps working, but they leave the header and footer navigation, the
+   * sitemap and every on-page link, and they stop being indexable. Foundry is
+   * showing a single page for now and these are the switch.
+   *
+   * They are deliberately two flags rather than one. The pages are ready at
+   * different times — the portfolio needs a six-company selection, the fund page
+   * needs counsel-approved entity details — so one is very likely to come back
+   * before the other.
+   */
+  portfolio: boolean;
+  fund: boolean;
   /** The six-fact investment model strip (§8.3). */
   investmentCriteria: boolean;
   /** The single founder quote (§8.7). Off until one is approved for publication. */

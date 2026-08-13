@@ -19,6 +19,7 @@ import {
   getFundPage,
   getInvestmentCriteria,
   getSiteSettings,
+  isRoutePublished,
 } from "@/content";
 import { resolvePolicyContext } from "@/content/context";
 import { buildMetadata } from "@/lib/seo/metadata";
@@ -39,6 +40,10 @@ export async function generateMetadata(): Promise<Metadata> {
     path: "/fund",
     fallbackTitle: "The fund",
     fallbackDescription: settings.defaultSeoDescription,
+    // Hidden means "not advertised": absent from navigation and the sitemap,
+    // and not listed by a crawler that reaches it some other way. The route
+    // still resolves, so no shared link breaks (§3.4).
+    noIndex: !(await isRoutePublished("/fund", policy)),
     seo: fund.seo,
     type: "website",
   });

@@ -100,8 +100,25 @@ export function ContactCta({
                 const phone = telHref(channels.phone);
                 const role = canPublishTeamField(member, "role", policy) ? member.role : null;
 
+                const portrait = canPublishTeamField(member, "portrait", policy)
+                  ? member.portrait
+                  : undefined;
+
                 return (
                   <li key={member.id} className={styles.person}>
+                    {/*
+                      Decorative: the name is printed immediately below, so an
+                      alt text here would announce the same fact twice.
+                    */}
+                    {portrait ? (
+                      <ResponsiveImage
+                        image={portrait}
+                        policy={policy}
+                        alt=""
+                        sizes="(min-width: 768px) 12rem, 40vw"
+                        frameClassName={styles.portrait}
+                      />
+                    ) : null}
                     <p className={styles.personName}>{member.name}</p>
                     {role ? <p className={styles.personRole}>{role}</p> : null}
                     {email ? (

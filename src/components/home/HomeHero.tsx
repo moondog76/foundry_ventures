@@ -34,6 +34,13 @@ export type HomeHeroProps = {
   /** Nav-derived labels, used when the authored CTA label is unapproved. */
   primaryCtaFallbackLabel: string;
   secondaryCtaFallbackLabel: string;
+  /**
+   * False when a CTA's destination is hidden (§3.4). The hero then renders
+   * whichever action survives — or none, on a single-page site, where the
+   * contact section at the foot of the page is the only action there is.
+   */
+  showPrimaryCta?: boolean;
+  showSecondaryCta?: boolean;
 };
 
 /**
@@ -59,6 +66,8 @@ export function HomeHero({
   fallbackHeading,
   primaryCtaFallbackLabel,
   secondaryCtaFallbackLabel,
+  showPrimaryCta = true,
+  showSecondaryCta = true,
 }: HomeHeroProps) {
   const eyebrow = renderableText(hero.eyebrow, policy);
   const heading = renderableText(hero.heading, policy) ?? fallbackHeading;
@@ -112,16 +121,34 @@ export function HomeHero({
               </div>
             ) : null}
 
-            {/* §9.7: one primary action per section. The fund link is a text link
-              rather than a second button so it cannot compete with it. */}
-            <div className={styles.actions}>
-              <ButtonLink href={hero.primaryCta.href} onDark>
-                {primaryLabel}
-              </ButtonLink>
-              <TextLink href={hero.secondaryCta.href} onDark>
-                {secondaryLabel}
-              </TextLink>
-            </div>
+            {/*
+              §9.7: one primary action per section, so the fund link is a text
+              link rather than a second button and cannot compete with it. When
+              the button's destination is hidden the text link is promoted to
+              the button, so the hero never ends on a lone secondary action —
+              and when both are hidden it ends on the copy, which is the right
+              shape for a single-page site whose only action is at the foot.
+            */}
+            {showPrimaryCta || showSecondaryCta ? (
+              <div className={styles.actions}>
+                {showPrimaryCta ? (
+                  <ButtonLink href={hero.primaryCta.href} onDark>
+                    {primaryLabel}
+                  </ButtonLink>
+                ) : null}
+                {showSecondaryCta ? (
+                  showPrimaryCta ? (
+                    <TextLink href={hero.secondaryCta.href} onDark>
+                      {secondaryLabel}
+                    </TextLink>
+                  ) : (
+                    <ButtonLink href={hero.secondaryCta.href} onDark>
+                      {secondaryLabel}
+                    </ButtonLink>
+                  )
+                ) : null}
+              </div>
+            ) : null}
           </div>
         </Container>
       </OceanField>

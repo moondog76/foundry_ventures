@@ -39,18 +39,26 @@ export async function SiteFooter() {
             ) : null}
           </div>
 
-          <nav className={styles.nav} aria-label="Footer">
-            <h2 className="visually-hidden">Site</h2>
-            <ul className={styles.navList}>
-              {settings.footerNavigation.map((item) => (
-                <li key={item.href}>
-                  <Link href={item.href} className={styles.navLink}>
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          {/*
+            A navigation whose only entry is the page you are already on is not
+            navigation. With `/portfolio` and `/fund` hidden the list collapses
+            to "Home", so the column is dropped rather than left as an empty
+            gesture — and it returns on its own when either route comes back.
+          */}
+          {settings.footerNavigation.length > 1 ? (
+            <nav className={styles.nav} aria-label="Footer">
+              <h2 className="visually-hidden">Site</h2>
+              <ul className={styles.navList}>
+                {settings.footerNavigation.map((item) => (
+                  <li key={item.href}>
+                    <Link href={item.href} className={styles.navLink}>
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ) : null}
 
           <div className={styles.contact}>
             <h2 className={styles.contactHeading}>Contact</h2>

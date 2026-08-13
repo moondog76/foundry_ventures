@@ -34,6 +34,7 @@ const BASE: CompanySummary = {
   opticalScale: 1,
   cardImage: null,
   tagline: "A synthetic record used only by the component tests.",
+  descriptor: null,
   stages: [{ group: "stage", slug: "pre-seed", title: "Pre-seed" }],
   sectors: [{ group: "sector", slug: "ai-infrastructure", title: "AI infrastructure" }],
   focuses: [],

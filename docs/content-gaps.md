@@ -184,6 +184,23 @@ Two records in `src/content/seed/team.ts`, both `publicationStatus: "review"`.
 
 ---
 
+## C2. Monava, added 2026-08-13
+
+Added on the owner's instruction with a logo supplied the same day. Both
+descriptors are drafted from monava.io, the same provenance as the other nine,
+and carry the same `draftedFromCompanySite` evidence saying Foundry has not read
+the wording line by line.
+
+Worth knowing before it goes public: **Monava describes itself as a defence
+company.** Their own first line is "a defence company developing acoustic machine
+learning", and the portfolio descriptor uses that word because a reader who
+follows the link finds it in one sentence. If Foundry would rather the portfolio
+page not carry the category, the descriptor is the only place it appears.
+
+The delivered `.svg` was not a vector — a 788×127 SVG shell wrapping one base64
+PNG. `scripts/prepare-supplied-assets.mjs` extracts the PNG losslessly so
+`next/image` can resample it; the original is in `assets-supplied/`.
+
 ## F3. Where the enhancement brief reverses your own instructions
 
 The 2026-08-12 rebuild was built to the website enhancement brief, on the
@@ -198,7 +215,18 @@ the brief specifies; each row names the one place to change to put it back.
 | 3 | "We only invest in AI. We only invest in teams." | "We invest in teams **first**" — "teams only" reads as not caring about the market (§6.4) | `seed/home.ts`, `hero.heading` |
 | 4 | Less interested in PMF and moats | Reframe as epistemic humility, not absent diligence (§6.5) | `seed/home.ts`, `vision.paragraphs` |
 | 5 | "Remove Portfolio from the navigation" (11 Aug) | The header must reach Portfolio and Fund without a hero CTA or the footer (§2.8, §7.2) | `seed/site-settings.ts`, `navigation` |
-| 6 | "Make the ocean motion way more on scroll and cursor"; parallax on the stills | No cursor-following distortion; parallax no greater than a few percent; one continuous motion source (§2.5, §10.4) | `AmbientOcean.tsx`, `SCROLL_TRAVEL` |
+| 6 | "Make the ocean motion way more on scroll and cursor"; parallax on the stills | No cursor-following distortion; parallax no greater than a few percent; one continuous motion source (§2.5, §10.4) | **Reverted 2026-08-13 — the owner's motion stands.** See below. |
+
+**Number 6 was reverted on 2026-08-13.** Pointer tracking, the rotation tilt and
+32%-of-viewport scroll travel are back, and the editorial stills stay still (they
+were removed from the page entirely, so there is nothing left to parallax). The
+accessibility work built around the weaker motion is untouched and matters more
+now, not less: reduced-motion and Save-Data still refuse motion outright rather
+than soften it, the pause control still wins over both, and every offset is still
+clamped per frame to the video's overscan — verified at five viewports from
+1280×600 to 2560×1440 with 31–62px of margin at the worst pointer and scroll
+position. `SETTINGS` in `AmbientOcean.tsx` and `--overscan` in
+`ambient-ocean.module.css` are a matched pair and must move together.
 
 Numbers 3 and 5 are the two most likely to matter to you. The brief itself offers
 an escape hatch on 3 — §6.4 says the current headline may be kept if it is

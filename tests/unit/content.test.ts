@@ -59,6 +59,8 @@ describe("getCompanies (real seed)", () => {
     "memmo",
     // Confirmed by the content owner on 2026-08-11, after the live snapshot.
     "builderbase",
+    // Added by the content owner on 2026-08-13.
+    "monava",
   ];
 
   it("returns every portfolio company in the observed live order", async () => {

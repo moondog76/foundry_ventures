@@ -356,6 +356,33 @@ function buildPortfolioLogos() {
     log(`memmo: viewBox tightened to the artwork (${box.width}×${box.height})`);
   }
 
+  /*
+   * Monava's mark was delivered as an `.svg`, but it is not a vector: the file
+   * is a 788×127 SVG shell wrapping one base64 PNG in a `<pattern>` fill.
+   * Shipping it as-is would serve 12.5 KiB of base64 to draw an 8.9 KiB image
+   * and defeat `next/image` entirely, since the optimiser cannot resample a
+   * raster hidden inside an SVG.
+   *
+   * So the PNG is extracted back out and stored as a PNG. This is lossless —
+   * the bytes written are byte-identical to the ones the shell carried — and it
+   * is asserted below rather than assumed.
+   */
+  const monavaSource = path.join(SUPPLIED, "monava-logo.svg");
+  if (existsSync(monavaSource)) {
+    const shell = readFileSync(monavaSource, "utf8");
+    const embedded = shell.match(/xlink:href="data:image\/png;base64,([A-Za-z0-9+/=]+)"/);
+    if (!embedded) {
+      throw new Error("monava-logo.svg no longer wraps a base64 PNG — re-check the delivered file");
+    }
+    const png = Buffer.from(embedded[1], "base64");
+    // PNG magic number: the extraction produced an image, not a truncated blob.
+    if (png.subarray(0, 8).toString("hex") !== "89504e470d0a1a0a") {
+      throw new Error("monava: extracted payload is not a PNG");
+    }
+    writeFileSync(path.join(PORTFOLIO_OUT, "monava.png"), png);
+    log(`monava: PNG extracted from the SVG shell (${png.length} bytes, was ${shell.length})`);
+  }
+
   // Newly ships as an A4 page with the square logo tile placed on it.
   const newlySource = path.join(SUPPLIED, "newly.pdf");
   if (existsSync(newlySource)) {

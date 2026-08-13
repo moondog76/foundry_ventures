@@ -67,10 +67,17 @@ export default async function HomePage() {
   const policy = await resolvePolicyContext();
   const [home, settings] = await Promise.all([getHomePage(), getSiteSettings(policy)]);
 
+  /*
+   * §8.4 asks for six, editorially chosen — and says in the same section that
+   * Foundry, not Claude Code, must approve which six, and that until then the
+   * build renders the published set in data order. The limit is the list's own
+   * length rather than a number, so adding a company to the seed never requires
+   * editing this file to make it appear.
+   */
   const featuredSlugs = home.featuredPortfolio.companyIds.map((company) => company.slug);
   const [criteria, featuredCompanies, decisionMakers, contactPeople] = await Promise.all([
     getInvestmentCriteria(policy),
-    getFeaturedCompanies(featuredSlugs, FEATURED_LIMIT, policy),
+    getFeaturedCompanies(featuredSlugs, featuredSlugs.length, policy),
     getDecisionMakers(policy),
     getContactPeople(policy),
   ]);
@@ -132,10 +139,3 @@ export default async function HomePage() {
   );
 }
 
-/**
- * §8.4 asks for six. Foundry has not yet chosen which six, and the same section
- * forbids inferring the selection — so the page renders the full published set
- * in data order until that decision exists. Raising this to six is the only
- * change needed once it does.
- */
-const FEATURED_LIMIT = 9;

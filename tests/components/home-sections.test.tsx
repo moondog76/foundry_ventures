@@ -64,6 +64,7 @@ const COMPANY: CompanySummary = {
   opticalScale: 1,
   cardImage: null,
   tagline: null,
+  descriptor: null,
   stages: [],
   sectors: [],
   focuses: [],

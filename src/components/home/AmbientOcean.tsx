@@ -14,7 +14,8 @@
  *    preference in both directions;
  *  - playback pauses when the tab is hidden or the hero scrolls away;
  *  - a decode error falls back to the still rather than a black rectangle;
- *  - no sound, no scroll-jacking, no cursor tracking.
+ *  - no sound, and no scroll-jacking: the page never takes over the scroll,
+ *    the background only responds to it.
  *
  * Server markup renders the video with the poster already applied, so nothing
  * depends on hydration to look right.
@@ -25,13 +26,24 @@ import { useAmbientParallax, type ParallaxSettings } from "./use-ambient-paralla
 import styles from "./ambient-ocean.module.css";
 
 /**
- * §10.4 caps parallax at "a few percent". 5% of viewport height across the
- * hero's own scroll is perceptible as depth and never as an effect.
+ * Motion strength, restored on the owner's instruction 2026-08-13.
+ *
+ * The enhancement brief cut these to a fifth (§10.4: no cursor tracking, no
+ * parallax beyond "a few percent"). The owner asked for the stronger version
+ * twice and chose it over the brief; `docs/content-gaps.md` §F3 records that.
+ *
+ * Every value is a fraction of the viewport, so the effect is proportional on a
+ * laptop and a 5K display alike. `overscan` is the whole travel budget: the hook
+ * clamps pointer, scroll and rotation into it per frame, and the CSS oversizes
+ * the video by the same amount — the two must stay equal or an edge appears.
  */
 const SETTINGS: ParallaxSettings = {
-  scrollTravel: 0.05,
+  pointerX: 0.14,
+  pointerY: 0.1,
+  scrollTravel: 0.32,
+  rotation: 1.6,
   easing: 0.09,
-  overscan: 0.08,
+  overscan: 0.22,
 };
 
 export function AmbientOcean({ className, paused }: { className?: string; paused: boolean }) {

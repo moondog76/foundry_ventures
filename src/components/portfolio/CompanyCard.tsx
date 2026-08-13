@@ -65,7 +65,15 @@ export function CompanyCard({
           <span className={styles.nameText}>{summary.name}</span>
           {isExternal ? <ExternalIcon /> : null}
         </h3>
-        {summary.tagline ? <p className={styles.tagline}>{summary.tagline}</p> : null}
+        {/*
+          §8.10 gives the archive the longer descriptor: this grid has room for
+          what a company does and who it is for, where the homepage grid does
+          not. Falls back to the short one so a company with only a card
+          descriptor still says something.
+        */}
+        {summary.descriptor ?? summary.tagline ? (
+          <p className={styles.tagline}>{summary.descriptor ?? summary.tagline}</p>
+        ) : null}
         {tags.length > 0 ? (
           <ul className={styles.tags} role="list">
             {tags.map((label) => (

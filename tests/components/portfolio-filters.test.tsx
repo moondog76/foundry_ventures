@@ -286,6 +286,7 @@ describe("portfolio zero states", () => {
             opticalScale: 1,
             cardImage: null,
             tagline: null,
+            descriptor: null,
             stages: [],
             sectors: [],
             focuses: [],

@@ -401,7 +401,16 @@ export type CompanySummary = {
   logoSurface: "dark" | "light";
   opticalScale: number;
   cardImage: ImageAsset | null;
+  /**
+   * The 10-14 word card descriptor (§8.4), for the homepage grid where nine or
+   * ten of these sit together and length turns proof of taste into a directory.
+   */
   tagline: string | null;
+  /**
+   * The 22-28 word descriptor (§8.10), for the `/portfolio` grid, where there
+   * is room to say what the company does and who it is for.
+   */
+  descriptor: string | null;
   stages: TaxonomyRef[];
   sectors: TaxonomyRef[];
   focuses: TaxonomyRef[];

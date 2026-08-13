@@ -339,6 +339,7 @@ describe("entity JSON-LD", () => {
       opticalScale: 1,
       cardImage: null,
       tagline: null,
+      descriptor: null,
       stages: [],
       sectors: [],
       focuses: [],

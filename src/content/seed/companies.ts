@@ -285,4 +285,28 @@ export const SEED_COMPANIES: Company[] = [
     reviewNote:
       "Consistent with the linked study platform observed 2026-08-10, but still requires editorial approval.",
   }),
+  seedCompany({
+    slug: "monava",
+    name: "Monava",
+    websiteUrl: "https://www.monava.io/",
+    /*
+     * Drafted from monava.io on 2026-08-13, the same provenance as the other
+     * nine. Their own first line is "a defence company developing acoustic
+     * machine learning" — the category is theirs, not an inference, and it is
+     * kept because a reader who follows the link will find it in one sentence.
+     */
+    cardDescriptor:
+      "Acoustic machine learning that detects, classifies and locates drones by sound.",
+    descriptor:
+      "A defence company applying machine learning to acoustic sensing, detecting, classifying and locating aerial and ground sound sources in conditions that defeat cameras and radar.",
+    logo: SUPPLIED_PORTFOLIO_LOGOS.monava,
+    // A white wordmark on transparent — measured mean luminance 255, so it is
+    // invisible on anything but a dark field.
+    logoSurface: "dark",
+    logoFit: "wide",
+    // Aspect 6.20, between Grand (6.11) and BuilderBase (6.42), so it takes the
+    // same optical reduction those two carry.
+    opticalScale: 0.92,
+    sortOrder: 100,
+  }),
 ];

@@ -173,6 +173,9 @@ export const SUPPLIED_PORTFOLIO_LOGOS = {
   // the wordmark's own proportions rather than the 810×810 artboard.
   memmo: suppliedLogo("memmo", "memmo.svg", 639, 98, "Memmo"),
   builderbase: suppliedLogo("builderbase", "builderbase.png", 1258, 196, "BuilderBase"),
+  // Delivered as an SVG shell wrapping one base64 PNG; the prep script extracts
+  // the raster so `next/image` can actually resample it.
+  monava: suppliedLogo("monava", "monava.png", 788, 127, "Monava"),
 } as const;
 
 /** Superseded live-CDN references, retained for the migration record. */

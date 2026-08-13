@@ -13,11 +13,11 @@
   --motion-rotate: 0deg;
   /*
    * Must match `SETTINGS.overscan` in AmbientOcean.tsx — the hook clamps its
-   * offsets to this, so a smaller CSS value would expose an edge and a larger
-   * one just upscales the video for nothing. It drifted to 22% when the motion
-   * was strong; §10.4 cut the travel to 5%, so 8% is now the whole budget.
+   * offsets to this, so a smaller CSS value exposes an edge and a larger one
+   * upscales the video for nothing. Back to 22% with the stronger motion
+   * restored on 2026-08-13; the two values are a pair and always move together.
    */
-  --overscan: 8%;
+  --overscan: 22%;
 
   position: absolute;
   inset: 0;

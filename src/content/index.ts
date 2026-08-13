@@ -172,6 +172,9 @@ export function toCompanySummary(company: Company, policy: PolicyContext): Compa
     opticalScale: company.opticalScale ?? 1,
     cardImage: canRenderImage(company.cardImage, policy) ? (company.cardImage as ImageAsset) : null,
     tagline: canPublishCompanyField(company, "tagline", policy) ? (company.tagline ?? null) : null,
+    descriptor: canPublishCompanyField(company, "shortDescription", policy)
+      ? (company.shortDescription ?? null)
+      : null,
     stages: taxonomyOk("stages") ? (company.stages ?? []) : [],
     sectors: taxonomyOk("sectors") ? (company.sectors ?? []) : [],
     focuses: taxonomyOk("focuses") ? (company.focuses ?? []) : [],

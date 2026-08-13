@@ -1119,3 +1119,47 @@ mobile poster against ≤100 KiB, and a 62.6 KiB mobile WebM against ≤80 KiB.
 
 **Reversal.** Revisit if a future Next.js release cuts the baseline, or if the
 site ever justifies a non-React build.
+
+---
+
+## D-038 — The owner's motion overrides §10.4
+
+**Decision.** Restore pointer-tracked parallax, the rotation tilt and 32%
+scroll travel on the ocean field, reversing §10.4 of the enhancement brief.
+
+**Rationale.** The owner asked for stronger motion on 11 August, asked again for
+the editorial stills, and on 13 August chose it over the brief when the conflict
+was put to them explicitly. A third-party audit does not outrank the owner on a
+question of house taste.
+
+**Spec.** Brief §2.5, §10.4 — knowingly departed from. `docs/content-gaps.md` §F3.
+
+**Consequence.** Everything the weaker motion was paired with stays, and matters
+more at this strength: reduced-motion and Save-Data refuse motion rather than
+soften it, the §10.5 pause control wins over both, playback stops off-screen and
+on tab-hide, and every offset is clamped per frame to the element's own overscan.
+Verified at 1280×600, 1440×900, 1920×1080, 2560×1440 and 390×844 with 31–62px of
+margin at the worst pointer and scroll position.
+
+**Reversal.** `SETTINGS` in `AmbientOcean.tsx`; `--overscan` in
+`ambient-ocean.module.css` must be changed to match in the same commit.
+
+---
+
+## D-039 — Two descriptor lengths, two grids
+
+**Decision.** `CompanySummary` carries both `tagline` (10–14 words) and
+`descriptor` (22–28 words). The homepage grid renders the short one, `/portfolio`
+the long one.
+
+**Rationale.** §8.4 and §8.10 budget the two grids differently and for good
+reason — ten cards of 25 words each on the homepage is the corporate directory
+the rebuild set out to remove, while ten cards of 11 words on the archive is
+thin. The lengths were written on 12 August but only `tagline` reached the view
+model, so every long descriptor was dead data visible on no page a visitor
+reliably reaches.
+
+**Spec.** Brief §8.4, §8.10, §11.2.
+
+**Consequence.** Both budgets are enforced at seed load, so an over-long
+descriptor fails the build rather than being counted by hand in review.

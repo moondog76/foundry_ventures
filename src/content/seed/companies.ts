@@ -144,8 +144,18 @@ function seedCompany(input: SeedCompanyInput): Company {
 }
 
 /**
- * Observed live order (§8.5): Empley, Agaton, Grand, Wilgot, Openroll, Newly,
- * Skattio, Memmo — then BuilderBase, which the owner added on 2026-08-11.
+ * Display order.
+ *
+ * This started as the observed live order (§8.5) — Empley, Agaton, Grand,
+ * Wilgot, Openroll, Newly, Skattio, Memmo — and is now an editorial decision on
+ * top of it: BuilderBase was added 2026-08-11, Monava 2026-08-13, and the owner
+ * swapped Memmo and Empley on 2026-08-13, putting Memmo in the lead tile.
+ *
+ * `sortOrder` is the single source of truth for the order, not the position of
+ * a record in this array — a swap is one number rather than a block move, and
+ * the diff shows which company changed rank rather than a wall of relocated
+ * lines. `seed/home.ts` sorts by it before building the featured list, so the
+ * home grid and `/portfolio` cannot disagree.
  */
 export const SEED_COMPANIES: Company[] = [
   seedCompany({
@@ -160,7 +170,7 @@ export const SEED_COMPANIES: Company[] = [
     logoSurface: "dark",
     logoFit: "wide",
     opticalScale: 1,
-    sortOrder: 10,
+    sortOrder: 80,
   }),
   seedCompany({
     slug: "agaton",
@@ -281,7 +291,7 @@ export const SEED_COMPANIES: Company[] = [
     logoSurface: "light",
     logoFit: "wide",
     opticalScale: 0.92,
-    sortOrder: 80,
+    sortOrder: 10,
     reviewNote:
       "Consistent with the linked study platform observed 2026-08-10, but still requires editorial approval.",
   }),

@@ -30,6 +30,7 @@ import {
   toCompanySummary,
 } from "@/content";
 import { PREVIEW_POLICY, PRODUCTION_POLICY } from "@/content/policy";
+import { SEED_HOME_PAGE } from "@/content/seed/home";
 
 const APPROVED: FieldEvidence = {
   status: "owner-approved",
@@ -48,15 +49,22 @@ afterEach(() => __setAdapterForTests(null));
 /* ------------------------------------------------------------- Companies */
 
 describe("getCompanies (real seed)", () => {
+  /*
+   * The published display order. No longer purely the live snapshot: the owner
+   * swapped Memmo and Empley on 2026-08-13, so Memmo leads and Empley sits
+   * eighth. Asserted in full because the order is an editorial decision and a
+   * silent reshuffle — from an accidental `sortOrder` collision, say — would
+   * otherwise reach production unnoticed.
+   */
   const LIVE_ORDER = [
-    "empley",
+    "memmo",
     "agaton",
     "grand",
     "wilgot",
     "openroll",
     "newly",
     "skattio",
-    "memmo",
+    "empley",
     // Confirmed by the content owner on 2026-08-11, after the live snapshot.
     "builderbase",
     // Added by the content owner on 2026-08-13.
@@ -66,6 +74,27 @@ describe("getCompanies (real seed)", () => {
   it("returns every portfolio company in the observed live order", async () => {
     const summaries = await getCompanies(undefined, PREVIEW_POLICY);
     expect(summaries.map((summary) => summary.slug)).toEqual(LIVE_ORDER);
+  });
+
+  it("shows the same order on the home page as on /portfolio", async () => {
+    /*
+     * These two grids reach their order by different routes: `/portfolio` sorts
+     * by `sortOrder`, while the home page hands `getFeaturedCompanies` an
+     * explicit slug list from the home document, which that function honours
+     * verbatim so a future editorial selection can override the ranking.
+     *
+     * That flexibility is also the hazard. When Memmo and Empley were swapped on
+     * 2026-08-13 the home list was still being built from the seed array's own
+     * position, so `/portfolio` reordered and the home page did not — the two
+     * pages disagreed in production and nothing failed. Asserting the agreement
+     * is the only thing that catches it.
+     */
+    const archive = (await getCompanies(undefined, PRODUCTION_POLICY)).map((c) => c.slug);
+    const homeSlugs = SEED_HOME_PAGE.featuredPortfolio.companyIds.map((c) => c.slug);
+    const featured = (await getFeaturedCompanies(homeSlugs, homeSlugs.length, PRODUCTION_POLICY))
+      .map((c) => c.slug);
+
+    expect(featured).toEqual(archive);
   });
 
   it("publishes the same companies in production, because the owner approved them", async () => {

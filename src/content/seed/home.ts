@@ -124,12 +124,21 @@ export const SEED_HOME_PAGE: HomePage = {
     /*
      * §8.4 wants six editorially selected companies — and says in the same
      * section that Foundry, not Claude Code, must approve which six and in what
-     * order, and that until that decision exists the build preserves data order
-     * and renders all nine. That is what happens here: nine, in observed live
-     * order. The selection is logged in `docs/content-gaps.md` §C as the open
-     * content decision it is, rather than guessed from public signals.
+     * order, and that until that decision exists the build renders the published
+     * set. So this is every published company, in the owner's own order. The
+     * six-company selection stays logged in `docs/content-gaps.md` §C.
+     *
+     * Sorted by `sortOrder` rather than by position in the seed array.
+     * `getFeaturedCompanies` honours this list verbatim — that is the point of
+     * it, so a future editorial selection can override the ranking — while
+     * `/portfolio` sorts by `sortOrder`. Mapping the raw array here let the two
+     * grids silently disagree the moment a rank changed without the array being
+     * reordered to match, which is what happened when Memmo and Empley were
+     * swapped on 2026-08-13.
      */
-    companyIds: SEED_COMPANIES.map((c) => ({ id: c.id, slug: c.slug, name: c.name })),
+    companyIds: [...SEED_COMPANIES]
+      .sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name, "en"))
+      .map((c) => ({ id: c.id, slug: c.slug, name: c.name })),
     ctaLabel: fromEnhancementBrief("See all teams"),
     ctaHref: "/portfolio",
   },

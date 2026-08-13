@@ -15,8 +15,9 @@
  *      category confusion that undercuts a fund actively raising.
  *   2. "Industrial angel" is removed from public copy (§6.5). It may survive as
  *      internal shorthand; it is no longer the public category.
- *   3. "We only invest in teams" becomes "We invest in teams first" (§6.4), so
- *      the line cannot be read as "Foundry does not care about the market".
+ *   3. "We only invest in teams" became "We invest in teams first" (§6.4) — and
+ *      the owner then rewrote the headline again on 2026-08-13, so what ships is
+ *      neither version but their own line.
  *
  * What the copy still asserts as fact, all owner-stated: cheques are €100k or
  * €200k; one to three investments a month; AI only; Nordics; team-first
@@ -38,7 +39,22 @@ export const SEED_HOME_PAGE: HomePage = {
     // "AI only / Teams only" directly above the headline itself; this one adds
     // the qualifying fact instead of saying the same thing twice.
     eyebrow: fromEnhancementBrief("Early-stage AI · Nordics · €100k / €200k"),
-    heading: fromEnhancementBrief("We only invest in AI. We invest in teams first."),
+    /*
+     * The owner's own words, 2026-08-13, replacing §6.4's "We invest in teams
+     * first" — and effectively settling conflict 3 in `content-gaps.md` §F3.
+     * The audit's objection to "we only invest in teams" was that it could be
+     * read as indifference to the market; "it's all about the team" carries the
+     * same conviction without the exclusion, so the concern does not survive the
+     * rewording.
+     *
+     * It is also one sentence rather than two, so the hero's sentence-per-line
+     * treatment now yields a single block that wraps on its own measure. The
+     * heading column is sized for that in `home-hero.module.css`.
+     */
+    heading: ownerWrote("We only invest in AI, and it’s all about the team.", {
+      normalizationNote:
+        "Straight apostrophe in “it's” set as a typographic one, matching the rest of the site.",
+    }),
     /*
      * The owner's own words, supplied 2026-08-13, replacing the §6.4 support
      * line. Twelve words against a 28-32 word ceiling — the audit's complaint

@@ -305,7 +305,7 @@ the brief specifies; each row names the one place to change to put it back.
 |---|---|---|---|
 | 1 | "Foundry is not a venture fund" (11 Aug) | Delete it — category confusion that undercuts a fund actively raising (§6.5) | `seed/home.ts`, hero paragraph |
 | 2 | Position as an "industrialised super angel"; "industrial angel" in the thesis | Remove from public category copy; may survive as internal shorthand (§6.5) | `seed/home.ts`, `vision.paragraphs` |
-| 3 | "We only invest in AI. We only invest in teams." | "We invest in teams **first**" — "teams only" reads as not caring about the market (§6.4) | `seed/home.ts`, `hero.heading` |
+| 3 | "We only invest in AI. We only invest in teams." | "We invest in teams **first**" — "teams only" reads as not caring about the market (§6.4) | **Settled 2026-08-13** — the owner rewrote it again to "We only invest in AI, and it’s all about the team." Neither the original nor the brief's version ships. The audit's objection was to the exclusion in "only teams"; this keeps the conviction without it, so the concern does not survive the rewording. |
 | 4 | Less interested in PMF and moats | Reframe as epistemic humility, not absent diligence (§6.5) | `seed/home.ts`, `vision.paragraphs` |
 | 5 | "Remove Portfolio from the navigation" (11 Aug) | The header must reach Portfolio and Fund without a hero CTA or the footer (§2.8, §7.2) | `seed/site-settings.ts`, `navigation` |
 | 6 | "Make the ocean motion way more on scroll and cursor"; parallax on the stills | No cursor-following distortion; parallax no greater than a few percent; one continuous motion source (§2.5, §10.4) | **Reverted 2026-08-13 — the owner's motion stands.** See below. |

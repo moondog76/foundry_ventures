@@ -143,13 +143,24 @@
 }
 
 @media (min-width: 768px) {
-  .headingSentence {
-    display: block;
-  }
-
   .heading {
     /* §8.2 desktop target: clamp(64px, 6.4vw, 112px). */
     font-size: clamp(4rem, 6.4vw, 7rem);
+  }
+}
+
+/*
+ * The authored break only applies where the resulting lines actually fit.
+ *
+ * Below 992px the heading column is the full container and the longer clause
+ * overruns it, so forcing the break produced three ragged lines where free
+ * wrapping produced a decent two or three. Under that width the parts stay
+ * inline and the browser breaks wherever it must — which at phone sizes is the
+ * honest answer anyway.
+ */
+@media (min-width: 992px) {
+  .headingSentence {
+    display: block;
   }
 }
 
@@ -159,13 +170,19 @@
   }
 
   /*
-   * 19 of 24 columns. Wide enough that each sentence of the headline holds a
-   * single line at the §8.2 type size — the whole point of breaking on sentence
-   * boundaries is lost if the sentences then wrap anyway. Measured against the
-   * longest line, "We invest in teams first." at 6.4vw.
+   * 22 of 24 columns, measured against the headline that actually ships rather
+   * than a rule of thumb.
+   *
+   * The current line is one sentence with a clause break at the comma, and that
+   * comma is where it should break. At 19 columns the second clause was ~140px
+   * too wide for the measure, so it wrapped again and stranded "team." alone on
+   * a third line. 22 gives the clause room to hold one line, which turns the
+   * rag from an orphan into the editorial break §8.2 asks for.
+   *
+   * Re-measure if the headline changes: this number belongs to the copy.
    */
   .headingBlock {
-    grid-column: 1 / span 19;
+    grid-column: 1 / span 22;
   }
 
   .support {
@@ -178,8 +195,13 @@
 }
 
 @media (min-width: 1440px) {
+  /*
+   * The full measure. Above 1440 the type keeps growing on `6.4vw` while the
+   * container caps at 1600, so the column has to widen or the second clause
+   * overruns and strands "team." on a third line. Verified at 1728 and 2560.
+   */
   .headingBlock {
-    grid-column: 1 / span 18;
+    grid-column: 1 / span 24;
   }
 
   .support {

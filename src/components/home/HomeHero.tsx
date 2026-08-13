@@ -44,20 +44,33 @@ export type HomeHeroProps = {
 };
 
 /**
- * Splits a heading on sentence boundaries so the CSS can break lines there.
+ * Splits a heading at its own punctuation, so the line breaks are the writer's
+ * rather than the measure's (§8.2).
  *
- * §8.2 asks for editorial line breaks rather than whatever the measure
- * produces. The trailing space is kept inside each span so the sentences still
- * read as one continuous string when they are inline on a narrow screen, and so
- * a screen reader announces "…in AI. We invest…" rather than running the words
- * together.
+ * Two rules, in order:
  *
- * A heading with no sentence break comes back as a single element, so this is
- * safe for any future copy.
+ *  1. **Sentence boundaries**, when there is more than one sentence. A heading
+ *     of two sentences reads as two lines.
+ *  2. **The first comma**, when there is only one sentence and it has one. The
+ *     clause break is the natural place to fold a long headline, and it often
+ *     cannot happen on its own: with "We only invest in AI, and it’s all about
+ *     the team." the second clause is wider than the first clause plus "and",
+ *     so no measure exists that breaks at the comma. Only an explicit split can.
+ *
+ * Anything else comes back as one element and wraps normally. The trailing
+ * space is kept inside each part so the pieces still read as one string when
+ * they are inline on a narrow screen, and so a screen reader announces
+ * "…in AI, and it’s…" rather than running the words together.
  */
-function splitSentences(heading: string): string[] {
-  const parts = heading.match(/[^.!?]+[.!?]*\s*/g);
-  return parts ? parts.map((part) => part.trim()).filter(Boolean) : [heading];
+function splitHeading(heading: string): string[] {
+  const sentences = heading.match(/[^.!?]+[.!?]*\s*/g)?.map((part) => part.trim()).filter(Boolean);
+  if (sentences && sentences.length > 1) return sentences;
+
+  const comma = heading.indexOf(",");
+  if (comma > 0 && comma < heading.length - 1) {
+    return [heading.slice(0, comma + 1).trim(), heading.slice(comma + 1).trim()];
+  }
+  return [heading];
 }
 
 export function HomeHero({
@@ -103,7 +116,7 @@ export function HomeHero({
             <div className={styles.headingBlock}>
               {eyebrow ? <p className={`type-label ${styles.eyebrow}`}>{eyebrow}</p> : null}
               <h1 id="home-hero-heading" className={styles.heading}>
-                {splitSentences(heading).map((sentence) => (
+                {splitHeading(heading).map((sentence) => (
                   <span key={sentence} className={styles.headingSentence}>
                     {sentence}{" "}
                   </span>
